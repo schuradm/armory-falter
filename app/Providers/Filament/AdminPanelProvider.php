@@ -25,21 +25,29 @@ class AdminPanelProvider extends PanelProvider
         return $panel
             ->default()
             ->id('admin')
-            ->path('admin')
-            ->login()
+            ->path('kms-login') // Backend-Adresse laut Kundenwunsch
+            ->login(\App\Filament\Pages\Auth\Login::class)
+            ->brandName('Armory Falter')
+            ->brandLogo(asset('images/brand/armory-falter-logo.svg'))
+            ->darkModeBrandLogo(asset('images/brand/armory-falter-logo-light.svg'))
+            ->brandLogoHeight('2.75rem')
+            ->favicon(asset('images/brand/favicon.svg'))
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => Color::hex('#9d4640'),
+                'gray' => Color::Zinc,
             ])
+            ->font('Poppins')
+            ->sidebarCollapsibleOnDesktop()
+            ->databaseNotifications()
+            ->globalSearchKeyBindings(['command+k', 'ctrl+k'])
+            ->navigationGroups(['Verkauf', 'Katalog', 'Kunden & Prüfung', 'Service', 'Marketing', 'Inhalte', 'System'])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
                 Pages\Dashboard::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
-            ->widgets([
-                Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
-            ])
+            ->widgets([])
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
@@ -53,6 +61,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
+                \App\Http\Middleware\RequireStaffTwoFactor::class,
             ]);
     }
 }

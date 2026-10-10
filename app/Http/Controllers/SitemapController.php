@@ -39,7 +39,7 @@ class SitemapController extends Controller
     public function robots()
     {
         $lines = app()->isProduction() && ! config('app.noindex')
-            ? ['User-agent: *', 'Disallow: /konto', 'Disallow: /kasse', 'Disallow: /warenkorb', 'Disallow: /admin', 'Disallow: /suche', 'Disallow: /vergleich', 'Disallow: /*?*sortierung=', '', 'Sitemap: '.route('sitemap')]
+            ? ['User-agent: *', 'Disallow: /konto', 'Disallow: /kasse', 'Disallow: /warenkorb', 'Disallow: /suche', 'Disallow: /vergleich', 'Disallow: /*?*sortierung=', '', 'Sitemap: '.route('sitemap')]
             : ['User-agent: *', 'Disallow: /'];
 
         return response(implode("\n", $lines)."\n", 200, ['Content-Type' => 'text/plain']);

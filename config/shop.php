@@ -100,7 +100,7 @@ return [
     'page_cache' => [
         'enabled' => env('PAGE_CACHE', true),
         'ttl' => 900,
-        'except' => ['konto*', 'kasse*', 'warenkorb', 'zahlung*', 'admin*', 'livewire*', 'newsletter*', 'downloads*', 'suche', 'vergleich', 'sitemap.xml', 'robots.txt', 'up'],
+        'except' => ['konto*', 'kasse*', 'warenkorb', 'zahlung*', 'kms-login*', 'livewire*', 'newsletter*', 'downloads*', 'suche', 'vergleich', 'sitemap.xml', 'robots.txt', 'up'],
     ],
 
     // Performance-Schalter
