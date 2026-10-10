@@ -1,0 +1,12 @@
+@props(['prefix'])
+<div class="grid gap-4 sm:grid-cols-6">
+    <div class="sm:col-span-6"><label class="label" for="{{ $prefix }}-company">Firma (optional)</label><input id="{{ $prefix }}-company" wire:model="{{ $prefix }}.company_name" class="input" autocomplete="organization"></div>
+    <div class="sm:col-span-3"><label class="label" for="{{ $prefix }}-fn">Vorname *</label><input id="{{ $prefix }}-fn" wire:model="{{ $prefix }}.first_name" class="input" autocomplete="given-name">@error($prefix.'.first_name')<p class="mt-1 text-xs text-red-400">{{ $message }}</p>@enderror</div>
+    <div class="sm:col-span-3"><label class="label" for="{{ $prefix }}-ln">Nachname *</label><input id="{{ $prefix }}-ln" wire:model="{{ $prefix }}.last_name" class="input" autocomplete="family-name">@error($prefix.'.last_name')<p class="mt-1 text-xs text-red-400">{{ $message }}</p>@enderror</div>
+    <div class="sm:col-span-4"><label class="label" for="{{ $prefix }}-st">Straße *</label><input id="{{ $prefix }}-st" wire:model="{{ $prefix }}.street" class="input" autocomplete="address-line1">@error($prefix.'.street')<p class="mt-1 text-xs text-red-400">{{ $message }}</p>@enderror</div>
+    <div class="sm:col-span-2"><label class="label" for="{{ $prefix }}-hn">Nr. *</label><input id="{{ $prefix }}-hn" wire:model="{{ $prefix }}.house_number" class="input">@error($prefix.'.house_number')<p class="mt-1 text-xs text-red-400">{{ $message }}</p>@enderror</div>
+    <div class="sm:col-span-6"><label class="label" for="{{ $prefix }}-ex">Adresszusatz</label><input id="{{ $prefix }}-ex" wire:model="{{ $prefix }}.address_extra" class="input" autocomplete="address-line2"></div>
+    <div class="sm:col-span-2"><label class="label" for="{{ $prefix }}-pc">PLZ *</label><input id="{{ $prefix }}-pc" wire:model="{{ $prefix }}.postal_code" class="input" inputmode="numeric" autocomplete="postal-code">@error($prefix.'.postal_code')<p class="mt-1 text-xs text-red-400">{{ $message }}</p>@enderror</div>
+    <div class="sm:col-span-4"><label class="label" for="{{ $prefix }}-ci">Ort *</label><input id="{{ $prefix }}-ci" wire:model="{{ $prefix }}.city" class="input" autocomplete="address-level2">@error($prefix.'.city')<p class="mt-1 text-xs text-red-400">{{ $message }}</p>@enderror</div>
+    <div class="sm:col-span-6"><label class="label">Land</label><p class="text-sm">Deutschland <span class="text-muted">(Lieferung nur innerhalb Deutschlands)</span></p></div>
+</div>
