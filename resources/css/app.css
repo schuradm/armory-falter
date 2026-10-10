@@ -3,10 +3,10 @@
 @plugin '@tailwindcss/forms';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../storage/framework/views/*.php';
 @source '../**/*.blade.php';
 @source '../**/*.js';
-@source '../../app/**/*.php';
+@source '../../app/Livewire/**/*.php';
+@source '../../app/Enums/**/*.php';
 
 @custom-variant light (&:where([data-theme=light], [data-theme=light] *));
 
@@ -110,6 +110,7 @@
     body {
         @apply bg-bg text-fg font-sans antialiased;
         text-rendering: optimizeLegibility;
+        overflow-x: clip;
     }
     h1, h2, h3, h4 {
         @apply font-display tracking-tight;
@@ -145,12 +146,13 @@
 ::view-transition-group(product-hero) { animation-duration: 420ms; animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
 @media (prefers-reduced-motion: reduce) { @view-transition { navigation: none; } }
 
+@utility btn {
+    @apply relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-md px-5 py-3 font-ui text-sm font-semibold tracking-wide uppercase transition duration-200 disabled:cursor-not-allowed disabled:opacity-50;
+}
+
 @layer components {
     .container-af {
         @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
-    }
-    .btn {
-        @apply relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-md px-5 py-3 font-ui text-sm font-semibold tracking-wide uppercase transition duration-200 disabled:cursor-not-allowed disabled:opacity-50;
     }
     .btn-primary {
         @apply btn bg-brand text-white hover:bg-brand-hi active:translate-y-px shadow-[0_10px_30px_-10px_rgb(157_70_64/0.8)] hover:shadow-[0_14px_36px_-10px_rgb(192_82_74/0.9)];

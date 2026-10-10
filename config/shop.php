@@ -105,7 +105,7 @@ return [
 
     // Performance-Schalter
     'performance' => [
-        'inline_css' => env('INLINE_CSS', true),
+        'inline_css' => env('INLINE_CSS', false),
     ],
 
     // Standardinhalte der Startseite (AIDA). Überschreibbar im Backend unter Einstellungen → Startseite.
