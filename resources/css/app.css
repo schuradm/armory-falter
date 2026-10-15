@@ -1,10 +1,10 @@
-@import 'tailwindcss';
+@import 'tailwindcss' source(none);
 @plugin '@tailwindcss/typography';
 @plugin '@tailwindcss/forms';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../**/*.blade.php';
-@source '../**/*.js';
+@source '../views/**/*.blade.php';
+@source '../js/**/*.js';
 @source '../../app/Livewire/**/*.php';
 @source '../../app/Enums/**/*.php';
 
