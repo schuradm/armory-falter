@@ -26,3 +26,4 @@ Thumbs.db
 # Deployment
 /dist
 /deploy/.deploy.env
+/*.png

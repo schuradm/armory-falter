@@ -117,11 +117,12 @@ log "4/7 npm ci && npm run build"
 
 # -----------------------------------------------------------------------------
 log "5/7 Entwicklungsdateien entfernen"
-rm -rf "$STAGE/node_modules" "$STAGE/tests" "$STAGE/.github" "$STAGE/deploy" "$STAGE/public/hot"
+rm -rf "$STAGE/node_modules" "$STAGE/tests" "$STAGE/.github" "$STAGE/deploy" "$STAGE/public/hot" "$STAGE/docker"
 rm -f  "$STAGE/package.json" "$STAGE/package-lock.json" "$STAGE/vite.config.js" \
        "$STAGE/phpunit.xml" "$STAGE/.editorconfig" "$STAGE/.styleci.yml" \
        "$STAGE/.env.example" "$STAGE/.gitattributes" "$STAGE/.gitignore" \
-       "$STAGE/CHANGELOG.md" "$STAGE/HANDOVER.md" "$STAGE/README.md"
+       "$STAGE/CHANGELOG.md" "$STAGE/HANDOVER.md" "$STAGE/README.md" \
+       "$STAGE/docker-compose.yml" "$STAGE/.dockerignore"
 # Konzeptdokumente gehören nicht auf den Server, nur die Deployment-Anleitung
 if [ -d "$STAGE/docs" ]; then
     find "$STAGE/docs" -mindepth 1 ! -name 'DEPLOYMENT-ONECOM.md' -exec rm -rf {} + 2>/dev/null || true
