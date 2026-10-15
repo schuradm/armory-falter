@@ -1,0 +1,66 @@
+# Armory Falter – Testumgebung
+#   Start:   docker compose up -d --build
+#   Shop:    http://<IP-des-Servers>:8080      Backend: http://<IP>:8080/kms-login
+#   Mails:   http://<IP-des-Servers>:8025
+# Anleitung: docs/TESTUMGEBUNG-DOCKER.md
+
+x-app: &app
+  build:
+    context: .
+    dockerfile: docker/php/Dockerfile
+  image: armory-falter:test
+  environment: &app-env
+    DB_HOST: db
+    DB_DATABASE: armory
+    DB_USERNAME: armory
+    DB_PASSWORD: armory
+  volumes:
+    - storage:/var/www/html/storage
+  depends_on:
+    db:
+      condition: service_healthy
+  restart: unless-stopped
+
+services:
+  app:
+    <<: *app
+    ports:
+      - "${ARMORY_PORT:-8080}:80"
+
+  # Ersetzt den Cronjob: Warteschlange, Newsletter-Strecke, Aufräumen
+  scheduler:
+    <<: *app
+    environment:
+      <<: *app-env
+      ARMORY_ROLE: scheduler
+    command: ["php", "artisan", "schedule:work"]
+    depends_on:
+      app:
+        condition: service_started
+
+  db:
+    image: mariadb:10.11
+    environment:
+      MARIADB_DATABASE: armory
+      MARIADB_USER: armory
+      MARIADB_PASSWORD: armory
+      MARIADB_ROOT_PASSWORD: armory-root
+    command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
+    volumes:
+      - db:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    restart: unless-stopped
+
+  mailpit:
+    image: axllent/mailpit:v1.21
+    ports:
+      - "${MAILPIT_PORT:-8025}:8025"
+    restart: unless-stopped
+
+volumes:
+  storage:
+  db:

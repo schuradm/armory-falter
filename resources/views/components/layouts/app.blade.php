@@ -26,15 +26,23 @@
     <link rel="apple-touch-icon" href="{{ asset('images/brand/apple-touch-icon.png') }}">
     <link rel="manifest" href="{{ asset('site.webmanifest') }}">
     {{-- Schriften der ersten Bildschirmseite vorladen; übrige laden bei Bedarf --}}
-    <link rel="preload" href="/fonts/montserrat-var.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="preload" href="/fonts/roboto-var.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/fonts/montserrat-700-800.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/fonts/roboto-400-700.woff2" as="font" type="font/woff2" crossorigin>
     {{ $head ?? '' }}
-    @if (config('shop.performance.inline_css') && ! app()->environment('local') && is_file(public_path('build/manifest.json')))
-        {{-- CSS inline: spart einen render-blockierenden Request (FCP/LCP). Ganzseiten-Cache macht die Größe unkritisch. --}}
-        <style>{!! \Illuminate\Support\Facades\Vite::content('resources/css/app.css') !!}</style>
-        @vite(['resources/js/app.js'])
-    @else
+    @php($vite = \Illuminate\Support\Facades\Vite::getFacadeRoot())
+    @if ($vite->isRunningHot() || ! is_file(public_path('build/manifest.json')))
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @else
+        @if (config('shop.performance.inline_css') && ! app()->environment('local'))
+            {{-- CSS inline: spart einen render-blockierenden Request (FCP/LCP). Ganzseiten-Cache macht die Größe unkritisch. --}}
+            <style>{!! $vite->content('resources/css/app.css') !!}</style>
+        @else
+            @vite(['resources/css/app.css'])
+        @endif
+        {{-- JS (Livewire + Alpine, ~65 kB gzip) wird für die erste Darstellung nicht gebraucht: Es lädt erst, wenn die Seite
+             geladen und der erste Inhalt gezeichnet ist (load + first-contentful-paint), bzw. sofort bei der ersten Interaktion. So bekommen HTML, CSS, Schriften und das LCP-Bild auf langsamen
+             Mobilverbindungen die volle Bandbreite. Die Datei ist unveränderlich gecacht, Folgeseiten laden sie aus dem Cache. --}}
+        <script nonce="{{ $vite->cspNonce() }}">(function(){var d=0,l=0,p=0,go=function(){if(d)return;d=1;var s=document.createElement('script');s.type='module';s.src=@js($vite->asset('resources/js/app.js'));document.head.appendChild(s)},t=function(){if(l&&p)setTimeout(go)};try{if(PerformanceObserver.supportedEntryTypes.indexOf('paint')<0)throw 0;new PerformanceObserver(function(x){x.getEntries().forEach(function(e){if(e.name==='first-contentful-paint'){p=1;t()}})}).observe({type:'paint',buffered:true})}catch(e){p=1}if(document.readyState==='complete'){l=1;t()}else addEventListener('load',function(){l=1;t()},{once:true});['pointerdown','keydown','touchstart'].forEach(function(e){addEventListener(e,go,{once:true,passive:true})})})();</script>
     @endif
     @livewireStyles
     @foreach ($seo->allJsonLd() as $block)
@@ -66,7 +74,7 @@
     @include('partials.cookie-consent')
     @include('partials.toast')
 
-    @livewireScripts
+    @livewireScriptConfig
     @stack('scripts')
 </body>
 </html>

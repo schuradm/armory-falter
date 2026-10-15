@@ -29,9 +29,12 @@ AddDefaultCharset UTF-8
     # --- HTTPS erzwingen ------------------------------------------------------
     # Prüft auch X-Forwarded-Proto (falls TLS vor dem Webserver endet).
     # Bei einer Weiterleitungsschleife die drei Zeilen auskommentieren.
+    # In der Docker-Testumgebung (Define AF_LOCAL) entfällt der HTTPS-Zwang.
+    <IfDefine !AF_LOCAL>
     RewriteCond %{HTTPS} !=on
     RewriteCond %{HTTP:X-Forwarded-Proto} !=https
     RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L,NE]
+    </IfDefine>
 
     # --- Kanonischer Host: armory-falter.de -> www.armory-falter.de ----------
     # >>> HOST HIER ANPASSEN (nur diese zwei Zeilen) <<<

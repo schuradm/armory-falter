@@ -1,4 +1,9 @@
-// Livewire 3 bringt Alpine.js mit; hier nur kleine, globale Helfer. Keine Bibliotheken → minimale JS-Last.
+// Livewire 3 + Alpine.js werden hier mitgebündelt (statt /livewire/livewire.min.js über PHP, Layout nutzt
+// @livewireScriptConfig): ein einziges, unveränderlich gecachtes Modul-Skript. Das Layout lädt es erst nach dem
+// ersten Rendern (load-Ereignis bzw. erste Interaktion), siehe components/layouts/app.blade.php.
+// Darüber nur kleine, globale Helfer. Keine weiteren Bibliotheken → minimale JS-Last.
+import { Livewire } from '../../vendor/livewire/livewire/dist/livewire.esm';
+
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 const csrf = () => document.querySelector('meta[name="csrf-token"]')?.content ?? '';
@@ -102,7 +107,8 @@ const counters = () => document.querySelectorAll('[data-count]:not([data-counted
 });
 
 const boot = () => { observeReveals(); counters(); };
-document.addEventListener('DOMContentLoaded', boot);
+// app.js wird nachgeladen (siehe Layout): DOMContentLoaded ist dann meist schon vorbei.
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
 document.addEventListener('livewire:navigated', boot);
 
 // Lichtkegel auf Karten und 3D-Neigung: ein einziger, passiver Listener (Event-Delegation)
@@ -156,7 +162,8 @@ document.addEventListener('click', (e) => {
 window.addEventListener('pageshow', () => document.querySelectorAll('img[style*="view-transition-name"]').forEach((i) => { i.style.viewTransitionName = ''; }));
 
 // Hero-Video erst nach dem Laden nachladen (Poster bzw. Headline ist das LCP-Element)
-window.addEventListener('load', () => {
+const onLoaded = (fn) => (document.readyState === 'complete' ? fn() : window.addEventListener('load', fn, { once: true }));
+onLoaded(() => {
     const video = document.querySelector('video[data-lazy-hero]');
     if (!video) return;
     const saveData = navigator.connection && navigator.connection.saveData;
@@ -168,3 +175,37 @@ window.addEventListener('load', () => {
         video.addEventListener('playing', () => video.classList.remove('opacity-0'), { once: true });
     }, { timeout: 2000 });
 });
+
+// Start in Zeitscheiben: Alpine würde sonst alle Komponenten der Seite in einer einzigen langen Aufgabe
+// initialisieren (~80 ms auf Mittelklasse-Handys, mehr bei 4x-CPU-Drosselung). Wir lassen Livewire/Alpine zunächst
+// nichts initialisieren (body._x_ignore), und starten dann die Wurzel-Komponenten in DOM-Reihenfolge
+// (Header zuerst) in Häppchen von max. ~8 ms. Dazwischen kann der Browser rendern und auf Eingaben reagieren.
+const Alpine = window.Alpine;
+const ROOTS = '[x-data],[x-init],[wire\\:id]';
+const CHUNKS = '[x-data],[wire\\:id],[data-alpine-chunk]';
+const queue = [];
+const initSlice = () => {
+    const t0 = performance.now();
+    while (queue.length && performance.now() - t0 < 8) {
+        const el = queue.shift();
+        if (!el.isConnected || el._x_marker) continue;
+        // Verschachtelte Komponenten (z. B. Buttons in Produktkarten) bekommen eigene Häppchen; sie starten
+        // direkt nach ihrer Eltern-Komponente, deren Daten (x-data) sie dann schon sehen.
+        // Ebenso große Teilbäume mit data-alpine-chunk (Mega-Menüs, Mobilmenü, Filter, Trefferliste).
+        const nested = Array.from(el.querySelectorAll(CHUNKS))
+            .filter((n) => n.parentElement.closest(`${ROOTS},${CHUNKS}`) === el && !n.hasAttribute('x-ignore'));
+        nested.forEach((n) => { n._x_ignore = true; });
+        delete el._x_ignore;
+        Alpine.initTree(el);
+        queue.unshift(...nested);
+    }
+    if (queue.length) setTimeout(initSlice, 0);
+};
+// Eigene Aufgabe nach dem Auswerten des Bundles (sonst addieren sich beide zu einer langen Aufgabe)
+setTimeout(() => {
+    document.body._x_ignore = true;
+    Livewire.start();
+    delete document.body._x_ignore;
+    queue.push(...Array.from(document.querySelectorAll(ROOTS)).filter((el) => !el.parentElement.closest(ROOTS)));
+    setTimeout(initSlice, 0);
+}, 0);

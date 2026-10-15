@@ -1,6 +1,7 @@
 <div x-data="{ filters: false }" class="grid gap-8 lg:grid-cols-[260px_1fr]">
     {{-- Filter --}}
-    <aside class="lg:block" :class="filters ? 'fixed inset-0 z-[60] overflow-y-auto bg-bg p-4' : 'hidden'" aria-label="Filter">
+    {{-- Mobil standardmäßig zu (statisch "hidden", sonst blitzt der Filter vor dem JS-Start auf → Layout-Shift) --}}
+    <aside data-alpine-chunk class="hidden lg:block" :class="filters && 'fixed inset-0 z-[60] block! overflow-y-auto bg-bg p-4'" aria-label="Filter">
         <div class="mb-4 flex items-center justify-between lg:hidden">
             <p class="font-display text-lg font-bold">Filter</p>
             <button type="button" class="btn-ghost" @click="filters = false" aria-label="Filter schließen"><x-icon name="x" class="size-6"/></button>
@@ -76,9 +77,9 @@
     </aside>
 
     {{-- Ergebnisse --}}
-    <section aria-live="polite">
+    <section data-alpine-chunk aria-live="polite">
         <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
-            <p class="text-sm text-muted"><span class="font-semibold text-fg">{{ $products->total() }}</span> Artikel</p>
+            <h2 class="font-ui text-sm font-normal text-muted"><span class="font-semibold text-fg">{{ $products->total() }}</span> Artikel</h2>
             <div class="flex items-center gap-2">
                 <button type="button" class="btn-outline py-2 lg:hidden" @click="filters = true"><x-icon name="filter" class="size-4"/> Filter @if($activeCount)({{ $activeCount }})@endif</button>
                 <label class="sr-only" for="sort">Sortierung</label>
@@ -94,7 +95,8 @@
 
         <div wire:loading.class="opacity-50" class="grid grid-cols-1 gap-5 transition sm:grid-cols-2 xl:grid-cols-3">
             @forelse ($products as $product)
-                <x-product-card :product="$product" wire:key="p-{{ $product->id }}"/>
+                {{-- Erste Reihe sofort laden (LCP), Rest lazy --}}
+                <x-product-card :product="$product" :priority="$loop->index < 3 ? ($loop->first ? 'high' : 'eager') : false" wire:key="p-{{ $product->id }}"/>
             @empty
                 <div class="card col-span-full p-10 text-center">
                     <x-icon name="search" class="mx-auto size-10 text-muted"/>

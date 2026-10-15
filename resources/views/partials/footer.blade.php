@@ -1,5 +1,5 @@
 @php($c = config('shop.company'))
-<footer class="mt-24 border-t border-line bg-ink text-sm text-white/80" style="--af-fg:#fff;--af-muted:#a8a8a8">
+<footer class="cv-auto [--cv-h:1900px] md:[--cv-h:1100px] lg:[--cv-h:800px] mt-24 border-t border-line bg-ink text-sm text-white/80" style="--af-fg:#fff;--af-muted:#a8a8a8">
     <div class="container-af grid gap-10 py-14 md:grid-cols-2 lg:grid-cols-5">
         <div class="lg:col-span-2">
             <x-logo variant="light" class="h-14 w-auto"/>

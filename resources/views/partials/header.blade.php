@@ -5,8 +5,9 @@
         @keydown.escape.window="mega = null; mobile = false"
         class="sticky top-0 z-50">
     {{-- Top-Bar --}}
-    <div class="hidden border-b border-line bg-ink text-xs text-muted md:block transition-all duration-300"
-         :class="scrolled ? 'h-0 overflow-hidden opacity-0' : 'h-9 opacity-100'">
+    {{-- Ausgangszustand steht statisch im HTML (vor dem JS-Start), sonst springt die Seite beim Initialisieren (CLS) --}}
+    <div class="hidden h-9 border-b border-line bg-ink text-xs text-muted opacity-100 md:block transition-all duration-300"
+         :class="{ 'h-0 overflow-hidden opacity-0': scrolled, 'h-9 opacity-100': !scrolled }">
         <div class="container-af flex h-9 items-center justify-between font-ui">
             <p class="flex items-center gap-2"><x-icon name="users" class="size-4 text-accent"/> Ihr persönlicher Waffenberater: kostenlose Kaufberatung per Telefon, Video oder vor Ort</p>
             <div class="flex items-center gap-5">
@@ -18,9 +19,9 @@
     </div>
 
     {{-- Hauptnavigation --}}
-    <div class="border-b border-line backdrop-blur-md transition-colors duration-300"
-         :class="scrolled ? 'bg-bg/90' : 'bg-bg/70'">
-        <div class="container-af flex items-center gap-4 transition-all duration-300" :class="scrolled ? 'h-16' : 'h-20'">
+    <div class="border-b border-line bg-bg/70 backdrop-blur-md transition-colors duration-300"
+         :class="{ 'bg-bg/90': scrolled, 'bg-bg/70': !scrolled }">
+        <div class="container-af flex h-20 items-center gap-4 transition-all duration-300" :class="{ 'h-16': scrolled, 'h-20': !scrolled }">
             <button type="button" class="btn-ghost -ml-3 lg:hidden" @click="mobile = true" aria-label="Menü öffnen" :aria-expanded="mobile">
                 <x-icon name="menu" class="size-6"/>
             </button>
@@ -29,41 +30,42 @@
                 <x-logo class="h-10 w-auto sm:h-12"/>
             </a>
 
-            <nav class="ml-6 hidden items-center gap-1 lg:flex" aria-label="Hauptnavigation">
-                <button type="button" class="flex items-center gap-1 rounded-md px-3 py-2 font-ui text-sm font-medium hover:text-accent"
+            <nav data-alpine-chunk class="hidden shrink-0 items-center whitespace-nowrap lg:ml-2 lg:flex 2xl:ml-6 2xl:gap-1" aria-label="Hauptnavigation">
+                <button type="button" class="flex items-center gap-1 rounded-md px-2.5 py-2 font-ui text-sm font-medium hover:text-accent 2xl:px-3"
                         @click="mega = mega === 'shop' ? null : 'shop'" @mouseenter="mega = 'shop'" :aria-expanded="mega === 'shop'">
                     Shop <x-icon name="chevron-down" class="size-4 transition" ::class="mega === 'shop' && 'rotate-180'"/>
                 </button>
-                <button type="button" class="flex items-center gap-1 rounded-md px-3 py-2 font-ui text-sm font-medium hover:text-accent"
+                <button type="button" class="flex items-center gap-1 rounded-md px-2.5 py-2 font-ui text-sm font-medium hover:text-accent 2xl:px-3"
                         @click="mega = mega === 'brands' ? null : 'brands'" @mouseenter="mega = 'brands'" :aria-expanded="mega === 'brands'">
                     Hersteller <x-icon name="chevron-down" class="size-4"/>
                 </button>
-                <a href="{{ route('trade.consignment') }}" class="rounded-md px-3 py-2 font-ui text-sm font-medium hover:text-accent" @mouseenter="mega = null">Verkaufsservice</a>
-                <a href="{{ route('trade.buyback') }}" class="rounded-md px-3 py-2 font-ui text-sm font-medium hover:text-accent" @mouseenter="mega = null">Ankauf</a>
-                <a href="{{ route('workshop.index') }}" class="rounded-md px-3 py-2 font-ui text-sm font-medium hover:text-accent" @mouseenter="mega = null">Werkstatt</a>
-                <a href="{{ route('events.index') }}" class="rounded-md px-3 py-2 font-ui text-sm font-medium hover:text-accent" @mouseenter="mega = null">Events</a>
-                <a href="{{ route('blog.index') }}" class="rounded-md px-3 py-2 font-ui text-sm font-medium hover:text-accent" @mouseenter="mega = null">Ratgeber</a>
+                <a href="{{ route('trade.consignment') }}" class="rounded-md px-2.5 py-2 font-ui text-sm font-medium hover:text-accent 2xl:px-3" @mouseenter="mega = null">Verkaufsservice</a>
+                <a href="{{ route('trade.buyback') }}" class="rounded-md px-2.5 py-2 font-ui text-sm font-medium hover:text-accent 2xl:px-3" @mouseenter="mega = null">Ankauf</a>
+                <a href="{{ route('workshop.index') }}" class="rounded-md px-2.5 py-2 font-ui text-sm font-medium hover:text-accent 2xl:px-3" @mouseenter="mega = null">Werkstatt</a>
+                <a href="{{ route('events.index') }}" class="rounded-md px-2.5 py-2 font-ui text-sm font-medium hover:text-accent 2xl:px-3" @mouseenter="mega = null">Events</a>
+                <a href="{{ route('blog.index') }}" class="rounded-md px-2.5 py-2 font-ui text-sm font-medium hover:text-accent 2xl:px-3" @mouseenter="mega = null">Ratgeber</a>
             </nav>
 
-            <div class="ml-auto flex items-center gap-1 sm:gap-2">
-                <div class="hidden w-72 xl:block"><livewire:search-autocomplete /></div>
-                <a href="{{ route('search') }}" class="btn-ghost xl:hidden" aria-label="Suche"><x-icon name="search"/></a>
-                <button type="button" class="btn-ghost hidden sm:inline-flex" @click="$store.theme.toggle()" aria-label="Farbschema wechseln">
+            <div class="ml-auto flex min-w-0 flex-1 items-center justify-end gap-1 sm:gap-2">
+                {{-- Suchfeld ist flexibel (min. 10 rem, max. 18 rem), damit die Kopfzeile nie breiter als der Viewport wird --}}
+                <div class="hidden min-w-40 max-w-72 flex-1 xl:block"><livewire:search-autocomplete /></div>
+                <a href="{{ route('search') }}" class="btn-ghost shrink-0 xl:hidden" aria-label="Suche"><x-icon name="search"/></a>
+                <button type="button" class="btn-ghost hidden shrink-0 sm:inline-flex lg:hidden xl:inline-flex" @click="$store.theme.toggle()" aria-label="Farbschema wechseln">
                     <x-icon name="sun" x-show="$store.theme.current === 'dark'"/>
                     <x-icon name="moon" x-show="$store.theme.current === 'light'" x-cloak/>
                 </button>
-                <a href="{{ route('account.wishlists') }}" class="btn-ghost hidden sm:inline-flex" aria-label="Merkliste"><x-icon name="heart"/></a>
-                <a href="{{ route('compare') }}" class="btn-ghost relative hidden sm:inline-flex" aria-label="Produktvergleich" x-data>
+                <a href="{{ route('account.wishlists') }}" class="btn-ghost hidden shrink-0 sm:inline-flex lg:hidden xl:inline-flex" aria-label="Merkliste"><x-icon name="heart"/></a>
+                <a href="{{ route('compare') }}" class="btn-ghost relative hidden shrink-0 sm:inline-flex lg:hidden xl:inline-flex" aria-label="Produktvergleich" x-data>
                     <x-icon name="compare"/>
                     <span x-show="$store.compare.items.length" x-text="$store.compare.items.length" x-cloak class="absolute right-0.5 top-0.5 grid size-4 place-items-center rounded-full bg-brand text-[10px] font-bold text-white"></span>
                 </a>
-                <a href="{{ auth()->check() ? route('account.dashboard') : route('login') }}" class="btn-ghost" aria-label="Kundenkonto"><x-icon name="user"/></a>
+                <a href="{{ auth()->check() ? route('account.dashboard') : route('login') }}" class="btn-ghost shrink-0" aria-label="Kundenkonto"><x-icon name="user"/></a>
                 <livewire:cart-counter :count="$cartCount" />
             </div>
         </div>
 
         {{-- Mega-Menü Shop --}}
-        <div x-show="mega === 'shop'" x-cloak x-transition.opacity.duration.200ms @mouseleave="mega = null" @click.outside="mega = null"
+        <div x-show="mega === 'shop'" x-cloak data-alpine-chunk x-transition.opacity.duration.200ms @mouseleave="mega = null" @click.outside="mega = null"
              class="absolute inset-x-0 top-full hidden border-b border-line bg-surface/98 shadow-card backdrop-blur lg:block">
             <div class="container-af grid grid-cols-12 gap-8 py-8">
                 <div class="col-span-9 grid grid-cols-4 gap-x-8 gap-y-6">
@@ -98,7 +100,7 @@
         </div>
 
         {{-- Mega-Menü Hersteller --}}
-        <div x-show="mega === 'brands'" x-cloak x-transition.opacity.duration.200ms @mouseleave="mega = null" @click.outside="mega = null"
+        <div x-show="mega === 'brands'" x-cloak data-alpine-chunk x-transition.opacity.duration.200ms @mouseleave="mega = null" @click.outside="mega = null"
              class="absolute inset-x-0 top-full hidden border-b border-line bg-surface/98 shadow-card backdrop-blur lg:block">
             <div class="container-af py-8">
                 <div class="grid grid-cols-6 gap-3">

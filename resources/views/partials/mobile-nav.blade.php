@@ -1,4 +1,4 @@
-<div x-show="mobile" x-cloak class="fixed inset-0 z-[60] lg:hidden" role="dialog" aria-modal="true" aria-label="Menü">
+<div x-show="mobile" x-cloak data-alpine-chunk class="fixed inset-0 z-[60] lg:hidden" role="dialog" aria-modal="true" aria-label="Menü">
     <div x-show="mobile" x-transition.opacity class="absolute inset-0 bg-black/70" @click="mobile = false"></div>
     <nav x-show="mobile" x-transition:enter="transition duration-300 ease-out-expo" x-transition:enter-start="-translate-x-full"
          x-transition:leave="transition duration-200" x-transition:leave-end="-translate-x-full"

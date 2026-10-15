@@ -71,7 +71,7 @@
     @endif
 
     {{-- ============ I · INTEREST: Kategorien ============ --}}
-    <section id="entdecken" class="container-af scroll-mt-24 py-20 sm:py-28">
+    <section id="entdecken" class="cv-auto [--cv-h:1400px] md:[--cv-h:1150px] lg:[--cv-h:1150px] container-af scroll-mt-24 py-20 sm:py-28">
         <x-section-heading eyebrow="Sortiment" title="Finden Sie Ihre Ausrüstung" :link="route('shop.index')" link-text="Zum Shop"/>
         <div class="grid auto-rows-[9.5rem] grid-cols-2 gap-3 sm:auto-rows-[11rem] sm:grid-cols-3 lg:grid-cols-4">
             @foreach ($categories as $cat)
@@ -85,7 +85,7 @@
     </section>
 
     {{-- Versprechen: „Mehr als Waffen.“ --}}
-    <section class="cv-auto relative overflow-hidden bg-surface py-20 sm:py-28">
+    <section class="cv-auto [--cv-h:1950px] md:[--cv-h:1250px] lg:[--cv-h:950px] relative overflow-hidden bg-surface py-20 sm:py-28">
         <div class="container-af grid gap-14 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
             <div class="reveal">
                 <p class="eyebrow">Das Armory-Falter-Versprechen</p>
@@ -111,14 +111,14 @@
 
     {{-- ============ D · DESIRE ============ --}}
     @if ($featured->isNotEmpty())
-        <section class="cv-auto container-af py-20 sm:py-28">
+        <section class="cv-auto [--cv-h:2600px] md:[--cv-h:1500px] lg:[--cv-h:950px] container-af py-20 sm:py-28">
             <x-section-heading eyebrow="Handverlesen" title="Unsere Empfehlungen" :link="route('shop.index')"/>
             <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">@foreach ($featured as $p)<x-product-card :product="$p"/>@endforeach</div>
         </section>
     @endif
 
     @if ($offers->isNotEmpty())
-        <section class="cv-auto relative overflow-hidden border-y border-brand/30 bg-gradient-to-br from-brand-900/60 via-bg to-bg py-20">
+        <section class="cv-auto [--cv-h:2600px] md:[--cv-h:1500px] lg:[--cv-h:950px] relative overflow-hidden border-y border-brand/30 bg-gradient-to-br from-brand-900/60 via-bg to-bg py-20">
             <div class="container-af">
                 <x-section-heading eyebrow="Nur für kurze Zeit" title="Aktuelle Angebote" :link="route('shop.index', ['sortierung' => 'angebote'])"/>
                 <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">@foreach ($offers as $p)<x-product-card :product="$p"/>@endforeach</div>
@@ -127,7 +127,7 @@
     @endif
 
     {{-- So einfach geht's (nimmt die größte Kaufhürde: den Erwerbsnachweis) --}}
-    <section class="cv-auto container-af py-20 sm:py-28">
+    <section class="cv-auto [--cv-h:1100px] md:[--cv-h:750px] lg:[--cv-h:700px] container-af py-20 sm:py-28">
         <x-section-heading eyebrow="Rechtssicher & einfach" :title="$home['steps_title']"/>
         <ol class="relative grid gap-6 md:grid-cols-3">
             <span class="absolute left-0 right-0 top-8 hidden h-px bg-gradient-to-r from-transparent via-brand to-transparent md:block" aria-hidden="true"></span>
@@ -142,7 +142,7 @@
     </section>
 
     {{-- Persönlicher Waffenberater --}}
-    <section class="cv-auto container-af">
+    <section class="cv-auto [--cv-h:750px] md:[--cv-h:550px] lg:[--cv-h:650px] container-af">
         <div class="card fx-spotlight relative grid overflow-hidden lg:grid-cols-[1.3fr_1fr]">
             <div class="p-8 sm:p-12">
                 <p class="eyebrow">Ihr persönlicher Waffenberater</p>
@@ -161,7 +161,7 @@
     </section>
 
     @if ($testimonials->isNotEmpty())
-        <section class="cv-auto container-af py-20 sm:py-28">
+        <section class="cv-auto [--cv-h:1600px] md:[--cv-h:1000px] lg:[--cv-h:850px] container-af py-20 sm:py-28">
             <x-section-heading eyebrow="Stimmen unserer Kunden" title="Vertrauen, das man spürt"/>
             <div class="grid gap-5 md:grid-cols-3">
                 @foreach ($testimonials as $t)
@@ -176,7 +176,7 @@
     @endif
 
     {{-- Services --}}
-    <section class="cv-auto bg-surface py-20 sm:py-28">
+    <section class="cv-auto [--cv-h:1500px] md:[--cv-h:1000px] lg:[--cv-h:900px] bg-surface py-20 sm:py-28">
         <div class="container-af">
             <x-section-heading eyebrow="Mehr als ein Shop" title="Service aus einer Hand"/>
             <div class="grid gap-5 md:grid-cols-3">
@@ -197,14 +197,14 @@
     </section>
 
     @if ($newest->isNotEmpty())
-        <section class="cv-auto container-af py-20 sm:py-28">
+        <section class="cv-auto [--cv-h:2600px] md:[--cv-h:1500px] lg:[--cv-h:950px] container-af py-20 sm:py-28">
             <x-section-heading eyebrow="Frisch eingetroffen" title="Neuheiten" :link="route('shop.index', ['sortierung' => 'neu'])"/>
             <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">@foreach ($newest as $p)<x-product-card :product="$p"/>@endforeach</div>
         </section>
     @endif
 
     @if ($events->isNotEmpty())
-        <section class="cv-auto container-af pb-20 sm:pb-28">
+        <section class="cv-auto [--cv-h:1500px] md:[--cv-h:900px] lg:[--cv-h:700px] container-af pb-20 sm:pb-28">
             <x-section-heading eyebrow="Erleben" title="Events & Workshops" :link="route('events.index')"/>
             <div class="grid gap-5 md:grid-cols-3">
                 @foreach ($events as $event)
@@ -218,7 +218,7 @@
     @endif
 
     {{-- Leadmagnet + Community --}}
-    <section class="cv-auto fx-aurora relative bg-ink py-20 text-white sm:py-28" style="--af-fg:#fff;--af-muted:#c4c4c4">
+    <section class="cv-auto [--cv-h:1500px] md:[--cv-h:1100px] lg:[--cv-h:850px] fx-aurora relative bg-ink py-20 text-white sm:py-28" style="--af-fg:#fff;--af-muted:#c4c4c4">
         <div class="container-af relative grid gap-12 lg:grid-cols-2 lg:items-center">
             <div>
                 <p class="eyebrow">Kostenloser Download</p>
@@ -247,14 +247,14 @@
     </section>
 
     @if ($posts->isNotEmpty())
-        <section class="cv-auto container-af py-20 sm:py-28">
+        <section class="cv-auto [--cv-h:1800px] md:[--cv-h:800px] lg:[--cv-h:700px] container-af py-20 sm:py-28">
             <x-section-heading eyebrow="Wissen" title="Aus dem Blog" :link="route('blog.index')"/>
             <div class="grid gap-5 md:grid-cols-3">@foreach ($posts as $post)@include('blog.partials.card', ['post' => $post])@endforeach</div>
         </section>
     @endif
 
     {{-- ============ A · ACTION ============ --}}
-    <section class="cv-auto container-af pb-8">
+    <section class="cv-auto [--cv-h:800px] md:[--cv-h:600px] lg:[--cv-h:600px] container-af pb-8">
         <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-600 via-brand-700 to-brand-900 px-8 py-14 text-center text-white sm:px-16">
             <svg class="absolute -right-10 -top-10 size-72 text-white/10" viewBox="0 0 316 290" aria-hidden="true"><path d="M24 268 158 20 292 268H264L158 72 52 268Z" fill="currentColor"/></svg>
             <h2 class="relative font-display text-3xl font-extrabold uppercase sm:text-5xl">{{ $home['cta']['headline'] }}</h2>
