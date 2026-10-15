@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\BlogPost;
 use App\Models\Caliber;
 use App\Models\Category;
+use App\Models\Event;
+use App\Models\LocalPage;
 use App\Models\Manufacturer;
 use App\Models\Page;
 use App\Models\Product;
@@ -20,7 +22,7 @@ class SitemapController extends Controller
                 ['loc' => route('home'), 'priority' => '1.0'],
                 ['loc' => route('shop.index')], ['loc' => route('brands.index')], ['loc' => route('trade.consignment')],
                 ['loc' => route('trade.buyback')], ['loc' => route('workshop.index')], ['loc' => route('blog.index')],
-                ['loc' => route('faq')], ['loc' => route('contact')],
+                ['loc' => route('faq')], ['loc' => route('contact')], ['loc' => route('events.index')], ['loc' => route('elite')],
             ]);
             Category::where('is_active', true)->get()->each(fn ($c) => $urls->push(['loc' => $c->url(), 'lastmod' => $c->updated_at]));
             Product::visible()->select('slug', 'updated_at')->chunk(500, fn ($ps) => $ps->each(fn ($p) => $urls->push(['loc' => route('product.show', $p), 'lastmod' => $p->updated_at])));
@@ -28,7 +30,10 @@ class SitemapController extends Controller
             Caliber::whereHas('products')->get()->each(fn ($c) => $urls->push(['loc' => route('calibers.show', $c)]));
             WorkshopService::all()->each(fn ($s) => $urls->push(['loc' => route('workshop.show', $s)]));
             BlogPost::published()->get()->each(fn ($p) => $urls->push(['loc' => route('blog.show', $p), 'lastmod' => $p->updated_at]));
-            Page::where('status', 'published')->get()->each(fn ($p) => $urls->push(['loc' => route('page.show', $p->slug)]));
+            Page::where('status', 'published')->whereIn('slug', PageController::SLUGS)->get()->each(fn ($p) => $urls->push(['loc' => route('page.show', $p->slug), 'lastmod' => $p->updated_at]));
+            Event::where('is_published', true)->where(fn ($q) => $q->where('starts_at', '>=', now()->subDay())->orWhere('ends_at', '>=', now()))
+                ->get()->each(fn ($e) => $urls->push(['loc' => route('events.show', $e), 'lastmod' => $e->updated_at]));
+            LocalPage::where('is_published', true)->get()->each(fn ($l) => $urls->push(['loc' => route('local.show', $l), 'lastmod' => $l->updated_at]));
 
             return view('sitemap', ['urls' => $urls])->render();
         });

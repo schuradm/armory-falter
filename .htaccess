@@ -1,0 +1,49 @@
+# =============================================================================
+# Armory Falter – Root-.htaccess (für Hoster ohne frei wählbare Dokumentenwurzel)
+#
+# Auf One.com zeigt die Domain fest auf ihren Ordner (httpd.www bzw. den
+# Subdomain-Ordner). Das komplette Projekt liegt dort; diese Datei leitet jede
+# Anfrage INTERN nach public/ um. Von außen ist "public" nie zu sehen, und
+# nichts außerhalb von public/ ist direkt abrufbar.
+#
+# Zeigt die Dokumentenwurzel bereits auf public/, wird diese Datei nie gelesen.
+# =============================================================================
+
+Options -Indexes
+<IfModule mod_negotiation.c>
+    Options -MultiViews
+</IfModule>
+
+# Ohne mod_rewrite wäre der Projektordner ungeschützt -> dann alles sperren.
+<IfModule !mod_rewrite.c>
+    Require all denied
+</IfModule>
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # 1) Interne Wiederholungsdurchläufe (nach unseren eigenen Umleitungen)
+    #    nicht erneut bearbeiten – verhindert Schleifen.
+    RewriteCond %{ENV:REDIRECT_STATUS} .
+    RewriteRule ^ - [L]
+
+    # 2) Punktdateien (.env, .git …) sperren, .well-known (SSL-Prüfung) erlauben.
+    RewriteRule (^|/)\.(?!well-known(/|$)) - [F,L]
+
+    # 3) "/public/…" wird in public/.htaccess auf die saubere Adresse geleitet
+    #    (Anfragen in Unterordner mit eigener .htaccess erreichen diese Datei nicht).
+
+    # 4) Öffentliche Uploads (Disk "public") ohne Symlink ausliefern:
+    #    /storage/datei.jpg -> storage/app/public/datei.jpg
+    #    Nur Medien-Dateitypen, niemals PHP o. Ä. Ein vorhandener Symlink
+    #    public/storage wird dadurch nicht benötigt (storage:link optional).
+    RewriteRule ^storage/(.+\.(?:jpe?g|png|gif|webp|avif|ico|pdf|mp4|webm))$ storage/app/public/$1 [NC,L]
+
+    # 5) Alles andere nach public/ (Front-Controller kümmert sich um 404).
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+
+# --- Zusätzliche Sperren (greifen auch, falls eine Regel oben versagt) ---------
+<FilesMatch "^(\.env.*|\.git.*|\.editorconfig|\.styleci\.yml|artisan|composer\.(json|lock)|package(-lock)?\.json|phpunit\.xml|vite\.config\.js|.*\.md|.*\.log|.*\.sql|.*\.sh)$">
+    Require all denied
+</FilesMatch>

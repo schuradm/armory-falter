@@ -8,7 +8,7 @@ use App\Support\Seo;
 
 class PageController extends Controller
 {
-    public const SLUGS = ['impressum', 'datenschutz', 'agb', 'widerruf', 'versandinformationen', 'zahlungsarten', 'barrierefreiheit', 'ueber-uns'];
+    public const SLUGS = ['impressum', 'datenschutz', 'agb', 'widerruf', 'versandinformationen', 'zahlungsarten', 'barrierefreiheit', 'ueber-uns', 'altersverifikation'];
 
     public function show(string $slug, Seo $seo)
     {

@@ -43,9 +43,19 @@ class AuditLogger
         $data = [];
         foreach ($fields as $f) {
             $v = $payload[$f] ?? null;
-            $data[$f] = is_array($v) ? json_encode($v) : (string) $v;
+            $data[$f] = is_array($v) ? json_encode(self::canonical($v), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : (string) $v;
         }
 
         return hash_hmac('sha256', implode('|', $data), config('app.key'));
+    }
+
+    /** Schlüssel rekursiv sortieren: MySQL speichert JSON-Objekte mit eigener Schlüsselreihenfolge. */
+    private static function canonical(array $value): array
+    {
+        if (! array_is_list($value)) {
+            ksort($value, SORT_STRING);
+        }
+
+        return array_map(fn ($v) => is_array($v) ? self::canonical($v) : $v, $value);
     }
 }

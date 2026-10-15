@@ -62,8 +62,29 @@ enum PaymentMethod: string implements FilamentLabel
         };
     }
 
+    /**
+     * Aktiv, wenn im Backend (Einstellungen → Zahlarten) eingeschaltet – ohne Backend-Wert gilt config/shop.php.
+     * Online-Zahlarten bleiben ohne Zugangsdaten immer aus, damit der Checkout nicht ins Leere läuft.
+     */
     public function isEnabled(): bool
     {
-        return (bool) config("shop.payment_methods.{$this->value}.enabled", false);
+        $override = app(\App\Support\Settings::class)->get("payment_methods.{$this->value}");
+        if ($override === null) {
+            return (bool) config("shop.payment_methods.{$this->value}.enabled", false);
+        }
+
+        return (bool) $override && $this->isConfigured();
+    }
+
+    /** Sind die nötigen Zugangsdaten bzw. eine Anbindung vorhanden? */
+    public function isConfigured(): bool
+    {
+        return match ($this) {
+            self::PayPal => filled(config('shop.payment_methods.paypal.client_id')) && filled(config('shop.payment_methods.paypal.secret')),
+            self::Sofort, self::Klarna => filled(config('shop.payment_methods.klarna.username')) && filled(config('shop.payment_methods.klarna.password')),
+            // Noch keine Gateway-Anbindung: nur über die .env (CARD_ENABLED / WEAPON_PSP_ENABLED) einschaltbar
+            self::Card, self::WeaponPsp => (bool) config("shop.payment_methods.{$this->value}.enabled", false),
+            default => true,
+        };
     }
 }

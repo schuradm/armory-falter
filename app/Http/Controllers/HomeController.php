@@ -37,7 +37,7 @@ class HomeController extends Controller
             'posts' => BlogPost::published()->with('category', 'author')->latest('published_at')->take(3)->get(),
         ]);
 
-        $home = array_replace_recursive(config('shop.home'), $settings->get('home', []));
+        $home = $settings->home();
 
         // Hinweis: Eigene Kundenstimmen nicht als aggregateRating auszeichnen (Google: „self-serving reviews“).
         return view('home', $data + ['home' => $home, 'community' => array_filter($settings->get('community', []) + config('shop.community'))]);

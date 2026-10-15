@@ -3,10 +3,9 @@
 namespace App\Filament\Resources\AuditLogResource\Pages;
 
 use App\Filament\Resources\AuditLogResource;
-use Filament\Actions;
-use Filament\Resources\Pages\CreateRecord;
+use Filament\Resources\Pages\ViewRecord;
 
-class CreateAuditLog extends CreateRecord
+class ViewAuditLog extends ViewRecord
 {
     protected static string $resource = AuditLogResource::class;
 }

@@ -36,6 +36,23 @@ class Settings
         return ($value === null || $value === '' || $value === []) ? $default : $value;
     }
 
+    /**
+     * Startseiteninhalte: Standardwerte aus config/shop.php rekursiv überschrieben.
+     * Listen (Kennzahlen, USPs, Schritte) ersetzt das Backend komplett, statt sie elementweise zu mischen.
+     */
+    public function home(): array
+    {
+        $saved = (array) $this->get('home', []);
+        $home = array_replace_recursive((array) config('shop.home'), $saved);
+        foreach (['stats', 'usps', 'steps'] as $list) {
+            if (isset($saved[$list]) && is_array($saved[$list])) {
+                $home[$list] = array_values($saved[$list]);
+            }
+        }
+
+        return $home;
+    }
+
     public function set(string $key, mixed $value): void
     {
         Setting::updateOrCreate(['key' => $key], ['value' => $value]);

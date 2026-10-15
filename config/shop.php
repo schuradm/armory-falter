@@ -96,11 +96,18 @@ return [
 
     'free_shipping_from' => 15000, // Cent, nur Standardversand
 
+    // Scheduler-Auslösung per HTTP (/cron/{token}) für Hosting ohne Cronjob. Token: mind. 32 zufällige Zeichen.
+    'cron' => [
+        'token' => env('CRON_TOKEN'),
+        // Laufzeit von queue:work je Minute; bei HTTP-Auslösung unter max_execution_time des Hosters halten
+        'queue_max_time' => (int) env('QUEUE_WORK_MAX_TIME', 50),
+    ],
+
     // Ganzseiten-Cache für Gäste ohne Warenkorb (App\Http\Middleware\CachePublicPages)
     'page_cache' => [
         'enabled' => env('PAGE_CACHE', true),
         'ttl' => 900,
-        'except' => ['konto*', 'kasse*', 'warenkorb', 'zahlung*', 'kms-login*', 'livewire*', 'newsletter*', 'downloads*', 'suche', 'vergleich', 'sitemap.xml', 'robots.txt', 'up'],
+        'except' => ['konto*', 'kasse*', 'warenkorb', 'zahlung*', 'kms-login*', 'livewire*', 'newsletter*', 'downloads*', 'suche', 'vergleich', 'sitemap.xml', 'robots.txt', 'up', 'cron/*'],
     ],
 
     // Performance-Schalter

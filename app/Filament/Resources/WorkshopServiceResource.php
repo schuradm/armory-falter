@@ -3,99 +3,61 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\WorkshopServiceResource\Pages;
-use App\Filament\Resources\WorkshopServiceResource\RelationManagers;
+use App\Filament\Support\FormFields;
 use App\Models\WorkshopService;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class WorkshopServiceResource extends Resource
 {
     protected static ?string $model = WorkshopService::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-wrench-screwdriver';
+
+    protected static ?string $navigationGroup = 'Service';
+
+    protected static ?string $modelLabel = 'Werkstatt-Leistung';
+
+    protected static ?string $pluralModelLabel = 'Werkstatt-Leistungen';
+
+    protected static ?string $navigationLabel = 'Werkstatt-Leistungen';
+
+    protected static ?int $navigationSort = 30;
 
     public static function form(Form $form): Form
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('slug')
-                    ->required()
-                    ->maxLength(80),
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(120),
-                Forms\Components\TextInput::make('teaser')
-                    ->maxLength(255),
-                Forms\Components\Textarea::make('description')
-                    ->columnSpanFull(),
-                Forms\Components\TextInput::make('price_from_gross')
-                    ->numeric(),
-                Forms\Components\TextInput::make('duration_minutes')
-                    ->required()
-                    ->numeric()
-                    ->default(30),
-                Forms\Components\Toggle::make('is_bookable')
-                    ->required(),
-                Forms\Components\TextInput::make('sort_order')
-                    ->required()
-                    ->numeric()
-                    ->default(0),
-            ]);
+        return $form->columns(3)->schema([
+            Forms\Components\Section::make('Leistung')->columnSpan(['lg' => 2])->schema([
+                FormFields::title('name', 'Bezeichnung', 'slug', 120),
+                FormFields::slug('slug', 80, '/werkstatt/'),
+                Forms\Components\TextInput::make('teaser')->label('Kurzbeschreibung')->maxLength(255),
+                FormFields::content('description', 'Beschreibung', 'workshop'),
+            ]),
+            Forms\Components\Section::make('Preis & Buchung')->columnSpan(['lg' => 1])->schema([
+                FormFields::euro('price_from_gross', 'Preis ab (brutto)')->helperText('Leer = Preis auf Anfrage.'),
+                Forms\Components\TextInput::make('duration_minutes')->label('Dauer')->numeric()->minValue(15)->step(15)->default(30)->suffix('Min.')->required(),
+                Forms\Components\Toggle::make('is_bookable')->label('Online buchbar')->default(true),
+                Forms\Components\TextInput::make('sort_order')->label('Reihenfolge')->numeric()->default(0),
+            ]),
+        ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultSort('sort_order')
+            ->reorderable('sort_order')
             ->columns([
-                Tables\Columns\TextColumn::make('slug')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('teaser')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('price_from_gross')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('duration_minutes')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\IconColumn::make('is_bookable')
-                    ->boolean(),
-                Tables\Columns\TextColumn::make('sort_order')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('name')->label('Bezeichnung')->searchable(),
+                Tables\Columns\TextColumn::make('price_from_gross')->label('Preis ab')->formatStateUsing(fn ($state) => \App\Support\Money::format((int) $state))->placeholder('auf Anfrage'),
+                Tables\Columns\TextColumn::make('duration_minutes')->label('Dauer')->suffix(' Min.'),
+                Tables\Columns\IconColumn::make('is_bookable')->label('Buchbar')->boolean(),
             ])
-            ->filters([
-                //
-            ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
+            ->actions([Tables\Actions\EditAction::make()])
+            ->bulkActions([Tables\Actions\BulkActionGroup::make([Tables\Actions\DeleteBulkAction::make()])]);
     }
 
     public static function getPages(): array

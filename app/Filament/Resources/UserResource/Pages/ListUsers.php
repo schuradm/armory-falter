@@ -4,7 +4,9 @@ namespace App\Filament\Resources\UserResource\Pages;
 
 use App\Filament\Resources\UserResource;
 use Filament\Actions;
+use Filament\Resources\Components\Tab;
 use Filament\Resources\Pages\ListRecords;
+use Illuminate\Database\Eloquent\Builder;
 
 class ListUsers extends ListRecords
 {
@@ -13,7 +15,16 @@ class ListUsers extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()->label('Benutzer anlegen'),
+        ];
+    }
+
+    public function getTabs(): array
+    {
+        return [
+            'customers' => Tab::make('Kunden')->modifyQueryUsing(fn (Builder $query) => $query->where('is_staff', false)),
+            'staff' => Tab::make('Mitarbeiter')->modifyQueryUsing(fn (Builder $query) => $query->where('is_staff', true)),
+            'all' => Tab::make('Alle'),
         ];
     }
 }

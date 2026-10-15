@@ -38,6 +38,22 @@ return [
             'report' => false,
         ],
 
+        // Erwerbsdokumente (WBK, Jagdschein, Ausweis): privat, außerhalb des Webroots, Inhalte zusätzlich
+        // verschlüsselt (DocumentService). Niemals 'serve' oder eine URL setzen; Auslieferung nur über DocumentService::contents().
+        'documents' => [
+            'driver' => 'local',
+            'root' => storage_path('app/private/documents'),
+            'visibility' => 'private',
+            'directory_visibility' => 'private',
+            'permissions' => [
+                'file' => ['public' => 0640, 'private' => 0600],
+                'dir' => ['public' => 0750, 'private' => 0700],
+            ],
+            'serve' => false,
+            'throw' => true,
+            'report' => true,
+        ],
+
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),

@@ -16,6 +16,9 @@
     <div class="container-af py-12">
         <livewire:product-listing :manufacturer-id="$manufacturer->id"/>
         @if ($manufacturer->content)<article class="prose-af mt-16 max-w-4xl border-t border-line pt-10">{!! $manufacturer->content !!}</article>@endif
-        @if ($manufacturer->faqs->isNotEmpty())<section class="mt-12 max-w-4xl"><h2 class="font-display text-2xl font-bold">Häufige Fragen zu {{ $manufacturer->name }}</h2><x-faq-list :faqs="$manufacturer->faqs" class="mt-6"/></section>@endif
+        {{-- FAQ aus der JSON-Spalte „faqs“ (Backend) plus ggf. verknüpfte FAQ-Datensätze; die Spalte überdeckt die gleichnamige Relation --}}
+        @php($brandFaqs = collect($manufacturer->getAttribute('faqs') ?? [])->map(fn ($f) => (object) ['question' => $f['question'] ?? '', 'answer' => $f['answer'] ?? ''])
+            ->merge($manufacturer->relationLoaded('faqs') ? $manufacturer->getRelation('faqs') : []))
+        @if ($brandFaqs->isNotEmpty())<section class="mt-12 max-w-4xl"><h2 class="font-display text-2xl font-bold">Häufige Fragen zu {{ $manufacturer->name }}</h2><x-faq-list :faqs="$brandFaqs" class="mt-6"/></section>@endif
     </div>
 </x-layouts.app>

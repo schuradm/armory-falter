@@ -3,102 +3,103 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ManufacturerResource\Pages;
-use App\Filament\Resources\ManufacturerResource\RelationManagers;
+use App\Filament\Support\FaqRepeater;
+use App\Filament\Support\SeoFields;
 use App\Models\Manufacturer;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Str;
 
 class ManufacturerResource extends Resource
 {
     protected static ?string $model = Manufacturer::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-building-office-2';
+
+    protected static ?string $navigationGroup = 'Katalog';
+
+    protected static ?int $navigationSort = 30;
+
+    protected static ?string $modelLabel = 'Hersteller';
+
+    protected static ?string $pluralModelLabel = 'Hersteller';
+
+    protected static ?string $navigationLabel = 'Hersteller';
+
+    protected static ?string $recordTitleAttribute = 'name';
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->withCount('products');
+    }
 
     public static function form(Form $form): Form
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(120),
-                Forms\Components\TextInput::make('slug')
-                    ->required()
-                    ->maxLength(140),
-                Forms\Components\TextInput::make('logo_path')
-                    ->maxLength(255),
-                Forms\Components\FileUpload::make('hero_image_path')
-                    ->image(),
-                Forms\Components\TextInput::make('country_code')
-                    ->maxLength(2),
-                Forms\Components\TextInput::make('founded_year')
-                    ->numeric(),
-                Forms\Components\Textarea::make('intro')
-                    ->columnSpanFull(),
-                Forms\Components\Textarea::make('content')
-                    ->columnSpanFull(),
-                Forms\Components\TextInput::make('faqs'),
-                Forms\Components\Toggle::make('is_featured')
-                    ->required(),
-                Forms\Components\TextInput::make('sort_order')
-                    ->required()
-                    ->numeric()
-                    ->default(0),
-            ]);
+        return $form->schema([
+            Forms\Components\Tabs::make()->columnSpanFull()->tabs([
+                Forms\Components\Tabs\Tab::make('Allgemein')->columns(2)->schema([
+                    Forms\Components\TextInput::make('name')->label('Name')->required()->maxLength(120)
+                        ->live(onBlur: true)
+                        ->afterStateUpdated(function (Get $get, Set $set, ?string $state, string $operation) {
+                            if ($operation === 'create' && blank($get('slug'))) {
+                                $set('slug', Str::slug((string) $state));
+                            }
+                        }),
+                    Forms\Components\TextInput::make('slug')->label('URL-Kürzel')->required()->maxLength(140)->alphaDash()->unique(ignoreRecord: true),
+                    Forms\Components\TextInput::make('country_code')->label('Land (ISO, z. B. DE, AT, US)')->length(2)
+                        ->formatStateUsing(fn (?string $state) => $state)
+                        ->dehydrateStateUsing(fn (?string $state) => $state ? strtoupper($state) : null),
+                    Forms\Components\TextInput::make('founded_year')->label('Gegründet')->numeric()->integer()
+                        ->minValue(1500)->maxValue((int) date('Y')),
+                    Forms\Components\TextInput::make('sort_order')->label('Sortierung')->numeric()->integer()->default(0),
+                    Forms\Components\Toggle::make('is_featured')->label('Top-Marke (Startseite / Mega-Menü)')->inline(false),
+                    Forms\Components\FileUpload::make('logo_path')->label('Logo (SVG oder PNG, transparent)')
+                        ->disk('public')->directory('brands')->visibility('public')->maxSize(2048)
+                        ->acceptedFileTypes(['image/svg+xml', 'image/png', 'image/webp']),
+                    Forms\Components\FileUpload::make('hero_image_path')->label('Titelbild Markenseite')->image()->imageEditor()
+                        ->disk('public')->directory('brands')->visibility('public')->maxSize(6144),
+                ]),
+                Forms\Components\Tabs\Tab::make('Texte')->schema([
+                    Forms\Components\Textarea::make('intro')->label('Einleitung')->rows(3),
+                    Forms\Components\RichEditor::make('content')->label('Markentext')->disableToolbarButtons(['attachFiles']),
+                ]),
+                Forms\Components\Tabs\Tab::make('FAQ')->schema([FaqRepeater::make()]),
+                Forms\Components\Tabs\Tab::make('SEO')->schema([SeoFields::make()]),
+            ]),
+        ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultSort('sort_order')
+            ->reorderable('sort_order')
             ->columns([
-                Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('slug')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('logo_path')
-                    ->searchable(),
-                Tables\Columns\ImageColumn::make('hero_image_path'),
-                Tables\Columns\TextColumn::make('country_code')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('founded_year')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\IconColumn::make('is_featured')
-                    ->boolean(),
-                Tables\Columns\TextColumn::make('sort_order')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\ImageColumn::make('logo_path')->label('')->disk('public')->height(32),
+                Tables\Columns\TextColumn::make('name')->label('Name')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('country_code')->label('Land')->sortable(),
+                Tables\Columns\TextColumn::make('products_count')->label('Produkte')->numeric()->sortable()->alignEnd(),
+                Tables\Columns\ToggleColumn::make('is_featured')->label('Top-Marke'),
             ])
             ->filters([
-                //
+                Tables\Filters\TernaryFilter::make('is_featured')->label('Top-Marke'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make()->hidden(fn (Manufacturer $record) => $record->products_count > 0),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ]);
+            ->bulkActions([]);
     }
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array

@@ -70,6 +70,13 @@ Route::get('/newsletter/o/{campaign}/{subscriber}', [NewsletterController::class
 Route::post('/consent', [ConsentController::class, 'store'])->middleware('throttle:30,1')->name('consent.store');
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 Route::get('/robots.txt', [SitemapController::class, 'robots']);
+// Scheduler-Auslösung für Hosting ohne Cronjob (Token aus CRON_TOKEN, siehe CronController). Ohne Session/CSRF.
+Route::get('/cron/{token}', \App\Http\Controllers\CronController::class)
+    ->where('token', '[A-Za-z0-9_\-]{16,128}')
+    ->middleware('throttle:10,1')
+    ->withoutMiddleware([\Illuminate\Session\Middleware\StartSession::class, \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+        \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class, \App\Http\Middleware\CachePublicPages::class])
+    ->name('cron');
 Route::get('/downloads/{document}', [AccountController::class, 'productDocument'])->name('product-document.download');
 
 // Checkout & Konto
