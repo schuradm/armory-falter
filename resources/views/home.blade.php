@@ -9,7 +9,13 @@
 @endphp
 <x-layouts.app>
     {{-- ============ A · ATTENTION: Hero ============ --}}
-    <section class="fx-aurora fx-grain relative isolate -mt-px flex min-h-[calc(100svh-4rem)] items-center overflow-hidden bg-ink text-white lg:min-h-[calc(100svh-7.25rem)]" style="--af-fg:#fff;--af-muted:#c4c4c4">
+    {{-- Mit Explosionszeichnung wird der Hero zur Scroll-Bühne: Desktop ~220vh mit gepinntem Inhalt (sticky), mobil eine eigene
+         Bühne nur für die Grafik. Der Fortschritt kommt aus CSS-Scroll-Timelines (--asm-d / --asm-m), sonst aus app.js. --}}
+    <section @class(['fx-aurora fx-grain relative isolate -mt-px bg-ink text-white',
+        'flex min-h-[calc(100svh-4rem)] items-center overflow-hidden lg:min-h-[calc(100svh-7.25rem)]' => ! $showAssembly,
+        'asm-hero' => $showAssembly])
+        style="--af-fg:#fff;--af-muted:#c4c4c4{{ $showAssembly ? ';view-timeline:--asm-d block' : '' }}" @if ($showAssembly) data-asm-hero @endif>
+        @if ($showAssembly) @include('partials.hero-assembly-styles') @endif
         <div class="fx-crosshair absolute inset-0 -z-10" aria-hidden="true"></div>
         @if ($hero['image'])
             <img src="{{ Storage::disk('public')->url($hero['image']) }}" alt="" fetchpriority="high" decoding="async" class="absolute inset-0 -z-10 size-full object-cover opacity-40" width="1920" height="1080">
@@ -30,30 +36,33 @@
         </svg>
         @endunless
 
-        <div @class(['container-af relative py-16 sm:py-24', 'grid items-center gap-x-10 lg:grid-cols-[minmax(0,1.08fr)_minmax(0,0.92fr)]' => $showAssembly])>
+        @if ($showAssembly)<div class="asm-pin">@endif
+        <div @class(['container-af relative', 'py-16 sm:py-24' => ! $showAssembly, 'asm-grid' => $showAssembly])>
             @if ($showAssembly)<div class="min-w-0">@endif
             <p class="eyebrow fx-pop-in">{{ $hero['eyebrow'] }}</p>
-            <h1 @class(['mt-6 max-w-4xl font-display text-[2.6rem] leading-[1.02] font-extrabold uppercase sm:text-6xl', 'lg:text-[5.5rem]' => ! $showAssembly, 'lg:text-[4.25rem] xl:text-[5rem]' => $showAssembly])>
+            <h1 @class(['mt-6 max-w-4xl font-display text-[2.6rem] leading-[1.02] font-extrabold uppercase sm:text-6xl', 'lg:text-[5.5rem]' => ! $showAssembly])>
                 @foreach ($lines as $i => $line)
                     <span class="block {{ $i === 1 ? 'fx-brand-text' : '' }}">{{ trim($line) }}</span>
                 @endforeach
             </h1>
-            <p class="mt-7 max-w-2xl text-lg leading-relaxed text-white/80 sm:text-xl">{{ $hero['text'] }}</p>
-            <div class="mt-10 flex flex-col gap-3 sm:flex-row">
+            <p @class(['mt-7 max-w-2xl text-lg leading-relaxed text-white/80 sm:text-xl', 'asm-lead' => $showAssembly])>{{ $hero['text'] }}</p>
+            <div @class(['mt-10 flex flex-col gap-3 sm:flex-row', 'asm-ctas' => $showAssembly])>
                 <a href="{{ $hero['cta_primary']['url'] }}" class="btn-primary fx-shine fx-shine-auto px-8 py-4 text-base">{{ $hero['cta_primary']['label'] }} <x-icon name="arrow-right" class="size-5"/></a>
                 <a href="{{ $hero['cta_secondary']['url'] }}" class="btn-outline border-white/35 px-8 py-4 text-base text-white"><x-icon name="calendar" class="size-5"/> {{ $hero['cta_secondary']['label'] }}</a>
             </div>
             @if ($showAssembly)
                 </div>
-                <x-hero-assembly :config="$assembly" class="mx-auto mt-12 w-full max-w-[34rem] lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:mt-0 lg:max-w-none"/>
+                <div data-asm-stage class="asm-stage" style="view-timeline:--asm-m block">
+                    <x-hero-assembly :config="$assembly"/>
+                </div>
                 <div class="min-w-0">
             @endif
-            <ul class="mt-8 flex flex-wrap gap-x-6 gap-y-2 font-ui text-sm text-white/80">
+            <ul @class(['mt-8 flex flex-wrap gap-x-6 gap-y-2 font-ui text-sm text-white/80', 'asm-trust' => $showAssembly])>
                 <li class="flex items-center gap-2"><x-icon name="shield" class="size-4 text-brand-400"/> Rechtssichere Abwicklung</li>
                 <li class="flex items-center gap-2"><x-icon name="users" class="size-4 text-brand-400"/> Persönlicher Waffenberater</li>
                 <li class="flex items-center gap-2"><x-icon name="map-pin" class="size-4 text-brand-400"/> Ladengeschäft bei Stuttgart</li>
             </ul>
-            <dl class="mt-14 grid max-w-3xl grid-cols-3 gap-4 border-t border-white/15 pt-8 sm:gap-8">
+            <dl @class(['mt-14 grid max-w-3xl grid-cols-3 gap-4 border-t border-white/15 pt-8 sm:gap-8', 'asm-stats' => $showAssembly])>
                 @foreach ($home['stats'] as $stat)
                     <div class="flex flex-col">
                         <dt class="order-2 mt-1 text-xs text-white/70 sm:text-sm">{{ $stat['label'] }}</dt>
@@ -63,9 +72,12 @@
             </dl>
             @if ($showAssembly)</div>@endif
         </div>
+        @unless ($showAssembly)
         <a href="#entdecken" class="absolute bottom-6 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-2 text-xs tracking-[0.3em] text-white/70 uppercase sm:flex" aria-label="Zum Inhalt scrollen">
             <span class="fx-float grid h-10 w-6 place-items-start justify-center rounded-full border border-white/30 pt-2"><span class="h-2 w-0.5 rounded bg-white/70"></span></span>
         </a>
+        @endunless
+        @if ($showAssembly)</div>@endif
     </section>
 
     {{-- Marken-Laufband --}}

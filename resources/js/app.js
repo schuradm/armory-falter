@@ -161,6 +161,32 @@ document.addEventListener('click', (e) => {
 });
 window.addEventListener('pageshow', () => document.querySelectorAll('img[style*="view-transition-name"]').forEach((i) => { i.style.viewTransitionName = ''; }));
 
+// Explosionszeichnung im Hero: Fallback für Browser ohne CSS-Scroll-Timelines (animation-timeline). Setzt nur die
+// Variable --p (0..1) an der Grafik; gerechnet wird nur, solange die Bühne sichtbar ist (IntersectionObserver + rAF).
+const assembly = document.querySelector('[data-assembly]');
+if (assembly && !reduced && !CSS.supports('animation-timeline: view()')) {
+    const desktop = window.matchMedia('(min-width: 1024px)');
+    const stage = () => assembly.closest(desktop.matches ? '[data-asm-hero]' : '[data-asm-stage]') || assembly;
+    let frame = 0;
+    const update = () => {
+        frame = 0;
+        const r = stage().getBoundingClientRect();
+        const range = r.height - window.innerHeight;
+        const p = range > 0 ? Math.min(1, Math.max(0, -r.top / range)) : 1;
+        assembly.style.setProperty('--p', p.toFixed(3));
+    };
+    const onScroll = () => { frame ||= requestAnimationFrame(update); };
+    const io = new IntersectionObserver(([entry]) => {
+        const method = entry.isIntersecting ? 'addEventListener' : 'removeEventListener';
+        window[method]('scroll', onScroll, { passive: true });
+        window[method]('resize', onScroll, { passive: true });
+        if (entry.isIntersecting) onScroll();
+    });
+    const observe = () => { io.disconnect(); io.observe(stage()); onScroll(); };
+    desktop.addEventListener('change', observe);
+    observe();
+}
+
 // Hero-Video erst nach dem Laden nachladen (Poster bzw. Headline ist das LCP-Element)
 const onLoaded = (fn) => (document.readyState === 'complete' ? fn() : window.addEventListener('load', fn, { once: true }));
 onLoaded(() => {

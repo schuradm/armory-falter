@@ -1,29 +1,10 @@
 @props(['config' => []])
 {{-- Explosionszeichnung Glock 17 Gen5 (generisch, ohne Marken-/Schriftzüge). Teile starten auseinandergezogen
-     und setzen sich nach dem Laden zeitgesteuert zusammen (reines CSS, siehe .asm in app.css).
+     und setzen sich beim Scrollen zusammen: --p (0 = Explosion, 1 = montiert) kommt aus einer CSS-Scroll-Timeline
+     (--asm-d am Hero bzw. --asm-m an der mobilen Bühne, siehe home.blade.php) oder ersatzweise aus app.js.
+     Styles: partials/hero-assembly-styles (stehen am Anfang des Heros, vor dessen Inhalt).
      Koordinaten: 1 mm ≈ 2 Einheiten, Mündung links. Zusammengebaut ist der Grundzustand (reduced motion = statisch). --}}
 <figure {{ $attributes->class('asm') }} data-assembly>
-    {{-- Styles bewusst hier statt in app.css: nur die Startseite braucht sie (hält das render-blockierende CSS schlank).
-         Grundzustand = zusammengebaut; die Animationen (fill-mode both) liefern den explodierten Startzustand. Nur transform/opacity. --}}
-    <style>
-        .asm svg{aspect-ratio:630/480}
-        .asm-p{animation:asm-in 1.15s cubic-bezier(.16,1,.3,1) var(--d,0s) both}
-        .asm-slide{animation-name:asm-rack;animation-duration:1.35s}
-        .asm-frame{animation:none;--d:1.6s}
-        .asm-l{opacity:0;animation:asm-lbl .9s ease-out var(--d,0s) both;fill:none;stroke:#9d4640;stroke-width:1.1}
-        .asm-l circle{fill:#111;stroke-width:1.6}
-        .asm-l text{fill:#e6e6e6;stroke:none;font:500 14px var(--font-ui);letter-spacing:.02em}
-        .asm-glow{opacity:.55;animation:asm-glow 2.4s ease-out 2.4s both}
-        .asm-sheen{animation:asm-sheen 1.4s cubic-bezier(.45,0,.2,1) 2.9s both}
-        .asm-wait *{animation-play-state:paused!important}
-        @media (max-width:639px){.asm-l text{font-size:19px}}
-        @media (prefers-reduced-motion:reduce){.asm *{animation:none!important}.asm-sheen{display:none}}
-        @keyframes asm-in{from{transform:translate(var(--x),var(--y))}}
-        @keyframes asm-rack{from{transform:translate(var(--x),var(--y))}55%{transform:translate(var(--x),0)}}
-        @keyframes asm-lbl{from,35%{opacity:1}}
-        @keyframes asm-glow{from{opacity:0}45%{opacity:1}}
-        @keyframes asm-sheen{from{transform:skewX(-18deg)}to{transform:translateX(820px) skewX(-18deg)}}
-    </style>
     <svg viewBox="-20 0 630 480" width="630" height="480" class="block h-auto w-full overflow-visible" role="img"
          aria-label="Explosionszeichnung einer Glock 17 Gen5: Verschluss, Lauf, Schließfeder, Abzug, Griffstück und Magazin setzen sich zur fertigen Pistole zusammen.">
         <defs>
@@ -45,26 +26,8 @@
 
         <ellipse class="asm-glow" cx="300" cy="230" rx="260" ry="170" fill="url(#aG)"/>
 
-        {{-- Lauf --}}
-        <g class="asm-p" style="--x:-100px;--y:-6px;--d:.5s">
-            <path fill="url(#aB)" d="M104 112h178v20H104q-4 0-4-4v-12q0-4 4-4z"/>
-            <path fill="url(#aB)" d="M282 104h54q4 0 4 4v20l-10 8h-48z"/>
-            <path fill="#8b8e92" d="M298 136h20l12 10-16 4-12-8z"/>
-            <path fill="#3a3c40" d="M100 116h4v12h-4z"/>
-            <path stroke="#fff" stroke-opacity=".5" d="M284 106h50"/>
-            <g class="asm-l" aria-hidden="true"><circle cx="150" cy="113" r="3"/><path d="M150 113 130 70h70"/><text x="134" y="64">Lauf</text></g>
-        </g>
-
-        {{-- Schließfederführung mit Feder --}}
-        <g class="asm-p" style="--x:-120px;--y:58px;--d:.65s">
-            <path fill="#9fa2a6" d="M110 139h190v4H110z"/>
-            <path fill="url(#aCoil)" d="M114 135h178v12H114z"/>
-            <path fill="url(#aB)" d="M108 136h6v10h-6zM292 133h12v16h-12z"/>
-            <g class="asm-l" aria-hidden="true"><circle cx="200" cy="147" r="3"/><path d="M200 147v53h110"/><text x="204" y="194">Schließfeder</text></g>
-        </g>
-
         {{-- Magazin --}}
-        <g class="asm-p" style="--x:36px;--y:96px;--d:1.95s">
+        <g class="asm-p" style="--x:36px;--y:96px;--s:.02;--l:.24">
             <path fill="url(#aP)" stroke="#55555a" d="M354 186l84-6 54 170-92 8z"/>
             <path fill="#d0d2d5" d="M356 184l80-6 2 6-80 6z"/>
             <g fill="#0d0d0e" stroke="#6a6a70" stroke-width=".8"><circle cx="452" cy="220" r="2.4"/><circle cx="460" cy="246" r="2.4"/><circle cx="468" cy="272" r="2.4"/><circle cx="476" cy="298" r="2.4"/><circle cx="484" cy="324" r="2.4"/></g>
@@ -73,14 +36,14 @@
         </g>
 
         {{-- Abzug mit Sicherungszüngel --}}
-        <g class="asm-p" style="--x:-6px;--y:80px;--d:.8s">
+        <g class="asm-p" style="--x:-6px;--y:80px;--s:.66;--l:.16">
             <path fill="url(#aP)" stroke="#5a5a5f" d="M300 170c-8 14-12 30-8 52h8c-2-18 2-34 10-46z"/>
             <path stroke="#9a9a9f" stroke-width="1.6" d="M297 192v26"/>
             <g class="asm-l" aria-hidden="true"><circle cx="296" cy="214" r="3"/><path d="M296 214l-30 30h-70"/><text x="200" y="238">Abzug</text></g>
         </g>
 
         {{-- Griffstück (Polymer, Gen5-Textur) --}}
-        <g class="asm-p asm-frame">
+        <g class="asm-frame" style="--s:.74;--l:.14">
             <path fill="url(#aS)" stroke="#3a3a3e" stroke-width=".8" d="M244 139h42l6 9h-48zM438 142h26v6h-26zM150 143h40v5h-40z"/>
             <use href="#aFrame" fill="url(#aP)" stroke="#6b6b71" stroke-width="1.3"/>
             <use href="#aFrame" fill="url(#aH)" fill-opacity=".6"/>
@@ -92,7 +55,7 @@
         </g>
 
         {{-- Verriegelung, Schlittenfanghebel, Stifte --}}
-        <g class="asm-p" style="--x:0px;--y:-34px;--d:1s">
+        <g class="asm-p" style="--x:0px;--y:-34px;--s:.72;--l:.14">
             <path fill="url(#aS)" stroke="#3a3a3e" stroke-width=".8" d="M240 152h26v8h-26z"/>
             <path stroke="#45484c" d="M246 153v6M252 153v6M258 153v6"/>
             <path fill="url(#aS)" stroke="#3a3a3e" stroke-width=".8" d="M334 152h34l10-2v12l-10 1h-34z"/>
@@ -100,7 +63,26 @@
         </g>
 
         {{-- Verschluss (Schlitten) mit Front-/Heckriffelung und Visierung --}}
-        <g class="asm-p asm-slide" style="--x:64px;--y:-60px;--d:1.35s">
+        <g class="asm-slide" style="--x:64px;--y:-60px;--s:.42;--l:.26">
+            {{-- Schließfeder und Lauf wandern zuerst in den Verschluss und reisen dann mit ihm aufs Griffstück --}}
+            {{-- Lauf --}}
+            <g class="asm-p" style="--x:-164px;--y:54px;--s:.24;--l:.2">
+                <path fill="url(#aB)" d="M104 112h178v20H104q-4 0-4-4v-12q0-4 4-4z"/>
+                <path fill="url(#aB)" d="M282 104h54q4 0 4 4v20l-10 8h-48z"/>
+                <path fill="#8b8e92" d="M298 136h20l12 10-16 4-12-8z"/>
+                <path fill="#3a3c40" d="M100 116h4v12h-4z"/>
+                <path stroke="#fff" stroke-opacity=".5" d="M284 106h50"/>
+                <g class="asm-l" aria-hidden="true"><circle cx="150" cy="113" r="3"/><path d="M150 113 130 70h70"/><text x="134" y="64">Lauf</text></g>
+            </g>
+
+            {{-- Schließfederführung mit Feder --}}
+            <g class="asm-p" style="--x:-184px;--y:118px;--s:.1;--l:.2">
+                <path fill="#9fa2a6" d="M110 139h190v4H110z"/>
+                <path fill="url(#aCoil)" d="M114 135h178v12H114z"/>
+                <path fill="url(#aB)" d="M108 136h6v10h-6zM292 133h12v16h-12z"/>
+                <g class="asm-l" aria-hidden="true"><circle cx="200" cy="147" r="3"/><path d="M200 147v53h110"/><text x="204" y="194">Schließfeder</text></g>
+            </g>
+
             <use href="#aSlide" fill="url(#aS)" stroke="#55585c"/>
             <use href="#aSlide" fill="url(#aH)"/>
             <path fill="#000" fill-opacity=".22" d="M98 104l6-2v40l-4-2q-2-2-2-6zM120 152l-18-10h20l14 10z"/>
@@ -115,13 +97,11 @@
         <g clip-path="url(#aClip)" aria-hidden="true"><rect class="asm-sheen" x="-160" y="80" width="120" height="300" fill="url(#aR)"/></g>
     </svg>
     @if (filled($config['title'] ?? null) || filled($config['cta']['label'] ?? null))
-        <figcaption class="asm-cap mt-2 flex flex-wrap items-baseline justify-center gap-x-4 gap-y-1 text-center font-ui text-sm text-white/75 lg:justify-end lg:text-right">
+        <figcaption class="asm-cap">
             @if (filled($config['title'] ?? null))<span><strong class="font-semibold text-white">{{ $config['title'] }}</strong>@if (filled($config['text'] ?? null)) {{ $config['text'] }}@endif</span>@endif
             @if (filled($config['cta']['label'] ?? null) && filled($config['cta']['url'] ?? null))
-                <a href="{{ $config['cta']['url'] }}" class="inline-flex min-h-11 items-center gap-1.5 font-semibold text-brand-400 underline-offset-4 hover:underline">{{ $config['cta']['label'] }} <x-icon name="arrow-right" class="size-4"/></a>
+                <a href="{{ $config['cta']['url'] }}">{{ $config['cta']['label'] }} <x-icon name="arrow-right" class="size-4"/></a>
             @endif
         </figcaption>
     @endif
-    {{-- Liegt die Grafik beim Laden außerhalb des Bildschirms (Mobil), startet der Zusammenbau erst beim Hineinscrollen. --}}
-    <script>(()=>{const f=document.currentScript.parentElement;if(!('IntersectionObserver'in window))return;f.classList.add('asm-wait');new IntersectionObserver((e,o)=>{if(e[0].isIntersecting){f.classList.remove('asm-wait');o.disconnect()}},{threshold:.4}).observe(f)})()</script>
 </figure>
