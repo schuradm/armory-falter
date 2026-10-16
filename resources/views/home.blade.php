@@ -4,6 +4,8 @@
     $company = config('shop.company');
     $phoneHref = 'tel:'.preg_replace('/\s+/', '', $company['phone']);
     $whatsapp = $company['social']['whatsapp'] ?? null;
+    $assembly = (array) ($home['hero_assembly'] ?? []);
+    $showAssembly = (bool) ($assembly['enabled'] ?? false);
 @endphp
 <x-layouts.app>
     {{-- ============ A · ATTENTION: Hero ============ --}}
@@ -20,15 +22,18 @@
         <div class="absolute inset-0 -z-10 bg-gradient-to-r from-ink via-ink/80 to-ink/10"></div>
 
         {{-- Logo-Dreieck als großes Hintergrundmotiv mit Parallax --}}
+        @unless ($showAssembly)
         <svg data-parallax="0.18" class="pointer-events-none absolute -right-24 top-1/2 -z-10 hidden h-[115%] -translate-y-1/2 opacity-[0.16] lg:block" viewBox="0 0 316 290" aria-hidden="true">
             <path d="M24 268 158 20 292 268H264L158 72 52 268Z" fill="none" stroke="#c25a50" stroke-width="2"/>
             <circle cx="157" cy="212" r="27" fill="none" stroke="#c25a50" stroke-width="2"/>
             <path d="M157 150v124M95 212h124" stroke="#c25a50" stroke-width="1"/>
         </svg>
+        @endunless
 
-        <div class="container-af relative py-16 sm:py-24">
+        <div @class(['container-af relative py-16 sm:py-24', 'grid items-center gap-x-10 lg:grid-cols-[minmax(0,1.08fr)_minmax(0,0.92fr)]' => $showAssembly])>
+            @if ($showAssembly)<div class="min-w-0">@endif
             <p class="eyebrow fx-pop-in">{{ $hero['eyebrow'] }}</p>
-            <h1 class="mt-6 max-w-4xl font-display text-[2.6rem] leading-[1.02] font-extrabold uppercase sm:text-6xl lg:text-[5.5rem]">
+            <h1 @class(['mt-6 max-w-4xl font-display text-[2.6rem] leading-[1.02] font-extrabold uppercase sm:text-6xl', 'lg:text-[5.5rem]' => ! $showAssembly, 'lg:text-[4.25rem] xl:text-[5rem]' => $showAssembly])>
                 @foreach ($lines as $i => $line)
                     <span class="block {{ $i === 1 ? 'fx-brand-text' : '' }}">{{ trim($line) }}</span>
                 @endforeach
@@ -38,6 +43,11 @@
                 <a href="{{ $hero['cta_primary']['url'] }}" class="btn-primary fx-shine fx-shine-auto px-8 py-4 text-base">{{ $hero['cta_primary']['label'] }} <x-icon name="arrow-right" class="size-5"/></a>
                 <a href="{{ $hero['cta_secondary']['url'] }}" class="btn-outline border-white/35 px-8 py-4 text-base text-white"><x-icon name="calendar" class="size-5"/> {{ $hero['cta_secondary']['label'] }}</a>
             </div>
+            @if ($showAssembly)
+                </div>
+                <x-hero-assembly :config="$assembly" class="mx-auto mt-12 w-full max-w-[34rem] lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:mt-0 lg:max-w-none"/>
+                <div class="min-w-0">
+            @endif
             <ul class="mt-8 flex flex-wrap gap-x-6 gap-y-2 font-ui text-sm text-white/80">
                 <li class="flex items-center gap-2"><x-icon name="shield" class="size-4 text-brand-400"/> Rechtssichere Abwicklung</li>
                 <li class="flex items-center gap-2"><x-icon name="users" class="size-4 text-brand-400"/> Persönlicher Waffenberater</li>
@@ -51,6 +61,7 @@
                     </div>
                 @endforeach
             </dl>
+            @if ($showAssembly)</div>@endif
         </div>
         <a href="#entdecken" class="absolute bottom-6 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-2 text-xs tracking-[0.3em] text-white/70 uppercase sm:flex" aria-label="Zum Inhalt scrollen">
             <span class="fx-float grid h-10 w-6 place-items-start justify-center rounded-full border border-white/30 pt-2"><span class="h-2 w-0.5 rounded bg-white/70"></span></span>

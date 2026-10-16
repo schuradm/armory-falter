@@ -148,6 +148,17 @@ class Settings extends Page implements HasForms
                     ->disk('public')->directory('home')->visibility('public')->acceptedFileTypes(['video/mp4'])->maxSize(51200)
                     ->helperText('Wird erst nach dem Laden der Seite nachgeladen (LCP bleibt der Text).'),
             ]),
+            Forms\Components\Section::make('Hero-Animation: Explosionszeichnung')->collapsible()->collapsed()->columns(2)
+                ->description('Glock 17 als Explosionszeichnung neben der Überschrift; die Teile setzen sich nach dem Laden zusammen. Bei „Bewegung reduzieren“ erscheint sie statisch zusammengebaut.')
+                ->schema([
+                    Forms\Components\Toggle::make('home.hero_assembly.enabled')->label('Animation anzeigen')->default(true)->columnSpanFull()
+                        ->helperText('Aus = klassischer Hero mit Logo-Motiv im Hintergrund.'),
+                    $text('home.hero_assembly.title', 'Bildunterschrift: Modell', 60)->placeholder('Glock 17 Gen5.'),
+                    $text('home.hero_assembly.text', 'Bildunterschrift: Text', 120)->placeholder('Präzision, die zusammenpasst.'),
+                    $text('home.hero_assembly.cta.label', 'Link: Text', 40)->placeholder('Zur Waffenauswahl'),
+                    $text('home.hero_assembly.cta.url', 'Link: Ziel', 255)->placeholder('/shop/kurzwaffen')
+                        ->helperText('Relativer Pfad (z. B. /shop/kurzwaffen oder /produkt/…). Leer = kein Link.'),
+                ]),
             Forms\Components\Section::make('Kennzahlen')->collapsible()->collapsed()->schema([
                 Forms\Components\Repeater::make('home.stats')->hiddenLabel()->columns(3)->maxItems(4)->reorderable()
                     ->schema([
@@ -219,6 +230,7 @@ class Settings extends Page implements HasForms
         foreach (self::HOME_LISTS as $list) {
             $home[$list] = array_values($home[$list] ?? []);
         }
+        $home['hero_assembly']['enabled'] = (bool) ($home['hero_assembly']['enabled'] ?? false);
         foreach ($home['stats'] as $i => $stat) {
             $home['stats'][$i]['value'] = (int) $stat['value'];
             $home['stats'][$i]['suffix'] = (string) ($stat['suffix'] ?? '');

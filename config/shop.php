@@ -126,6 +126,13 @@ return [
             'image' => null,
             'video' => null,
         ],
+        // Explosionszeichnung Glock 17 im Hero (setzt sich nach dem Laden zusammen), im Backend abschaltbar
+        'hero_assembly' => [
+            'enabled' => true,
+            'title' => 'Glock 17 Gen5.',
+            'text' => 'Präzision, die zusammenpasst.',
+            'cta' => ['label' => 'Zur Waffenauswahl', 'url' => '/shop/kurzwaffen'],
+        ],
         'stats' => [
             ['value' => 11, 'suffix' => '', 'label' => 'Premium-Marken'],
             ['value' => 6, 'suffix' => '', 'label' => 'Werkstatt-Leistungen'],
