@@ -144,21 +144,29 @@ return [
     */
 
     /*
-     | Deutsche URLs für alle Auth-Seiten (RoutePath::for liest diese Werte).
+     | Deutsche URLs für alle Auth-Seiten. RoutePath::for() liest config('fortify.paths.<routename>');
+     | Routennamen mit Punkt (z. B. password.request) müssen deshalb verschachtelt stehen,
+     | sonst greift die Punkt-Notation nicht und Fortify fällt auf die englischen Standardpfade zurück.
      */
     'paths' => [
         'login' => 'konto/anmelden',
         'logout' => 'konto/abmelden',
         'register' => 'konto/registrieren',
-        'password.request' => 'konto/passwort-vergessen',
-        'password.reset' => 'konto/passwort-neu/{token}',
-        'password.email' => 'konto/passwort-vergessen',
-        'password.update' => 'konto/passwort-neu',
-        'verification.notice' => 'konto/email-bestaetigen',
-        'verification.verify' => 'konto/email-bestaetigen/{id}/{hash}',
-        'verification.send' => 'konto/email-bestaetigen/senden',
-        'two-factor.login' => 'konto/zwei-faktor',
-        'password.confirm' => 'konto/passwort-bestaetigen',
+        'password' => [
+            'request' => 'konto/passwort-vergessen',
+            'reset' => 'konto/passwort-neu/{token}',
+            'email' => 'konto/passwort-vergessen',
+            'update' => 'konto/passwort-neu',
+            'confirm' => 'konto/passwort-bestaetigen',
+        ],
+        'verification' => [
+            'notice' => 'konto/email-bestaetigen',
+            'verify' => 'konto/email-bestaetigen/{id}/{hash}',
+            'send' => 'konto/email-bestaetigen/senden',
+        ],
+        'two-factor' => [
+            'login' => 'konto/zwei-faktor',
+        ],
     ],
 
     'features' => [
