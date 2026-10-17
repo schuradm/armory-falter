@@ -48,6 +48,7 @@
         </div>
         <h3 class="font-display text-base leading-snug font-bold"><a href="{{ $product->url() }}" data-vt-product class="hover:text-accent">{{ $product->name }}</a></h3>
         @if ($product->caliber)<p class="text-xs text-muted">Kaliber {{ $product->caliber->name }}</p>@endif
+        @if ($product->rating_count > 0)<x-stars :rating="$product->rating_avg" :count="$product->rating_count" size="size-3.5"/>@endif
         <div class="mt-auto flex items-end justify-between gap-2 pt-2">
             <x-price :product="$product" class="shrink-0"/>
             <span class="text-right text-xs {{ $product->availability->color() }}">● {{ $product->availability->label() }}</span>

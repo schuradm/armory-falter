@@ -119,10 +119,19 @@ class AccountController extends Controller
         return view('account.privacy');
     }
 
+    /** Bewertungseinladungen per E-Mail an/aus (Widerspruch nach § 7 Abs. 3 UWG). */
+    public function reviewInvites(Request $request)
+    {
+        $allow = $request->boolean('allow');
+        $request->user()->forceFill(['review_requests_opted_out_at' => $allow ? null : now()])->save();
+
+        return back()->with('status', $allow ? 'Sie erhalten wieder Bewertungseinladungen.' : 'Sie erhalten keine Bewertungseinladungen mehr.');
+    }
+
     /** Art. 15/20 DSGVO: Datenauskunft als JSON. */
     public function export(Request $request, AuditLogger $audit)
     {
-        $u = $request->user()->load(['addresses', 'orders.items', 'documents', 'entitlements', 'wishlists.products:id,name', 'tradeRequests', 'appointments']);
+        $u = $request->user()->load(['addresses', 'orders.items', 'documents', 'entitlements', 'wishlists.products:id,name', 'tradeRequests', 'appointments', 'reviews.product:id,name']);
         $audit->log('privacy.export', $u);
         $data = [
             'exportiert_am' => now()->toIso8601String(),
@@ -134,6 +143,7 @@ class AccountController extends Controller
             'merklisten' => $u->wishlists->map(fn ($w) => ['name' => $w->name, 'produkte' => $w->products->pluck('name')]),
             'anfragen' => $u->tradeRequests->map->only(['reference', 'type', 'model', 'status', 'created_at']),
             'termine' => $u->appointments->map->only(['type', 'starts_at', 'status']),
+            'bewertungen' => $u->reviews->map(fn ($r) => ['produkt' => $r->product?->name, 'sterne' => $r->rating, 'titel' => $r->title, 'text' => $r->body, 'status' => $r->statusLabel(), 'datum' => $r->created_at]),
         ];
 
         return response()->streamDownload(fn () => print(json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)), 'armory-falter-datenauskunft.json', ['Content-Type' => 'application/json']);
@@ -155,6 +165,9 @@ class AccountController extends Controller
         });
         $user->addresses()->delete();
         $user->wishlists()->delete();
+        // Bewertungen tragen den Namen: mit dem Konto löschen, Produktdurchschnitt neu berechnen
+        $reviewService = app(\App\Services\Reviews\ReviewService::class);
+        $user->reviews()->get()->each(fn ($review) => $reviewService->delete($review));
         $user->tokens()->delete();
         $user->forceFill([
             'first_name' => 'Gelöscht', 'last_name' => 'Kunde '.$user->id, 'email' => 'geloescht-'.$user->id.'@invalid.local',

@@ -6,6 +6,7 @@
         'invoices' => ['Rechnungen', 'account.invoices', 'euro'],
         'documents' => ['Dokumente & WBK', 'account.documents', 'shield'],
         'wishlists' => ['Merklisten', 'account.wishlists', 'heart'],
+        'reviews' => ['Meine Bewertungen', 'account.reviews', 'star'],
         'downloads' => ['Downloads', 'account.downloads', 'download'],
         'appointments' => ['Termine', 'account.appointments', 'calendar'],
         'requests' => ['Verkauf & Ankauf', 'account.requests', 'euro'],

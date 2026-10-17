@@ -17,6 +17,7 @@
                     <li><a href="{{ $cat->url() }}" class="hover:text-white">{{ $cat->name }}</a></li>
                 @endforeach
                 <li><a href="{{ route('brands.index') }}" class="hover:text-white">Hersteller</a></li>
+                <li><a href="{{ url('/produkt/geschenkgutschein') }}" class="hover:text-white">Geschenkgutscheine</a></li>
             </ul>
         </div>
         <div>

@@ -39,6 +39,10 @@ Schedule::call($artisan('documents:housekeeping'))->name('documents:housekeeping
 Schedule::call($artisan('newsletter:welcome'))->name('newsletter:welcome')->description('Newsletter-Willkommensstrecke')
     ->hourlyAt(20)->between('08:00', '20:00')->withoutOverlapping(30);
 
+// Bewertungseinladungen X Tage nach Zustellung (nur ohne Widerspruch, § 7 Abs. 3 UWG – siehe SendReviewRequests)
+Schedule::call($artisan('reviews:send-requests'))->name('reviews:send-requests')->description('Bewertungseinladungen versenden')
+    ->hourlyAt(25)->between('09:00', '19:00')->withoutOverlapping(30);
+
 // Abgelaufene Einträge aus Datei-/Datenbank-Cache entfernen (Ganzseiten-Cache erzeugt viele Schlüssel)
 Schedule::call($artisan('cache:prune-expired'))->name('cache:prune-expired')->description('Abgelaufene Cache-Einträge löschen')
     ->hourlyAt(40)->withoutOverlapping(30);

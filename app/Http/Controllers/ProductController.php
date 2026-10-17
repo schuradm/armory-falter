@@ -4,12 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Services\Compliance\ComplianceService;
+use App\Services\Reviews\ReviewService;
 use App\Support\Seo;
 use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
-    public function show(Product $product, Seo $seo, ComplianceService $compliance)
+    public function show(Product $product, Seo $seo, ComplianceService $compliance, ReviewService $reviewService)
     {
         abort_unless($product->status === 'active' && (! $product->authority_only || auth()->user()?->isAuthorityOrDealer()), 404);
 
@@ -28,6 +29,12 @@ class ProductController extends Controller
             }
         }
         $seo->breadcrumb($product->name, $product->url());
+
+        // Bewertungen: erste Seite serverseitig, weitere per „Mehr anzeigen“ (ReviewController::index)
+        $reviews = $product->rating_count > 0
+            ? $product->reviews()->approved()->latest()->paginate(config('shop.reviews.per_page', 5), pageName: 'bewertungen')
+            : null;
+        $distribution = $reviews ? $reviewService->distribution($product) : [];
 
         $seo->schema(array_filter([
             '@type' => 'Product',
@@ -49,6 +56,22 @@ class ProductController extends Controller
                 'seller' => ['@id' => url('/').'#organization'],
                 'eligibleRegion' => 'DE',
             ],
+            // Nur mit freigegebenen Bewertungen (Google verlangt echte, auf der Seite sichtbare Bewertungen)
+            'aggregateRating' => $reviews ? [
+                '@type' => 'AggregateRating',
+                'ratingValue' => number_format((float) $product->rating_avg, 1, '.', ''),
+                'reviewCount' => $product->rating_count,
+                'bestRating' => 5,
+                'worstRating' => 1,
+            ] : null,
+            'review' => $reviews ? $reviews->getCollection()->map(fn ($r) => array_filter([
+                '@type' => 'Review',
+                'author' => ['@type' => 'Person', 'name' => $r->author_name],
+                'datePublished' => $r->created_at->toDateString(),
+                'name' => $r->title,
+                'reviewBody' => $r->body,
+                'reviewRating' => ['@type' => 'Rating', 'ratingValue' => $r->rating, 'bestRating' => 5, 'worstRating' => 1],
+            ]))->values()->all() : null,
         ]));
         $seo->applyOverrides($product->seo);
 
@@ -58,6 +81,6 @@ class ProductController extends Controller
 
         $check = $compliance->evaluate($product, auth()->user());
 
-        return view('shop.product', compact('product', 'related', 'check'));
+        return view('shop.product', compact('product', 'related', 'check', 'reviews', 'distribution'));
     }
 }

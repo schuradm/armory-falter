@@ -42,6 +42,9 @@
                 </div>
                 <h1 class="font-display text-3xl leading-tight font-extrabold sm:text-4xl">{{ $product->name }}</h1>
                 <p class="text-sm text-muted">Art.-Nr. {{ $product->sku }}@if($product->caliber) · Kaliber <a href="{{ route('calibers.show', $product->caliber) }}" class="hover:text-accent">{{ $product->caliber->name }}</a>@endif</p>
+                @if ($product->rating_count > 0)
+                    <a href="#bewertungen" class="inline-flex items-center gap-2 text-sm hover:text-accent"><x-stars :rating="$product->rating_avg"/><span>{{ number_format((float) $product->rating_avg, 1, ',', '') }} · {{ $product->rating_count }} {{ $product->rating_count === 1 ? 'Bewertung' : 'Bewertungen' }}</span></a>
+                @endif
                 <x-price :product="$product" size="lg"/>
                 <p class="text-sm {{ $product->availability->color() }}">● {{ $product->availability->label() }}@if($product->delivery_time) · Lieferzeit {{ $product->delivery_time }}@endif</p>
                 @if ($product->short_description)<p class="text-fg/85">{{ $product->short_description }}</p>@endif
@@ -113,6 +116,10 @@
                 <div x-show="tab === 'faq'" x-cloak role="tabpanel" class="max-w-3xl"><x-faq-list :faqs="$product->faqs"/></div>
             </div>
         </div>
+
+        @unless ($product->isGiftVoucher())
+            @include('shop.partials.reviews')
+        @endunless
 
         @if ($product->accessories->isNotEmpty())
             {{-- Upsell: Zubehör-Set mit einem Klick --}}
