@@ -13,6 +13,7 @@ use Filament\Forms;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Throwable;
 
 class ViewOrder extends ViewRecord
@@ -24,15 +25,28 @@ class ViewOrder extends ViewRecord
         return 'Bestellung '.$this->getRecord()->order_number;
     }
 
+    private const RELATIONS = [
+        'user', 'items', 'payments', 'shipments.method', 'invoices', 'shippingMethod', 'statusHistory',
+        'complianceChecks.entitlement.caliber',
+    ];
+
     protected function resolveRecord(int|string $key): Order
     {
         /** @var Order $order */
         $order = parent::resolveRecord($key);
 
-        return $order->load([
-            'user', 'items', 'payments', 'shipments.method', 'invoices', 'shippingMethod', 'statusHistory',
-            'complianceChecks.entitlement.caliber',
-        ]);
+        return $order->load(self::RELATIONS);
+    }
+
+    /**
+     * Livewire stellt bei Folgeanfragen (z. B. Aktion öffnen) nur einen Teil der Relationen wieder her
+     * (Schnittmenge über alle Prüfschritte, Prüfschritt ohne Berechtigung → ohne entitlement.caliber).
+     * Ohne Nachladen bricht das Infolist mit LazyLoadingViolation (500) ab.
+     */
+    public function hydrate(): void
+    {
+        parent::hydrate();
+        $this->getRecord()->loadMissing(self::RELATIONS);
     }
 
     private function refreshRecord(): void
@@ -51,6 +65,16 @@ class ViewOrder extends ViewRecord
             Notification::make()->danger()->title('Aktion fehlgeschlagen')->body($e->getMessage())->persistent()->send();
         }
         $this->refreshRecord();
+    }
+
+    private const CARRIERS = ['dhl' => 'DHL', 'dpd' => 'DPD', 'ups' => 'UPS', 'gls' => 'GLS', 'hermes' => 'Hermes', 'other' => 'Sonstige'];
+
+    /** Versandart-Dienstleister ist Freitext („DHL“, „dhl_express“) – auf einen Auswahlschlüssel abbilden. */
+    private static function defaultCarrier(Order $order): string
+    {
+        $carrier = Str::before(Str::lower((string) $order->shippingMethod?->carrier), '_');
+
+        return array_key_exists($carrier, self::CARRIERS) ? $carrier : 'dhl';
     }
 
     private static function canRelease(): bool
@@ -133,8 +157,8 @@ class ViewOrder extends ViewRecord
                 ->modalHeading('Versand erfassen')
                 ->form(fn (Order $record) => $record->shippingMethod?->isPickup() ? [] : [
                     Forms\Components\Select::make('carrier')->label('Versanddienstleister')->required()
-                        ->options(['dhl' => 'DHL', 'dpd' => 'DPD', 'ups' => 'UPS', 'gls' => 'GLS', 'hermes' => 'Hermes', 'other' => 'Sonstige'])
-                        ->default($record->shippingMethod?->carrier ?: 'dhl'),
+                        ->options(self::CARRIERS)
+                        ->default(self::defaultCarrier($record)),
                     Forms\Components\TextInput::make('tracking_number')->label('Sendungsnummer')->maxLength(60)
                         ->required(fn () => ! $record->shippingMethod?->isPickup()),
                 ])
