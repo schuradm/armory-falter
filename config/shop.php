@@ -4,6 +4,9 @@ return [
     'company' => [
         'name' => env('SHOP_COMPANY_NAME', 'Armory Falter'),
         'owner' => env('SHOP_COMPANY_OWNER', 'Mark Falter'),
+        // Rechtsträger laut Impressum der WSSA (wssacademy.de): Fa. MPF, Inhaber Mark Falter. Vor Go-live bestätigen.
+        'legal_name' => env('SHOP_COMPANY_LEGAL_NAME', 'Fa. MPF'),
+        'privacy_email' => env('SHOP_COMPANY_PRIVACY_EMAIL'),
         'street' => env('SHOP_COMPANY_STREET', 'Stuttgarter Straße 2/1'),
         'postal_code' => env('SHOP_COMPANY_ZIP', '72649'),
         'city' => env('SHOP_COMPANY_CITY', 'Wolfschlugen'),
@@ -122,7 +125,7 @@ return [
     'page_cache' => [
         'enabled' => env('PAGE_CACHE', true),
         'ttl' => 900,
-        'except' => ['konto*', 'kasse*', 'warenkorb', 'zahlung*', 'kms-login*', 'livewire*', 'newsletter*', 'downloads*', 'bewertungen/*', 'suche', 'vergleich', 'sitemap.xml', 'robots.txt', 'up', 'cron/*'],
+        'except' => ['vertrag-widerrufen*', 'konto*', 'kasse*', 'warenkorb', 'zahlung*', 'kms-login*', 'livewire*', 'newsletter*', 'downloads*', 'bewertungen/*', 'suche', 'vergleich', 'sitemap.xml', 'robots.txt', 'up', 'cron/*'],
     ],
 
     // Performance-Schalter

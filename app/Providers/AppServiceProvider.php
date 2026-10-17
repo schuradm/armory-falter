@@ -30,6 +30,7 @@ class AppServiceProvider extends ServiceProvider
 
         Relation::enforceMorphMap([
             'user' => \App\Models\User::class,
+            'withdrawal' => \App\Models\Withdrawal::class,
             'product' => \App\Models\Product::class,
             'category' => \App\Models\Category::class,
             'manufacturer' => \App\Models\Manufacturer::class,

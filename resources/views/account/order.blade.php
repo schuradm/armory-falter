@@ -40,7 +40,9 @@
             </tfoot>
         </table>
     </section>
-    @if ($order->invoices->isNotEmpty())
-        <div class="mt-4 flex gap-3">@foreach ($order->invoices as $inv)<a href="{{ route('account.invoices.download', $inv) }}" class="btn-outline py-2"><x-icon name="download" class="size-4"/> Rechnung {{ $inv->invoice_number }}</a>@endforeach</div>
-    @endif
+    <div class="mt-4 flex flex-wrap gap-3">
+        @foreach ($order->invoices as $inv)<a href="{{ route('account.invoices.download', $inv) }}" class="btn-outline py-2"><x-icon name="download" class="size-4"/> Rechnung {{ $inv->invoice_number }}</a>@endforeach
+        {{-- Widerrufsbutton: während der Widerrufsfrist leicht erreichbar --}}
+        <a href="{{ route('withdrawal.create', ['bestellung' => $order->order_number]) }}" class="btn-ghost py-2">Vertrag widerrufen</a>
+    </div>
 </x-layouts.account>

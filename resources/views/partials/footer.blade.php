@@ -47,11 +47,12 @@
                 <a href="{{ route('page.show', 'impressum') }}" class="hover:text-white">Impressum</a>
                 <a href="{{ route('page.show', 'datenschutz') }}" class="hover:text-white">Datenschutz</a>
                 <a href="{{ route('page.show', 'agb') }}" class="hover:text-white">AGB</a>
-                <a href="{{ route('page.show', 'widerruf') }}" class="hover:text-white">Widerruf</a>
+                <a href="{{ route('page.show', 'widerruf') }}" class="hover:text-white">Widerrufsbelehrung</a>
+                <a href="{{ route('withdrawal.create') }}" class="inline-flex min-h-6 items-center rounded border border-white/30 px-2 font-semibold text-white hover:border-brand-400 hover:text-brand-300">Vertrag widerrufen</a>
                 <a href="{{ route('page.show', 'barrierefreiheit') }}" class="hover:text-white">Barrierefreiheit</a>
                 <button type="button" class="hover:text-white" x-data @click="$dispatch('open-consent')">Cookie-Einstellungen</button>
             </nav>
         </div>
-        <p class="container-af pb-6 text-xs text-white/60">© {{ date('Y') }} {{ $c['name'] }}</p>
+        <p class="container-af pb-6 text-xs text-white/60">© {{ date('Y') }} {{ $c['name'] }} · {{ config('shop.company.legal_name') }}, Inh. {{ $c['owner'] }}</p>
     </div>
 </footer>

@@ -62,6 +62,12 @@ Route::get('/faq', [PageController::class, 'faq'])->name('faq');
 Route::get('/kontakt', [PageController::class, 'contact'])->name('contact');
 Route::get('/{slug}', [PageController::class, 'show'])->whereIn('slug', PageController::SLUGS)->name('page.show');
 
+// Widerrufsbutton (Art. 11a Verbraucherrechte-RL, seit 19.06.2026): Angaben → „Widerruf bestätigen“ → Eingangsbestätigung
+Route::get('/vertrag-widerrufen', [\App\Http\Controllers\WithdrawalController::class, 'create'])->name('withdrawal.create');
+Route::post('/vertrag-widerrufen/pruefen', [\App\Http\Controllers\WithdrawalController::class, 'review'])->middleware('throttle:20,1')->name('withdrawal.review');
+Route::post('/vertrag-widerrufen', [\App\Http\Controllers\WithdrawalController::class, 'store'])->middleware('throttle:10,1')->name('withdrawal.store');
+Route::get('/vertrag-widerrufen/eingegangen', [\App\Http\Controllers\WithdrawalController::class, 'done'])->name('withdrawal.done');
+
 // Newsletter, Consent, SEO
 Route::post('/newsletter', [NewsletterController::class, 'subscribe'])->middleware('throttle:20,1')->name('newsletter.subscribe');
 Route::get('/newsletter/bestaetigen/{token}', [NewsletterController::class, 'confirm'])->name('newsletter.confirm');

@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Page;
+use App\Support\LegalTexts;
 use Illuminate\Database\Seeder;
 
 /**
@@ -15,81 +16,13 @@ class PageSeeder extends Seeder
     public function run(): void
     {
         $c = config('shop.company');
-        $address = e($c['name']).'<br>Inhaber: '.e($c['owner']).'<br>'.e($c['street']).'<br>'.e($c['postal_code'].' '.$c['city']);
-        $contact = 'Telefon: '.e($c['phone']).'<br>E-Mail: <a href="mailto:'.e($c['email']).'">'.e($c['email']).'</a>';
         $todo = fn (string $text) => '<mark>[PLATZHALTER: '.$text.']</mark>';
 
         $pages = [
-            'impressum' => ['Impressum', <<<HTML
-<h2>Angaben gemäß § 5 DDG</h2>
-<p>{$address}</p>
-<h2>Kontakt</h2>
-<p>{$contact}</p>
-<h2>Umsatzsteuer</h2>
-<p>Umsatzsteuer-Identifikationsnummer gemäß § 27a UStG: {$c['vat_id']}</p>
-<h2>Waffenrechtliche Erlaubnis</h2>
-<p>Waffenhandelserlaubnis nach § 21 WaffG, erteilt durch: {$todo('Behörde, Aktenzeichen und Datum der Erlaubnis')}</p>
-<p>Zuständige Aufsichtsbehörde: {$todo('z. B. Landratsamt Esslingen, Waffenbehörde, Anschrift')}</p>
-<h2>Berufsrechtliche Angaben</h2>
-<p>{$todo('ggf. Handwerkskammer, Meistertitel Büchsenmacher, Eintragung Handwerksrolle')}</p>
-<h2>Verbraucherstreitbeilegung</h2>
-<p>Wir sind nicht bereit und nicht verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen. {$todo('anwaltlich bestätigen')}</p>
-<h2>Verantwortlich für den Inhalt</h2>
-<p>{$c['owner']}, Anschrift wie oben.</p>
-HTML],
-            'datenschutz' => ['Datenschutzerklärung', <<<HTML
-<p>{$todo('Vollständige Datenschutzerklärung durch Anwalt/Datenschutzbeauftragten erstellen lassen. Die folgenden Abschnitte sind eine Gliederung mit den im Shop tatsächlich eingesetzten Verarbeitungen.')}</p>
-<h2>1. Verantwortlicher</h2>
-<p>{$address}<br>{$contact}</p>
-<h2>2. Hosting und Server-Logfiles</h2>
-<p>{$todo('Hoster (One.com Group AB), Auftragsverarbeitungsvertrag, Speicherdauer der Logfiles')}</p>
-<h2>3. Kundenkonto und Bestellungen</h2>
-<p>Wir verarbeiten Ihre Daten zur Vertragserfüllung (Art. 6 Abs. 1 lit. b DSGVO). {$todo('Aufbewahrungsfristen HGB/AO')}</p>
-<h2>4. Erwerbsberechtigungen und Ausweisdokumente</h2>
-<p>Für den Verkauf erlaubnispflichtiger Waffen und Munition sind wir gesetzlich verpflichtet, die Erwerbsberechtigung zu prüfen und zu dokumentieren (§ 34 WaffG, Art. 6 Abs. 1 lit. c DSGVO). Hochgeladene Dokumente werden verschlüsselt gespeichert und nur von berechtigten Mitarbeitern eingesehen. {$todo('Löschfristen, Waffenhandelsbuch, Nationales Waffenregister')}</p>
-<h2>5. Zahlungsdienstleister</h2>
-<p>PayPal (Europe) S.à r.l. et Cie, S.C.A. und Klarna Bank AB (publ) für frei verkäufliche Ware. {$todo('Angaben zur Datenübermittlung und Rechtsgrundlage')}</p>
-<h2>6. Versand</h2>
-<p>{$todo('DHL / Deutsche Post, Übermittlung von Name, Anschrift, ggf. E-Mail für Sendungsverfolgung')}</p>
-<h2>7. Newsletter und Waffenratgeber (Double-Opt-in)</h2>
-HTML.\App\Support\LegalTexts::newsletter($todo).<<<HTML
-<h2>8. Cookies und Einwilligung</h2>
-<p>{$todo('Technisch notwendige Cookies, Cookie-Banner, ggf. Statistik')}</p>
-<h2>9. Spamschutz</h2>
-<p>{$todo('Cloudflare Turnstile oder Google reCAPTCHA, je nach Konfiguration')}</p>
-<h2>10. Ihre Rechte</h2>
-<p>Auskunft, Berichtigung, Löschung, Einschränkung, Datenübertragbarkeit, Widerspruch und Beschwerde bei einer Aufsichtsbehörde (z. B. LfDI Baden-Württemberg).</p>
-HTML],
-            'agb' => ['Allgemeine Geschäftsbedingungen', <<<HTML
-<p>{$todo('AGB durch Fachanwalt erstellen lassen. Gliederung als Vorlage.')}</p>
-<h2>§ 1 Geltungsbereich</h2>
-<p>Diese AGB gelten für alle Bestellungen über den Online-Shop von {$c['name']}, {$c['street']}, {$c['postal_code']} {$c['city']}.</p>
-<h2>§ 2 Vertragsschluss</h2>
-<p>{$todo('Angebot/Annahme, Bestellbestätigung, Vertragsschluss bei erlaubnispflichtiger Ware erst nach Prüfung der Erwerbsberechtigung')}</p>
-<h2>§ 3 Erlaubnispflichtige Waren</h2>
-<p>Waffen und Munition, deren Erwerb einer Erlaubnis bedarf, werden nur an Personen abgegeben, die ihre Berechtigung nachgewiesen haben. Wir sind berechtigt, die Bestellung abzulehnen, wenn die Berechtigung nicht nachgewiesen wird. {$todo('Regelung zu bereits geleisteten Zahlungen')}</p>
-<h2>§ 4 Preise und Zahlung</h2>
-<p>Alle Preise inkl. gesetzlicher Umsatzsteuer, zzgl. Versandkosten. {$todo('Zahlungsarten, Fälligkeit, Vorkasse-Frist 7 Tage')}</p>
-<h2>§ 5 Lieferung und Übergabe</h2>
-<p>{$todo('Persönliche Übergabe, Altersprüfung, Abholung')}</p>
-<h2>§ 6 Eigentumsvorbehalt</h2>
-<p>{$todo('')}</p>
-<h2>§ 7 Gewährleistung</h2>
-<p>{$todo('Gesetzliche Mängelhaftung, Gebrauchtwaffen 1 Jahr bei Verbrauchern')}</p>
-<h2>§ 8 Schlussbestimmungen</h2>
-<p>{$todo('Rechtswahl, Gerichtsstand für Kaufleute')}</p>
-HTML],
-            'widerruf' => ['Widerrufsbelehrung', <<<HTML
-<p>{$todo('Muster-Widerrufsbelehrung nach Anlage 1 zu Art. 246a § 1 Abs. 2 EGBGB einsetzen und anwaltlich prüfen lassen, insbesondere zu Waffen mit Seriennummer und Ausschlüssen nach § 312g BGB.')}</p>
-<h2>Widerrufsrecht</h2>
-<p>Sie haben das Recht, binnen vierzehn Tagen ohne Angabe von Gründen diesen Vertrag zu widerrufen. {$todo('vollständiger Mustertext')}</p>
-<h2>Folgen des Widerrufs</h2>
-<p>{$todo('Mustertext, Hinweis: Rücksendung erlaubnispflichtiger Waffen nur unter Beachtung des WaffG (keine Rücksendung per Standardpaket)')}</p>
-<h2>Muster-Widerrufsformular</h2>
-<p>An {$c['name']}, {$c['street']}, {$c['postal_code']} {$c['city']}, E-Mail: {$c['email']}<br>
-Hiermit widerrufe(n) ich/wir den von mir/uns abgeschlossenen Vertrag über den Kauf der folgenden Waren: …<br>
-Bestellt am / erhalten am: …<br>Name, Anschrift: …<br>Datum, Unterschrift (nur bei Mitteilung auf Papier)</p>
-HTML],
+            'impressum' => ['Impressum', LegalTexts::impressum($todo)],
+            'datenschutz' => ['Datenschutzerklärung', LegalTexts::datenschutz($todo)],
+            'agb' => ['Allgemeine Geschäftsbedingungen', LegalTexts::agb($todo)],
+            'widerruf' => ['Widerrufsbelehrung', LegalTexts::widerruf($todo)],
             'versandinformationen' => ['Versand & Lieferung', <<<HTML
 <h2>Versandarten und Kosten</h2>
 <table>

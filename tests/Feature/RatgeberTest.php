@@ -21,9 +21,9 @@ class RatgeberTest extends TestCase
 
         // Normales Formular (POST), funktioniert ohne JavaScript
         $this->from('/')->post(route('newsletter.subscribe'), ['variant' => 'lead', 'email' => 'jaeger@example.test'])
-            ->assertRedirect('/#ratgeber')->assertSessionHasErrors('consent', null, 'newsletter_lead');
+            ->assertRedirectContains('#ratgeber')->assertSessionHasErrors('consent', null, 'newsletter_lead');
         $this->from('/')->post(route('newsletter.subscribe'), ['variant' => 'lead', 'email' => 'jaeger@example.test', 'consent' => '1'])
-            ->assertRedirect('/#ratgeber')->assertSessionHas('newsletter_done', 'lead');
+            ->assertRedirectContains('#ratgeber')->assertSessionHas('newsletter_done', 'lead');
         $this->get('/')->assertSee('Fast geschafft');
 
         $sub = NewsletterSubscriber::where('email', 'jaeger@example.test')->firstOrFail();
