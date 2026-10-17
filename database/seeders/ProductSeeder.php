@@ -17,6 +17,9 @@ use Illuminate\Support\Facades\DB;
  */
 class ProductSeeder extends Seeder
 {
+    /** Nur diese SKUs anlegen, ohne „Passend dazu“ (für Datenmigrationen in bestehende Installationen). */
+    public ?array $only = null;
+
     public function run(): void
     {
         $m = Manufacturer::pluck('id', 'slug');
@@ -54,6 +57,12 @@ class ProductSeeder extends Seeder
                 'desc' => '<p>Mit 1.300 g Gewicht liegt die Shadow 2 extrem ruhig in der Hand. Der Stahlrahmen, der lange Schlitten und der feine Abzug machen sie zur Wettkampfwaffe ab Werk.</p>'],
 
             // ---- Langwaffen / Jagd ----
+            ['sku' => 'CZ-EVO3-S1-C', 'name' => 'CZ Scorpion EVO 3 S1 Carbine', 'manufacturer' => 'cz', 'caliber' => '9mm-luger', 'legal' => 'firearm_permit',
+                'type' => 'weapon', 'kind' => 'langwaffe', 'price' => 164900, 'stock' => 2, 'sport' => true, 'featured' => true,
+                'cats' => ['langwaffen/selbstlader', 'langwaffen', 'sportwaffen'],
+                'short' => 'Halbautomatischer Selbstlader im Kaliber 9 mm Luger: kompakt, leicht und rückstoßarm. Die beliebte Pistol Caliber Carbine für das sportliche Schießen.',
+                'desc' => '<p>Die Scorpion EVO 3 S1 von Česká zbrojovka ist die zivile, halbautomatische Version der bekannten Dienstwaffe. Als Carbine mit langem Lauf ist sie eine Langwaffe und in Deutschland für Sportschützen mit entsprechendem Voreintrag erwerbbar. Durch das Kaliber 9 mm Luger schießt sie sich besonders weich und günstig, ideal für PCC-Disziplinen und das dynamische Schießen.</p><ul><li>Kaliber 9 mm Luger, Selbstlader (Halbautomat)</li><li>Rückstoßlader mit Feder-Masse-Verschluss</li><li>Klapp- und längenverstellbarer Schaft</li><li>Durchgehende Picatinny-Schiene für Optik, seitliche Schienen für Zubehör</li><li>Beidseitige Bedienelemente, verstellbare Diopter-Visierung</li><li>Lieferung mit Magazin für 10 Patronen (gesetzliche Höchstkapazität für halbautomatische Langwaffen)</li></ul><p>Erwerb nur mit grüner WBK und Voreintrag für eine halbautomatische Langwaffe. Mit der gelben WBK ist der Erwerb nicht möglich. Gern beraten wir Sie zur Bedürfnisbescheinigung und montieren Ihnen eine passende Leuchtpunktoptik.</p>'],
+
             ['sku' => 'BLA-R8-PRO-308', 'name' => 'Blaser R8 Professional Success', 'manufacturer' => 'blaser', 'caliber' => '308-win', 'legal' => 'firearm_permit',
                 'type' => 'weapon', 'kind' => 'langwaffe', 'price' => 439000, 'uvp' => 459000, 'stock' => 2, 'hunting' => true, 'featured' => true,
                 'cats' => ['langwaffen/repetierbuechsen', 'langwaffen', 'jagdwaffen'],
@@ -141,6 +150,9 @@ class ProductSeeder extends Seeder
 
         $ids = [];
         foreach ($products as $p) {
+            if ($this->only !== null && ! in_array($p['sku'], $this->only, true)) {
+                continue;
+            }
             $product = Product::updateOrCreate(['sku' => $p['sku']], [
                 'name' => $p['name'],
                 'slug' => \Illuminate\Support\Str::slug($p['name']),
@@ -173,6 +185,10 @@ class ProductSeeder extends Seeder
                 $sync[$cat[$path]] = ['is_primary' => $i === 0];
             }
             $product->categories()->sync($sync);
+        }
+
+        if ($this->only !== null) {
+            return;
         }
 
         // „Passend dazu“ (Upsell): Zubehör und Optik zu den Waffen

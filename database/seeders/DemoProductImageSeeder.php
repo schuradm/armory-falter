@@ -32,6 +32,7 @@ class DemoProductImageSeeder extends Seeder
         ],
         'SIG-P320-X5' => [['sig-sauer-p320-x-five', 'Sig Sauer P320 X-Five, Wettkampfpistole mit silbernem Schlitten, Magwell und rotem Leuchtkorn']],
         'CZ-SHADOW2' => [['cz-shadow-2', 'CZ Shadow 2, Ganzstahl-Wettkampfpistole mit Hahn und Griffschalen, Seitenansicht']],
+        'CZ-EVO3-S1-C' => [['cz-scorpion-evo-3-s1', 'CZ Scorpion EVO 3 S1, halbautomatischer Selbstlader 9 mm Luger mit Klappschaft und Picatinny-Schiene, Seitenansicht']],
         'BLA-R8-PRO-308' => [
             ['blaser-r8-professional-success', 'Blaser R8 Professional Success, Geradezugrepetierer mit Lochschaft und Zielfernrohr'],
             ['blaser-r8-professional-success-detail', 'Blaser R8 Professional Success, Detail von Geradezugverschluss, Handspannung und Montage'],
