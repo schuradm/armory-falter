@@ -285,7 +285,7 @@ namespace Tests\Feature {
 
             // Rechnung: Beträge, USt., deutsches Format, bezahlt-Vermerk statt Zahlungsaufforderung
             $html = view('pdf.invoice', ['order' => $order->load('items', 'user', 'payments'), 'number' => 'RE-TEST', 'company' => config('shop.company')])->render();
-            foreach (['799,00 €', '59,00 €', '39,00 €', '897,00 €', 'netto 753,78 €', '143,22 €', 'bereits beglichen'] as $needle) {
+            foreach (['799,00 €', '59,00 €', '39,00 €', '897,00 €', "netto 753,78\u{00A0}€", '143,22 €', 'bereits beglichen'] as $needle) {
                 $this->assertStringContainsString($needle, $html);
             }
             $this->assertStringNotContainsString('Bitte überweisen', $html);

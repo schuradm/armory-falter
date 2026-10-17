@@ -42,19 +42,20 @@
         .header td { vertical-align: top; }
         .logo { height: 16mm; }
         .sender { font-size: 7pt; color: #555; border-bottom: 0.5pt solid #999; padding-bottom: 1mm; margin-bottom: 2mm; }
-        .meta td { padding: 0.6mm 0; }
+        .meta td { padding: 0.3mm 0; line-height: 1.25; }
         .meta td:first-child { color: #555; padding-right: 4mm; }
-        h1 { font-size: 15pt; margin: 10mm 0 4mm; letter-spacing: 0.5pt; }
+        h1 { font-size: 15pt; margin: 7mm 0 4mm; letter-spacing: 0.5pt; }
         table { border-collapse: collapse; width: 100%; }
         .items th { background: #111; color: #fff; font-size: 8pt; text-align: left; padding: 2mm; }
         .items td { padding: 2mm; border-bottom: 0.5pt solid #ddd; vertical-align: top; }
         .num { text-align: right; white-space: nowrap; }
         .sku { color: #666; font-size: 7.5pt; }
-        .totals { width: 45%; margin-left: 55%; margin-top: 4mm; }
+        .totals { width: 52%; margin-left: 48%; margin-top: 4mm; }
         .totals td { padding: 1mm 2mm; }
         .totals .grand td { border-top: 1pt solid #111; font-weight: bold; font-size: 11pt; padding-top: 2mm; }
         .muted { color: #555; }
-        .note { margin-top: 8mm; font-size: 8.5pt; }
+        .note { margin-top: 6mm; font-size: 8.5pt; }
+        .note p { margin: 0 0 2mm; }
         .footer { position: fixed; bottom: -20mm; left: 0; right: 0; font-size: 7pt; color: #555; border-top: 0.5pt solid #999; padding-top: 2mm; }
         .footer td { vertical-align: top; width: 33%; }
     </style>
@@ -126,7 +127,7 @@
     <tr class="grand"><td>Gesamtbetrag</td><td class="num">{{ Money::format($order->total_gross) }}</td></tr>
     @foreach ($byRate as $rate => $gross)
         @php($net = (int) round($gross / (1 + ((float) $rate) / 100)))
-        <tr class="muted"><td>enthaltene USt. {{ str_replace('.', ',', $rate) }} % (netto {{ Money::format($net) }})</td><td class="num">{{ Money::format($gross - $net) }}</td></tr>
+        <tr class="muted"><td>enthaltene USt. {{ str_replace('.', ',', $rate) }} % (netto {{ str_replace(" ", "\u{00A0}", Money::format($net)) }})</td><td class="num">{{ Money::format($gross - $net) }}</td></tr>
     @endforeach
 </table>
 
