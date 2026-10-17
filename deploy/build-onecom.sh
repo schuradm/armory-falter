@@ -159,7 +159,7 @@ Require all granted
 EOF
 
 # Plausibilitätsprüfungen
-for f in .htaccess public/.htaccess public/index.php public/install.php .env.onecom.example vendor/autoload.php artisan; do
+for f in .htaccess public/.htaccess public/index.php public/install.php .env.onecom.example vendor/autoload.php artisan resources/demo/products/glock-17-gen5-fs.webp; do
     [ -e "$STAGE/$f" ] || { echo "Fehlt im Paket: $f" >&2; exit 1; }
 done
 if find "$STAGE" -path "$STAGE/vendor" -prune -o \( -name '.env' -o -name '.deploy.env' \) -print | grep -q .; then

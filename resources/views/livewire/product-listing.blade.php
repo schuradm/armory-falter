@@ -95,8 +95,8 @@
 
         <div wire:loading.class="opacity-50" class="grid grid-cols-1 gap-5 transition sm:grid-cols-2 xl:grid-cols-3">
             @forelse ($products as $product)
-                {{-- Erste Reihe sofort laden (LCP), Rest lazy --}}
-                <x-product-card :product="$product" :priority="$loop->index < 3 ? ($loop->first ? 'high' : 'eager') : false" wire:key="p-{{ $product->id }}"/>
+                {{-- Erste Reihe (Desktop: 3 Karten) sofort und mit hoher Priorität laden – das LCP-Bild kann jede der drei sein; Rest lazy --}}
+                <x-product-card :product="$product" :priority="$loop->index < 3 ? 'high' : false" wire:key="p-{{ $product->id }}"/>
             @empty
                 <div class="card col-span-full p-10 text-center">
                     <x-icon name="search" class="mx-auto size-10 text-muted"/>

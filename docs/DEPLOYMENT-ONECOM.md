@@ -145,6 +145,7 @@ Passwörter mit Sonderzeichen wie `#`, Leerzeichen oder `$` müssen in Anführun
    - Tragen Sie den **INSTALL_TOKEN** aus der `.env` ein.
    - Tippen Sie zur Bestätigung **INSTALLIEREN** ein.
    - Setzen Sie Haken bei **Migrationen**, **Grunddaten (Seeder)** (nur bei der ersten Installation!) und **Produktions-Caches**.
+   - Die Grunddaten enthalten auch die Demo-Produktbilder (Quelle `resources/demo/products`, sie werden nach `storage/app/public/products/demo` kopiert und als WebP-Varianten erzeugt). Ist die Datenbank schon eingerichtet und fehlen nur die Bilder, setzen Sie stattdessen den Haken bei **Nur Demo-Produktbilder einspielen** (entspricht `php artisan demo:images`, beliebig oft wiederholbar). Voraussetzung: PHP-Erweiterung GD mit WebP-Unterstützung.
    - Lassen Sie den Haken bei **Symlink** weg. Auf One.com ist er nicht nötig, weil die `.htaccess` hochgeladene Bilder direkt ausliefert.
 3. Klicken Sie auf **Jetzt ausführen**. Das dauert etwa 10 bis 60 Sekunden.
 4. Am Ende sollte überall ein grüner Haken stehen.

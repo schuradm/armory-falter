@@ -7,7 +7,7 @@
  * https://<domain>/install.php erreichbar. Er führt die Schritte aus, für die
  * man sonst eine Kommandozeile bräuchte:
  *   APP_KEY erzeugen (nur wenn leer), Caches leeren, migrate --force,
- *   optional db:seed, optional storage:link, Caches für Produktion aufbauen.
+ *   optional db:seed, optional demo:images, optional storage:link, Caches für Produktion aufbauen.
  *
  * Sicherheit:
  *   - Läuft nur, wenn in .env ein INSTALL_TOKEN mit mindestens 32 Zeichen steht.
@@ -255,6 +255,9 @@ if (! empty($_POST['migrate'])) {
 }
 if (! empty($_POST['seed'])) {
     $allOk = $run('Grunddaten (Seeder)', 'db:seed', ['--force' => true]) && $allOk;
+}
+if (! empty($_POST['demo']) && empty($_POST['seed'])) {
+    $allOk = $run('Demo-Produktbilder (demo:images)', 'demo:images') && $allOk;
 }
 if (! empty($_POST['link'])) {
     if (! function_exists('symlink')) {

@@ -4,7 +4,7 @@
     $cls = $size === 'lg' ? 'text-3xl' : 'text-lg';
 @endphp
 <div {{ $attributes->merge(['class' => 'flex flex-wrap items-baseline gap-x-3 gap-y-1']) }}>
-    <span class="font-display font-bold {{ $cls }} {{ $special ? 'text-accent' : '' }}">{{ \App\Support\Money::format($product->currentPrice()) }}</span>
+    <span class="font-display font-bold whitespace-nowrap {{ $cls }} {{ $special ? 'text-accent' : '' }}">{{ \App\Support\Money::format($product->currentPrice()) }}</span>
     @if ($special)
         {{-- § 11 PAngV: Referenz ist der niedrigste Preis der letzten 30 Tage --}}
         <span class="text-sm text-muted line-through">{{ \App\Support\Money::format($product->referencePrice()) }}</span>
