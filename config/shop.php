@@ -11,14 +11,14 @@ return [
         'phone' => env('SHOP_COMPANY_PHONE', '+49 151 29107670'),
         'email' => env('SHOP_COMPANY_EMAIL', 'info@armory-falter.de'),
         'web' => env('SHOP_COMPANY_WEB', 'www.armory-falter.de'),
-        'vat_id' => env('SHOP_COMPANY_VAT_ID', 'DE…'),            // TODO: echte USt-IdNr.
+        'vat_id' => env('SHOP_COMPANY_VAT_ID', 'DE329508909'),
         'tax_number' => env('SHOP_COMPANY_TAX_NUMBER'),
         'weapon_license_authority' => env('SHOP_WEAPON_AUTHORITY', 'Landratsamt Esslingen'), // TODO bestätigen
         'bank' => [
-            'holder' => env('SHOP_BANK_HOLDER', 'Armory Falter'),
-            'iban' => env('SHOP_BANK_IBAN', 'DE00 0000 0000 0000 0000 00'),
-            'bic' => env('SHOP_BANK_BIC', ''),
-            'name' => env('SHOP_BANK_NAME', ''),
+            'holder' => env('SHOP_BANK_HOLDER', 'Mark Falter'),
+            'iban' => env('SHOP_BANK_IBAN', 'DE04 6129 0120 0573 6560 10'),
+            'bic' => env('SHOP_BANK_BIC', 'GENODES1NUE'),
+            'name' => env('SHOP_BANK_NAME', 'Volksbank Mittlerer Neckar eG'),
         ],
         'geo' => ['lat' => 48.6497, 'lng' => 9.2953],
         // Öffnungszeiten (für Terminbuchung und Schema.org). TODO: mit echten Zeiten abgleichen.

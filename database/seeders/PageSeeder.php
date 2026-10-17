@@ -26,7 +26,7 @@ class PageSeeder extends Seeder
 <h2>Kontakt</h2>
 <p>{$contact}</p>
 <h2>Umsatzsteuer</h2>
-<p>Umsatzsteuer-Identifikationsnummer gemäß § 27a UStG: {$todo('USt-IdNr. eintragen')}</p>
+<p>Umsatzsteuer-Identifikationsnummer gemäß § 27a UStG: {$c['vat_id']}</p>
 <h2>Waffenrechtliche Erlaubnis</h2>
 <p>Waffenhandelserlaubnis nach § 21 WaffG, erteilt durch: {$todo('Behörde, Aktenzeichen und Datum der Erlaubnis')}</p>
 <p>Zuständige Aufsichtsbehörde: {$todo('z. B. Landratsamt Esslingen, Waffenbehörde, Anschrift')}</p>
