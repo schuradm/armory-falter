@@ -30,6 +30,9 @@ services:
   # Ersetzt den Cronjob: Warteschlange, Newsletter-Strecke, Aufräumen
   scheduler:
     <<: *app
+    # Nur der App-Dienst baut das Image; bauen beide gleichzeitig, scheitert das Taggen („already exists“)
+    build: !reset null
+    pull_policy: never
     environment:
       <<: *app-env
       ARMORY_ROLE: scheduler

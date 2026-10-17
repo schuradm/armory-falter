@@ -1,0 +1,50 @@
+# Ergänzung nur für den HOME-SERVER (Hosting-Plattform mit Traefik und Control Center):
+#   docker compose -f docker-compose.yml -f docker-compose.homeserver.yml up -d --build
+# - Shop im LAN unter http://192.168.178.30:8095, Testpostfach unter :8025
+# - Container im Netz hosting_proxy, Kachel „Armory Falter (Test)“ und Live-Freigabe per Control Center
+# - eigenes Subnetz, weil die Docker-Standardpools auf dem Server belegt sind
+services:
+  app:
+    container_name: armory-falter-app
+    ports: !override
+      - "192.168.178.30:8095:80"
+      - "127.0.0.1:8095:80"
+    environment:
+      APP_URL: https://next.karlmartinschur.de
+      APP_NOINDEX: "true"
+    networks: [default, hosting_proxy]
+    labels:
+      traefik.enable: "false"
+      traefik.docker.network: hosting_proxy
+      hosting.publishable: "true"
+      hosting.portal.enabled: "true"
+      hosting.portal.id: armory-falter
+      hosting.portal.title: Armory Falter (Test)
+      hosting.portal.short: AF
+      hosting.portal.description: Testumgebung Webshop Armory Falter (Laravel, PHP 8.4)
+      hosting.portal.mode: switch
+      hosting.portal.target: http://armory-falter-app:80
+      hosting.portal.port: "80"
+      hosting.portal.order: "600"
+
+  scheduler:
+    container_name: armory-falter-scheduler
+    environment:
+      APP_URL: https://next.karlmartinschur.de
+
+  db:
+    container_name: armory-falter-db
+
+  mailpit:
+    container_name: armory-falter-mailpit
+    ports: !override
+      - "192.168.178.30:8025:8025"
+
+networks:
+  default:
+    ipam:
+      config:
+        - subnet: 10.250.95.0/24
+  hosting_proxy:
+    external: true
+    name: hosting_proxy
