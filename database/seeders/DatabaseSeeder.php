@@ -29,9 +29,11 @@ class DatabaseSeeder extends Seeder
             PageSeeder::class,
             FaqSeeder::class,
             ProductSeeder::class,
+            GiftVoucherProductSeeder::class,
             DemoProductImageSeeder::class,
             MarketingSeeder::class,
             AdminUserSeeder::class,
+            ReviewVoucherDemoSeeder::class,
         ]);
 
         // Seiten-, Navigations- und Einstellungs-Cache verwerfen, damit die neuen Daten sofort sichtbar sind
