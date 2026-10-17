@@ -2,16 +2,13 @@
 
 namespace App\Providers;
 
-use App\Events\OrderPlaced;
 use App\Http\Middleware\PageCache;
-use App\Listeners\SendOrderConfirmation;
 use App\Support\Seo;
 use App\View\Composers\NavigationComposer;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\View;
@@ -56,7 +53,8 @@ class AppServiceProvider extends ServiceProvider
 
         View::composer(['partials.header', 'partials.mobile-nav', 'partials.footer'], NavigationComposer::class);
 
-        Event::listen(OrderPlaced::class, SendOrderConfirmation::class);
+        // OrderPlaced → SendOrderConfirmation registriert Laravel per Event-Discovery (app/Listeners).
+        // Kein zusätzliches Event::listen, sonst gehen Bestellbestätigung und Staff-Mail doppelt raus.
 
         // Ganzseiten-Cache leeren, sobald sich öffentlich sichtbare Inhalte ändern
         foreach ([\App\Models\Product::class, \App\Models\ProductVariant::class, \App\Models\ProductMedia::class, \App\Models\Category::class,

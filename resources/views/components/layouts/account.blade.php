@@ -26,7 +26,7 @@
                        @if($active === $key) aria-current="page" @endif><x-icon :name="$icon" class="size-4"/>{{ $label }}</a>
                 @endforeach
                 @if (auth()->user()->is_staff)
-                    <a href="{{ url('/admin') }}" class="flex shrink-0 items-center gap-2 rounded-md px-3 py-2 text-sm text-accent"><x-icon name="wrench" class="size-4"/>Admin-Bereich</a>
+                    <a href="{{ url(filament()->getPanel('admin')->getPath()) }}" class="flex shrink-0 items-center gap-2 rounded-md px-3 py-2 text-sm text-accent"><x-icon name="wrench" class="size-4"/>Admin-Bereich</a>
                 @endif
                 <form method="POST" action="{{ route('logout') }}">@csrf<button class="flex w-full shrink-0 items-center gap-2 rounded-md px-3 py-2 text-sm text-muted hover:text-fg"><x-icon name="logout" class="size-4"/>Abmelden</button></form>
             </nav>

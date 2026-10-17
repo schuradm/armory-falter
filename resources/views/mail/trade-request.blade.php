@@ -9,7 +9,7 @@
 
 Das Beratungs-PDF mit allen Fotos hängt an.
 
-<x-mail::button :url="url('/admin/trade-requests/'.$r->id)">Im Admin öffnen</x-mail::button>
+<x-mail::button :url="\App\Filament\Resources\TradeRequestResource::getUrl('edit', ['record' => $r])">Im Admin öffnen</x-mail::button>
 @else
 # Vielen Dank für Ihre Anfrage
 

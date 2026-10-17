@@ -1,4 +1,4 @@
-{{-- Rechnung (dompdf). Variablen: $order (mit items, user), $number, $company. Beträge in Cent. --}}
+{{-- Rechnung (dompdf). Variablen: $order (mit items, user, payments), $number, $company. Beträge in Cent. --}}
 @php
     use App\Support\Money;
     $logoFile = public_path('images/brand/armory-falter-logo-original.jpg');
@@ -135,7 +135,9 @@
     @if ($shippingAddr)
         <p><strong>Lieferanschrift:</strong> {{ implode(', ', $addr($shippingAddr)) }}</p>
     @endif
-    @if (($order->payment_method_code?->value ?? null) === 'prepayment')
+    @if ($order->payments->where('status', 'captured')->sum('amount') >= $order->total_gross)
+        <p>Der Rechnungsbetrag wurde bereits beglichen. Vielen Dank.</p>
+    @elseif (($order->payment_method_code?->value ?? null) === 'prepayment')
         <p>Bitte überweisen Sie den Gesamtbetrag unter Angabe der Rechnungsnummer <strong>{{ $number }}</strong> auf das unten genannte Konto.</p>
     @endif
     <p class="muted">Das Lieferdatum entspricht dem Rechnungsdatum, sofern nicht anders angegeben. Bei erlaubnispflichtigen Waffen und Munition erfolgt die Überlassung nach Prüfung der Erwerbsberechtigung gemäß § 34 WaffG.</p>

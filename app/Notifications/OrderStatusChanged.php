@@ -14,7 +14,13 @@ class OrderStatusChanged extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    public function __construct(public Order $order, public ?string $comment = null) {}
+    /** Status zum Zeitpunkt des Wechsels: die Queue lädt die Bestellung frisch, sie kann inzwischen weiter sein. */
+    public OrderStatus $status;
+
+    public function __construct(public Order $order, public ?string $comment = null)
+    {
+        $this->status = $order->status;
+    }
 
     public function via(object $notifiable): array
     {
@@ -25,17 +31,17 @@ class OrderStatusChanged extends Notification implements ShouldQueue
     {
         $o = $this->order;
         $mail = (new MailMessage)
-            ->subject("Bestellung {$o->order_number}: {$o->status->label()}")
+            ->subject("Bestellung {$o->order_number}: {$this->status->label()}")
             ->greeting("Hallo {$notifiable->first_name},")
-            ->line("der Status Ihrer Bestellung {$o->order_number} hat sich geändert: **{$o->status->label()}**.");
+            ->line("der Status Ihrer Bestellung {$o->order_number} hat sich geändert: **{$this->status->label()}**.");
 
         if ($this->comment) {
             $mail->line($this->comment);
         }
-        if ($o->status === OrderStatus::PendingPayment && $o->payment_method_code === PaymentMethod::Prepayment) {
+        if ($this->status === OrderStatus::PendingPayment && $o->payment_method_code === PaymentMethod::Prepayment) {
             $bank = config('shop.company.bank');
             $mail->line('Bitte überweisen Sie jetzt '.\App\Support\Money::format($o->total_gross).' an:')
-                ->line("{$bank['holder']} · IBAN {$bank['iban']} · BIC {$bank['bic']}")
+                ->line("{$bank['holder']} · IBAN {$bank['iban']}".(filled($bank['bic'] ?? null) ? " · BIC {$bank['bic']}" : ''))
                 ->line("Verwendungszweck: {$o->order_number}");
         }
 

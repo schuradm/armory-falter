@@ -18,7 +18,7 @@ class InvoiceService
             return $existing;
         }
         $number = $this->numbers->next('invoice', 'RE');
-        $order->load('items', 'user');
+        $order->load('items', 'user', 'payments');
         $pdf = Pdf::loadView('pdf.invoice', ['order' => $order, 'number' => $number, 'company' => config('shop.company')])->output();
         $path = "invoices/{$order->placed_at->year}/{$number}.pdf";
         Storage::disk('local')->put($path, $pdf);
