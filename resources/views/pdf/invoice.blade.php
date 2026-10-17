@@ -7,16 +7,12 @@
     $shippingAddr = $order->shipping_address;
     $shippingName = \App\Models\ShippingMethod::where('code', $order->shipping_method_code)->value('name') ?? $order->shipping_method_code;
     $payment = $order->payment_method_code instanceof \App\Enums\PaymentMethod ? $order->payment_method_code->label() : (string) $order->payment_method_code;
-    // USt-Ausweis je Steuersatz (Brutto → enthaltene Steuer); Versand mit Regelsteuersatz
-    $byRate = [];
-    foreach ($order->items as $item) {
-        $rate = (string) (float) $item->tax_rate;
-        $byRate[$rate] = ($byRate[$rate] ?? 0) + $item->line_total_gross;
-    }
-    if ($order->shipping_gross > 0) {
-        $byRate['19'] = ($byRate['19'] ?? 0) + $order->shipping_gross;
-    }
-    ksort($byRate);
+    // USt-Ausweis je Steuersatz nach anteiligem Rabatt (Order::vatBreakdown), Versand mit Regelsteuersatz
+    $byRate = $order->vatBreakdown();
+    // Eingelöste Geschenkgutscheine sind Zahlungen (Mehrzweck-Gutscheine): nach dem Gesamtbetrag abziehen
+    $voucherPayments = $order->payments->where('provider', 'gift_voucher')->where('status', 'captured');
+    $hasVoucherItems = $order->items->contains(fn ($i) => $i->isGiftVoucher());
+    $paid = $order->payments->where('status', 'captured')->sum('amount');
     $issued = now();
     $addr = function (array $a): array {
         return array_values(array_filter([
@@ -102,7 +98,7 @@
                 <td>{{ $i + 1 }}</td>
                 <td>{{ $item->name }}<br><span class="sku">Art.-Nr. {{ $item->sku }}</span></td>
                 <td class="num">{{ $item->quantity }}</td>
-                <td class="num">{{ rtrim(rtrim(number_format((float) $item->tax_rate, 2, ',', ''), '0'), ',') }} %</td>
+                <td class="num">{{ $item->isGiftVoucher() ? '—' : rtrim(rtrim(number_format((float) $item->tax_rate, 2, ',', ''), '0'), ',').' %' }}</td>
                 <td class="num">{{ Money::format($item->unit_price_gross) }}</td>
                 <td class="num">{{ Money::format($item->line_total_gross) }}</td>
             </tr>
@@ -122,13 +118,18 @@
     <tr><td>Zwischensumme</td><td class="num">{{ Money::format($order->subtotal_gross) }}</td></tr>
     <tr><td>Versand</td><td class="num">{{ Money::format($order->shipping_gross) }}</td></tr>
     @if ($order->discount_gross > 0)
-        <tr><td>Rabatt</td><td class="num">−{{ Money::format($order->discount_gross) }}</td></tr>
+        <tr><td>Rabatt{{ $order->discount_code ? ' ('.$order->discount_code.')' : '' }}</td><td class="num">−{{ Money::format($order->discount_gross) }}</td></tr>
     @endif
     <tr class="grand"><td>Gesamtbetrag</td><td class="num">{{ Money::format($order->total_gross) }}</td></tr>
-    @foreach ($byRate as $rate => $gross)
-        @php($net = (int) round($gross / (1 + ((float) $rate) / 100)))
-        <tr class="muted"><td>enthaltene USt. {{ str_replace('.', ',', $rate) }} % (netto {{ str_replace(" ", "\u{00A0}", Money::format($net)) }})</td><td class="num">{{ Money::format($gross - $net) }}</td></tr>
+    @foreach ($byRate as $rate => $v)
+        <tr class="muted"><td>enthaltene USt. {{ str_replace('.', ',', $rate) }} % (netto {{ str_replace(" ", "\u{00A0}", Money::format($v['net'])) }})</td><td class="num">{{ Money::format($v['tax']) }}</td></tr>
     @endforeach
+    @foreach ($voucherPayments as $vp)
+        <tr><td>abzgl. Geschenkgutschein …{{ substr(\Illuminate\Support\Str::before($vp->provider_reference, '-'), -4) }}</td><td class="num">−{{ Money::format($vp->amount) }}</td></tr>
+    @endforeach
+    @if ($voucherPayments->isNotEmpty())
+        <tr class="grand"><td>Zahlbetrag</td><td class="num">{{ Money::format($order->amountDue()) }}</td></tr>
+    @endif
 </table>
 
 <div class="note">
@@ -136,10 +137,19 @@
     @if ($shippingAddr)
         <p><strong>Lieferanschrift:</strong> {{ implode(', ', $addr($shippingAddr)) }}</p>
     @endif
-    @if ($order->payments->where('status', 'captured')->sum('amount') >= $order->total_gross)
+    @if ($paid >= $order->total_gross)
         <p>Der Rechnungsbetrag wurde bereits beglichen. Vielen Dank.</p>
     @elseif (($order->payment_method_code?->value ?? null) === 'prepayment')
-        <p>Bitte überweisen Sie den Gesamtbetrag unter Angabe der Rechnungsnummer <strong>{{ $number }}</strong> auf das unten genannte Konto.</p>
+        <p>Bitte überweisen Sie {{ $voucherPayments->isNotEmpty() ? 'den Zahlbetrag' : 'den Gesamtbetrag' }} unter Angabe der Rechnungsnummer <strong>{{ $number }}</strong> auf das unten genannte Konto.</p>
+    @endif
+    @if ($order->discount_gross > 0)
+        <p class="muted">Der Rabatt ist anteilig auf die rabattierten Positionen verteilt und mindert das Entgelt je Steuersatz (§ 17 UStG).</p>
+    @endif
+    @if ($hasVoucherItems)
+        <p class="muted">Geschenkgutscheine sind Mehrzweck-Gutscheine (§ 3 Abs. 15 UStG). Beim Verkauf fällt keine Umsatzsteuer an; sie wird bei Einlösung auf die dann gelieferten Waren berechnet und ausgewiesen.</p>
+    @endif
+    @if ($voucherPayments->isNotEmpty())
+        <p class="muted">Der eingelöste Geschenkgutschein (Mehrzweck-Gutschein) gilt als Zahlung und mindert die ausgewiesene Umsatzsteuer nicht.</p>
     @endif
     <p class="muted">Das Lieferdatum entspricht dem Rechnungsdatum, sofern nicht anders angegeben. Bei erlaubnispflichtigen Waffen und Munition erfolgt die Überlassung nach Prüfung der Erwerbsberechtigung gemäß § 34 WaffG.</p>
     <p>Vielen Dank für Ihren Einkauf bei {{ $company['name'] }}.</p>

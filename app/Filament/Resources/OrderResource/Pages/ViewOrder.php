@@ -27,7 +27,7 @@ class ViewOrder extends ViewRecord
 
     private const RELATIONS = [
         'user', 'items', 'payments', 'shipments.method', 'invoices', 'shippingMethod', 'statusHistory',
-        'complianceChecks.entitlement.caliber',
+        'complianceChecks.entitlement.caliber', 'issuedGiftVouchers',
     ];
 
     protected function resolveRecord(int|string $key): Order
@@ -139,7 +139,7 @@ class ViewOrder extends ViewRecord
                 ->visible(fn (Order $record) => $record->status === OrderStatus::PendingPayment
                     && ! in_array($record->compliance_status, [ComplianceStatus::Pending, ComplianceStatus::Rejected], true))
                 ->modalHeading('Zahlungseingang buchen')
-                ->modalDescription(fn (Order $record) => 'Betrag: '.\App\Support\Money::format($record->total_gross).'. Die Rechnung wird automatisch erstellt.')
+                ->modalDescription(fn (Order $record) => 'Betrag: '.\App\Support\Money::format($record->amountDue()).'. Die Rechnung wird automatisch erstellt.')
                 ->form([
                     Forms\Components\TextInput::make('reference')->label('Referenz (z. B. Kontoauszug, Verwendungszweck)')
                         ->default('manuell')->required()->maxLength(60),
@@ -165,6 +165,16 @@ class ViewOrder extends ViewRecord
                 ->action(fn (array $data, Order $record) => $this->run(
                     fn () => app(OrderService::class)->ship($record, auth()->user(), $data['carrier'] ?? 'pickup', $data['tracking_number'] ?? null),
                     $record->shippingMethod?->isPickup() ? 'Als abholbereit gemeldet' : 'Versand erfasst, Kunde informiert',
+                )),
+
+            Actions\Action::make('markDelivered')->label(fn (Order $record) => $record->status === OrderStatus::ReadyForPickup ? 'Übergeben' : 'Zugestellt')
+                ->icon('heroicon-o-check-badge')->color('success')
+                ->visible(fn (Order $record) => in_array($record->status, [OrderStatus::Shipped, OrderStatus::ReadyForPickup], true))
+                ->requiresConfirmation()
+                ->modalDescription('Ab jetzt kann der Kunde die Artikel bewerten. Die Bewertungseinladung folgt nach der eingestellten Zahl von Tagen, sofern er nicht widersprochen hat.')
+                ->action(fn (Order $record) => $this->run(
+                    fn () => app(OrderService::class)->markDelivered($record, auth()->user()),
+                    'Als zugestellt markiert',
                 )),
 
             Actions\Action::make('invoice')->label('Rechnung (PDF)')->icon('heroicon-o-document-arrow-down')->color('gray')

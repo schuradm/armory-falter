@@ -8,7 +8,7 @@
         <a href="{{ route('payment.start', $order) }}" class="btn-primary mt-4">Jetzt bezahlen</a>
     @elseif ($order->status === \App\Enums\OrderStatus::PendingPayment && $order->payment_method_code === \App\Enums\PaymentMethod::Prepayment)
         @php($bank = config('shop.company.bank'))
-        <div class="card mt-4 p-4 text-sm">Bitte überweisen Sie <strong>{{ \App\Support\Money::format($order->total_gross) }}</strong> an {{ $bank['holder'] }}, IBAN <span class="font-mono">{{ $bank['iban'] }}</span>, Verwendungszweck <strong>{{ $order->order_number }}</strong>.</div>
+        <div class="card mt-4 p-4 text-sm">Bitte überweisen Sie <strong>{{ \App\Support\Money::format($order->amountDue()) }}</strong> an {{ $bank['holder'] }}, IBAN <span class="font-mono">{{ $bank['iban'] }}</span>, Verwendungszweck <strong>{{ $order->order_number }}</strong>.</div>
     @endif
 
     <div class="mt-6 grid gap-6 md:grid-cols-2">
@@ -33,7 +33,11 @@
         <table class="w-full text-sm">
             <thead class="border-b border-line text-left text-xs text-muted uppercase"><tr><th class="p-4">Artikel</th><th class="p-4">Menge</th><th class="p-4 text-right">Summe</th></tr></thead>
             <tbody class="divide-y divide-line">@foreach ($order->items as $i)<tr><td class="p-4">{{ $i->name }}<br><span class="text-xs text-muted">{{ $i->sku }}</span></td><td class="p-4">{{ $i->quantity }}</td><td class="p-4 text-right">{{ \App\Support\Money::format($i->line_total_gross) }}</td></tr>@endforeach</tbody>
-            <tfoot class="border-t border-line"><tr><td class="p-4" colspan="2">Versand</td><td class="p-4 text-right">{{ \App\Support\Money::format($order->shipping_gross) }}</td></tr><tr class="font-display font-bold"><td class="p-4" colspan="2">Gesamt inkl. MwSt.</td><td class="p-4 text-right">{{ \App\Support\Money::format($order->total_gross) }}</td></tr></tfoot>
+            <tfoot class="border-t border-line">
+                @if ($order->discount_gross > 0)<tr><td class="p-4" colspan="2">Rabatt{{ $order->discount_code ? ' ('.$order->discount_code.')' : '' }}</td><td class="p-4 text-right">−{{ \App\Support\Money::format($order->discount_gross) }}</td></tr>@endif
+                <tr><td class="p-4" colspan="2">Versand</td><td class="p-4 text-right">{{ \App\Support\Money::format($order->shipping_gross) }}</td></tr><tr class="font-display font-bold"><td class="p-4" colspan="2">Gesamt inkl. MwSt.</td><td class="p-4 text-right">{{ \App\Support\Money::format($order->total_gross) }}</td></tr>
+                @if ($order->gift_voucher_gross > 0)<tr><td class="p-4" colspan="2">Geschenkgutschein eingelöst</td><td class="p-4 text-right">−{{ \App\Support\Money::format($order->gift_voucher_gross) }}</td></tr><tr class="font-bold"><td class="p-4" colspan="2">Zu zahlen</td><td class="p-4 text-right">{{ \App\Support\Money::format($order->amountDue()) }}</td></tr>@endif
+            </tfoot>
         </table>
     </section>
     @if ($order->invoices->isNotEmpty())

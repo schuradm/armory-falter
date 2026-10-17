@@ -10,6 +10,38 @@
         </div>
     @endif
 
+    @if ($product->isGiftVoucher())
+        <fieldset>
+            <legend class="label">Betrag</legend>
+            <div class="grid grid-cols-3 gap-2 sm:grid-cols-5">
+                @foreach (config('shop.gift_vouchers.amounts') as $cents)
+                    <label class="cursor-pointer rounded-md border px-2 py-2.5 text-center font-display font-bold has-[:checked]:border-accent has-[:checked]:text-accent has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-accent border-line">
+                        <input type="radio" wire:model.live="voucherAmount" value="{{ intdiv($cents, 100) }}" class="sr-only">{{ intdiv($cents, 100) }} €
+                    </label>
+                @endforeach
+                <label class="cursor-pointer rounded-md border px-2 py-2.5 text-center text-sm has-[:checked]:border-accent has-[:checked]:text-accent has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-accent border-line">
+                    <input type="radio" wire:model.live="voucherAmount" value="custom" class="sr-only">Anderer
+                </label>
+            </div>
+            @if ($voucherAmount === 'custom')
+                <label for="custom-amount" class="label mt-3">Wunschbetrag in Euro ({{ intdiv(config('shop.gift_vouchers.min'), 100) }}–{{ intdiv(config('shop.gift_vouchers.max'), 100) }} €)</label>
+                <input id="custom-amount" type="text" inputmode="numeric" wire:model="customAmount" class="input w-40" placeholder="z. B. 75">
+            @endif
+            @error('voucherAmount')<p class="mt-1 text-xs text-red-400">{{ $message }}</p>@enderror
+        </fieldset>
+        <label class="flex items-center gap-2 text-sm"><input type="checkbox" wire:model.live="forSomeoneElse" class="rounded border-line bg-surface-2 text-accent"> Direkt an den Beschenkten senden</label>
+        @if ($forSomeoneElse)
+            <div class="grid gap-3 sm:grid-cols-2">
+                <div><label for="vr-name" class="label">Name des Beschenkten</label><input id="vr-name" type="text" wire:model="recipientName" maxlength="100" class="input"></div>
+                <div><label for="vr-mail" class="label">E-Mail des Beschenkten</label><input id="vr-mail" type="email" wire:model="recipientEmail" class="input">@error('recipientEmail')<p class="mt-1 text-xs text-red-400">{{ $message }}</p>@enderror</div>
+                <div class="sm:col-span-2"><label for="vr-msg" class="label">Persönliche Nachricht (optional)</label><textarea id="vr-msg" wire:model="message" rows="2" maxlength="300" class="input"></textarea></div>
+            </div>
+            <p class="text-xs text-muted">Den Gutschein senden wir nach Zahlungseingang als PDF an diese Adresse, Sie erhalten eine Kopie.</p>
+        @else
+            <p class="text-xs text-muted">Nach Zahlungseingang erhalten Sie den Gutschein als PDF per E-Mail, zum Ausdrucken oder Weiterleiten. Gültig 3 Jahre zum Jahresende, Teileinlösung möglich.</p>
+        @endif
+    @endif
+
     @if ($product->isPurchasable())
         <div class="flex gap-3">
             @unless ($product->is_unique_item)

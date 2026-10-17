@@ -45,8 +45,15 @@
             @elseif ($step === 3)
                 <section class="card p-6">
                     <h2 class="font-display text-xl font-bold">Zahlungsart</h2>
-                    @if (count($payments) < count(\App\Enums\PaymentMethod::cases()))
+                    @if ($covered)
+                        <p class="mt-3 flex items-start gap-2 rounded-md border border-emerald-500/40 p-4 text-sm"><x-icon name="check" class="size-5 shrink-0 text-emerald-400"/>
+                            Der Gesamtbetrag ist vollständig durch Ihre Geschenkgutscheine gedeckt. Eine weitere Zahlungsart ist nicht nötig.</p>
+                    @else
+                    @if (count($payments) < count(\App\Enums\PaymentMethod::selectable()))
                         <p class="mt-1 text-sm text-muted">Für Waffen und Munition sind nur bestimmte Zahlungsarten möglich, weil viele Zahlungsanbieter diese Waren ausschließen.</p>
+                    @endif
+                    @if ($totals->giftVoucherTotal() > 0)
+                        <p class="mt-1 text-sm text-muted">Restbetrag nach Gutschein: <span class="text-fg">{{ \App\Support\Money::format($totals->amountDue()) }}</span></p>
                     @endif
                     <div class="mt-5 space-y-3">
                         @foreach ($payments as $pm)
@@ -57,6 +64,7 @@
                         @endforeach
                     </div>
                     @error('paymentMethod')<p class="mt-2 text-xs text-red-400">{{ $message }}</p>@enderror
+                    @endif
                     <div class="mt-6 flex gap-3"><button type="button" wire:click="toStep(2)" class="btn-outline">Zurück</button><button type="button" wire:click="toStep(4)" class="btn-primary">Weiter zur Übersicht</button></div>
                 </section>
             @else
@@ -65,7 +73,7 @@
                     <div class="grid gap-4 text-sm sm:grid-cols-3">
                         <div><p class="label">Rechnungsadresse</p><p>{{ $billing['first_name'] }} {{ $billing['last_name'] }}<br>{{ $billing['street'] }} {{ $billing['house_number'] }}<br>{{ $billing['postal_code'] }} {{ $billing['city'] }}</p><button type="button" class="mt-1 text-xs text-accent" wire:click="toStep(1)">Ändern</button></div>
                         <div><p class="label">Versand</p><p>{{ $selected?->name }}</p><button type="button" class="mt-1 text-xs text-accent" wire:click="toStep(2)">Ändern</button></div>
-                        <div><p class="label">Zahlung</p><p>{{ \App\Enums\PaymentMethod::tryFrom((string) $paymentMethod)?->label() }}</p><button type="button" class="mt-1 text-xs text-accent" wire:click="toStep(3)">Ändern</button></div>
+                        <div><p class="label">Zahlung</p><p>{{ $covered ? \App\Enums\PaymentMethod::GiftVoucher->label() : \App\Enums\PaymentMethod::tryFrom((string) $paymentMethod)?->label() }}</p><button type="button" class="mt-1 text-xs text-accent" wire:click="toStep(3)">Ändern</button></div>
                     </div>
                     <div><label for="note" class="label">Anmerkung (optional)</label><textarea id="note" wire:model="note" rows="2" maxlength="1000" class="input"></textarea></div>
 
@@ -86,6 +94,14 @@
                         <span>Ich habe die <a href="{{ route('page.show', 'agb') }}" target="_blank" class="text-accent underline">AGB</a> und die <a href="{{ route('page.show', 'widerruf') }}" target="_blank" class="text-accent underline">Widerrufsbelehrung</a> gelesen und akzeptiere sie. Hinweise zum Datenschutz finden Sie in der <a href="{{ route('page.show', 'datenschutz') }}" target="_blank" class="text-accent underline">Datenschutzerklärung</a>.</span></label>
                     @error('terms')<p class="text-xs text-red-400">{{ $message }}</p>@enderror
 
+                    {{-- § 7 Abs. 3 UWG: Hinweis auf das Widerspruchsrecht schon bei Erhebung der Adresse, Widerspruch hier direkt möglich --}}
+                    @unless ($evaluation->digitalOnly)
+                        <div class="rounded-md bg-surface-2 p-3 text-xs text-muted">
+                            <p>Nach der Zustellung laden wir Sie einmalig per E-Mail ein, die gekauften Artikel zu bewerten. Dieser Verwendung Ihrer E-Mail-Adresse können Sie jederzeit widersprechen (Kundenkonto → Datenschutz oder Link in der E-Mail), ohne dass andere als die Übermittlungskosten nach den Basistarifen entstehen.</p>
+                            <label class="mt-2 flex items-center gap-2 text-fg"><input type="checkbox" wire:model="noReviewInvite" class="rounded border-line bg-surface-2 text-accent"> Keine Bewertungseinladung senden</label>
+                        </div>
+                    @endunless
+
                     <div class="flex gap-3"><button type="button" wire:click="toStep(3)" class="btn-outline">Zurück</button>
                         <button type="button" wire:click="placeOrder" wire:loading.attr="disabled" class="btn-primary flex-1">
                             {{ $evaluation->requiresReview ? 'Zahlungspflichtig bestellen (nach Prüfung)' : 'Zahlungspflichtig bestellen' }}
@@ -99,15 +115,23 @@
             <h2 class="font-display text-lg font-bold">Ihre Bestellung</h2>
             <ul class="divide-y divide-line text-sm">
                 @foreach ($cart->items as $item)
-                    <li class="flex justify-between gap-3 py-2"><span>{{ $item->quantity }} × {{ $item->product->name }}</span><span class="whitespace-nowrap">{{ \App\Support\Money::format($item->lineTotal()) }}</span></li>
+                    <li class="flex justify-between gap-3 py-2"><span>{{ $item->quantity }} × {{ $item->displayName() }}</span><span class="whitespace-nowrap">{{ \App\Support\Money::format($item->lineTotal()) }}</span></li>
                 @endforeach
             </ul>
             <dl class="space-y-1 border-t border-line pt-3 text-sm">
                 <div class="flex justify-between"><dt class="text-muted">Zwischensumme</dt><dd>{{ \App\Support\Money::format($subtotal) }}</dd></div>
+                @if ($totals->discount > 0)
+                    <div class="flex justify-between text-accent"><dt>Rabatt ({{ $totals->discountCode->code }})</dt><dd>−{{ \App\Support\Money::format($totals->discount) }}</dd></div>
+                @endif
                 <div class="flex justify-between"><dt class="text-muted">Versand</dt><dd>{{ $selected ? \App\Support\Money::format($shippingCost) : '—' }}</dd></div>
-                <div class="flex justify-between border-t border-line pt-2 font-display text-lg font-bold"><dt>Gesamt</dt><dd>{{ \App\Support\Money::format($subtotal + $shippingCost) }}</dd></div>
+                <div class="flex justify-between border-t border-line pt-2 font-display text-lg font-bold"><dt>Gesamt</dt><dd>{{ \App\Support\Money::format($totals->total) }}</dd></div>
+                @if ($totals->giftVoucherTotal() > 0)
+                    <div class="flex justify-between text-accent"><dt>Geschenkgutschein</dt><dd>−{{ \App\Support\Money::format($totals->giftVoucherTotal()) }}</dd></div>
+                    <div class="flex justify-between font-display font-bold"><dt>Zu zahlen</dt><dd>{{ \App\Support\Money::format($totals->amountDue()) }}</dd></div>
+                @endif
             </dl>
-            <p class="text-xs text-muted">Alle Preise inkl. gesetzl. MwSt.</p>
+            <p class="text-xs text-muted">Alle Preise inkl. gesetzl. MwSt. (enthalten: {{ \App\Support\Money::format($totals->tax()) }})</p>
+            <div class="border-t border-line pt-3">@include('livewire.partials.voucher-codes')</div>
         </aside>
     </div>
 </div>

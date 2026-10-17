@@ -67,7 +67,7 @@ class LegalClassResource extends Resource
                 ->description('PayPal, Klarna/Sofort und Kreditkarte sind laut Anbieter-AGB nur für frei verkäufliche Ware zulässig.')
                 ->schema([
                     Forms\Components\CheckboxList::make('allowed_payment_codes')->hiddenLabel()
-                        ->options(PaymentMethod::class)->columns(2)->required()->default([]),
+                        ->options(PaymentMethod::selectableOptions())->columns(2)->required()->default([]),
                 ]),
             Forms\Components\Section::make('Hinweis im Shop')->schema([
                 Forms\Components\Textarea::make('notice_text')->hiddenLabel()->rows(3)

@@ -11,8 +11,11 @@
                 <li>Nach der Freigabe erhalten Sie die Zahlungsaufforderung per E-Mail.</li>
                 <li>Versand mit persönlicher Übergabe oder Abholung im Geschäft, gegen Vorlage Ihrer Erlaubnis im Original.</li>
             </ol>
+        @elseif ($order->payment_method_code === \App\Enums\PaymentMethod::GiftVoucher)
+            <p class="font-display text-lg font-bold">Vollständig per Geschenkgutschein bezahlt</p>
+            <p class="mt-2 text-muted">Eine weitere Zahlung ist nicht nötig. Wir bereiten Ihre Bestellung vor.</p>
         @elseif ($order->payment_method_code === \App\Enums\PaymentMethod::Prepayment)
-            <p class="font-display text-lg font-bold">Bitte überweisen Sie {{ \App\Support\Money::format($order->total_gross) }}</p>
+            <p class="font-display text-lg font-bold">Bitte überweisen Sie {{ \App\Support\Money::format($order->amountDue()) }}</p>
             <dl class="mt-3 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">
                 <dt class="text-muted">Empfänger</dt><dd>{{ $bank['holder'] }}</dd>
                 <dt class="text-muted">IBAN</dt><dd class="font-mono">{{ $bank['iban'] }}</dd>

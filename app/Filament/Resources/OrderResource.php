@@ -132,6 +132,15 @@ class OrderResource extends Resource
                             Euro::entry('total_gross', 'Gesamt (brutto)')->weight('bold')
                                 ->helperText(fn (Order $record) => 'enthält MwSt. '.\App\Support\Money::format($record->total_tax)),
                         ]),
+                        Infolists\Components\Grid::make(4)
+                            ->visible(fn (Order $record) => $record->discount_code || $record->gift_voucher_gross > 0)
+                            ->schema([
+                                Infolists\Components\TextEntry::make('discount_code')->label('Rabattcode')->placeholder('—')
+                                    ->url(fn (Order $record) => ($id = \App\Models\DiscountCode::where('code', $record->discount_code)->value('id')) ? DiscountCodeResource::getUrl('edit', ['record' => $id]) : null),
+                                Euro::entry('gift_voucher_gross', 'Per Geschenkgutschein bezahlt'),
+                                Infolists\Components\TextEntry::make('amount_due')->label('Zahlbetrag')->weight('bold')
+                                    ->getStateUsing(fn (Order $record) => \App\Support\Money::format($record->amountDue())),
+                            ]),
                         Infolists\Components\TextEntry::make('customer_note')->label('Anmerkung des Kunden')
                             ->visible(fn (Order $record) => filled($record->customer_note)),
                     ]),
@@ -224,6 +233,18 @@ class OrderResource extends Resource
                                 Infolists\Components\TextEntry::make('shipped_at')->label('Versendet')->dateTime('d.m.Y H:i')->placeholder('—'),
                             ]),
                     ]),
+                    Infolists\Components\Section::make('Gekaufte Geschenkgutscheine')
+                        ->visible(fn (Order $record) => $record->items->contains(fn ($i) => $i->isGiftVoucher()))
+                        ->schema([
+                            Infolists\Components\RepeatableEntry::make('issuedGiftVouchers')->hiddenLabel()->columns(2)
+                                ->placeholder('Wird nach Zahlungseingang erzeugt und versendet.')
+                                ->schema([
+                                    Infolists\Components\TextEntry::make('code')->label('Code')
+                                        ->formatStateUsing(fn ($record) => '…'.substr($record->code, -8))
+                                        ->url(fn ($record) => GiftVoucherResource::getUrl('view', ['record' => $record])),
+                                    Euro::entry('balance', 'Restguthaben'),
+                                ]),
+                        ]),
                     Infolists\Components\Section::make('Rechnungen')->visible(fn (Order $record) => $record->invoices->isNotEmpty())->schema([
                         Infolists\Components\RepeatableEntry::make('invoices')->hiddenLabel()->columns(2)->schema([
                             Infolists\Components\TextEntry::make('invoice_number')->label('Nummer'),

@@ -41,7 +41,7 @@ class KlarnaGateway
             'purchase_country' => 'DE',
             'purchase_currency' => 'EUR',
             'locale' => 'de-DE',
-            'order_amount' => $order->total_gross,
+            'order_amount' => $order->amountDue(),
             'order_tax_amount' => collect($lines)->sum('total_tax_amount'),
             'order_lines' => $lines,
             'merchant_reference1' => $order->order_number,
@@ -69,7 +69,7 @@ class KlarnaGateway
             'provider' => 'klarna',
             'provider_reference' => $hpp->json('session_id'),
             'status' => 'initiated',
-            'amount' => $order->total_gross,
+            'amount' => $order->amountDue(),
             'raw_response' => ['kp_session' => $kp->json('session_id'), 'category' => $sofort ? 'pay_now' : 'pay_later'],
         ]);
 
@@ -94,7 +94,7 @@ class KlarnaGateway
         }
 
         $kOrder = $this->http()->get("/ordermanagement/v1/orders/{$klarnaOrderId}")->throw()->json();
-        $ok = (int) ($kOrder['order_amount'] ?? -1) === $order->total_gross
+        $ok = (int) ($kOrder['order_amount'] ?? -1) === $order->amountDue()
             && in_array($kOrder['status'] ?? '', ['AUTHORIZED', 'PART_CAPTURED', 'CAPTURED'], true);
 
         $payment->update([
@@ -127,28 +127,32 @@ class KlarnaGateway
 
     private function orderLines(Order $order): array
     {
+        // Rabatt je Position (total_discount_amount), wie auf der Rechnung anteilig verteilt
         $lines = $order->items->map(function ($item) {
             $rate = (int) round($item->tax_rate * 100);
+            $total = $item->line_total_gross - $item->discount_gross;
 
-            return [
-                'type' => 'physical',
+            return array_filter([
+                'type' => $item->isGiftVoucher() ? 'digital' : 'physical',
                 'reference' => $item->sku,
                 'name' => mb_substr($item->name, 0, 255),
                 'quantity' => $item->quantity,
                 'unit_price' => $item->unit_price_gross,
                 'tax_rate' => $rate,
-                'total_amount' => $item->line_total_gross,
-                'total_tax_amount' => $this->tax($item->line_total_gross, $rate),
-            ];
+                'total_discount_amount' => $item->discount_gross ?: null,
+                'total_amount' => $total,
+                'total_tax_amount' => $this->tax($total, $rate),
+            ], fn ($v) => $v !== null);
         })->all();
 
         if ($order->shipping_gross > 0) {
             $lines[] = ['type' => 'shipping_fee', 'name' => 'Versand', 'quantity' => 1, 'unit_price' => $order->shipping_gross,
                 'tax_rate' => 1900, 'total_amount' => $order->shipping_gross, 'total_tax_amount' => $this->tax($order->shipping_gross, 1900)];
         }
-        if ($order->discount_gross > 0) {
-            $lines[] = ['type' => 'discount', 'name' => 'Rabatt', 'quantity' => 1, 'unit_price' => -$order->discount_gross,
-                'tax_rate' => 1900, 'total_amount' => -$order->discount_gross, 'total_tax_amount' => -$this->tax($order->discount_gross, 1900)];
+        // Eingelöste Geschenkgutscheine sind Zahlungsmittel: eigene Zeile ohne Steuer
+        if ($order->gift_voucher_gross > 0) {
+            $lines[] = ['type' => 'gift_card', 'name' => 'Geschenkgutschein', 'quantity' => 1, 'unit_price' => -$order->gift_voucher_gross,
+                'tax_rate' => 0, 'total_amount' => -$order->gift_voucher_gross, 'total_tax_amount' => 0];
         }
 
         return $lines;

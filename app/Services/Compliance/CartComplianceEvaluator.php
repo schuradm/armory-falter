@@ -37,6 +37,8 @@ class CartComplianceEvaluator
             fn (PaymentMethod $m) => $m->isEnabled(),
         ));
 
-        return new CartEvaluation($results, ShippingMode::strictest($modes), $methods, $review);
+        $digitalOnly = $cart->items->isNotEmpty() && $cart->items->every(fn ($item) => $item->product->isGiftVoucher());
+
+        return new CartEvaluation($results, ShippingMode::strictest($modes), $methods, $review, $digitalOnly);
     }
 }

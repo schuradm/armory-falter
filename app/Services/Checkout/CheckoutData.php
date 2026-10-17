@@ -15,5 +15,7 @@ final class CheckoutData
         public readonly bool $legalDeclarationAccepted,
         public readonly string $idempotencyKey,
         public readonly ?string $customerNote = null,
+        // Kunde hat der Bewertungseinladung beim Bestellen nicht widersprochen (§ 7 Abs. 3 UWG)
+        public readonly bool $reviewInvite = true,
     ) {}
 }

@@ -17,6 +17,7 @@ final class CartEvaluation
         public readonly ShippingMode $shippingMode,
         public readonly array $paymentMethods,
         public readonly bool $requiresReview,
+        public readonly bool $digitalOnly = false, // nur Geschenkgutscheine: Versand per E-Mail
     ) {}
 
     public function allowed(): bool

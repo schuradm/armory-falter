@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Enums\PaymentMethod;
+use App\Livewire\Concerns\HandlesVoucherCodes;
 use App\Models\Order;
 use App\Models\ShippingMethod;
 use App\Services\Cart\CartService;
@@ -10,6 +11,7 @@ use App\Services\Checkout\CheckoutData;
 use App\Services\Checkout\CheckoutException;
 use App\Services\Checkout\CheckoutService;
 use App\Services\Compliance\CartComplianceEvaluator;
+use App\Services\Vouchers\CartCodeService;
 use App\Support\Seo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -19,6 +21,8 @@ use Livewire\Component;
 /** Mehrstufiger Checkout: Adresse → Versand → Zahlung → Prüfen. Alle Regeln prüft CheckoutService erneut. */
 class Checkout extends Component
 {
+    use HandlesVoucherCodes;
+
     public int $step = 1;
 
     public array $billing = [];
@@ -31,6 +35,7 @@ class Checkout extends Component
     public string $note = '';
     public bool $terms = false;
     public bool $legalDeclaration = false;
+    public bool $noReviewInvite = false; // Widerspruch gegen Bewertungseinladung direkt beim Bestellen
 
     #[Locked]
     public string $idempotencyKey = '';
@@ -85,10 +90,24 @@ class Checkout extends Component
             $methods = $checkout->shippingMethodsFor($evaluator->evaluate($carts->current(), Auth::user()))->pluck('code')->all();
             $this->validate(['shippingMethod' => ['required', 'in:'.implode(',', $methods)]], ['shippingMethod.required' => 'Bitte wählen Sie eine Versandart.']);
         }
-        if ($step > 3) {
+        if ($step > 3 && ! $this->coveredByVouchers($carts)) {
             $this->validate(['paymentMethod' => ['required']], ['paymentMethod.required' => 'Bitte wählen Sie eine Zahlungsart.']);
         }
         $this->step = max(1, min(4, $step));
+    }
+
+    /** Deckt das Gutscheinguthaben den Gesamtbetrag, entfällt die Zahlungsart. */
+    protected function coveredByVouchers(CartService $carts): bool
+    {
+        $cart = $carts->current();
+        if (! $cart) {
+            return false;
+        }
+        $methods = app(CheckoutService::class)->shippingMethodsFor(app(CartComplianceEvaluator::class)->evaluate($cart, Auth::user()));
+        $shipping = $methods->firstWhere('code', $this->shippingMethod)?->priceFor($carts->subtotal($cart)) ?? 0;
+        [$totals] = app(CartCodeService::class)->totals($cart, Auth::user(), $shipping);
+
+        return $totals->giftVoucherTotal() > 0 && $totals->amountDue() === 0;
     }
 
     protected function storeAddresses(): void
@@ -109,11 +128,12 @@ class Checkout extends Component
                 billingAddress: $this->billing,
                 shippingAddress: $this->differentShipping ? $this->shipping : null,
                 shippingMethodCode: (string) $this->shippingMethod,
-                paymentMethod: PaymentMethod::from((string) $this->paymentMethod),
+                paymentMethod: PaymentMethod::tryFrom((string) $this->paymentMethod) ?? PaymentMethod::GiftVoucher, // Server prüft die Deckung
                 termsAccepted: $this->terms,
                 legalDeclarationAccepted: $this->legalDeclaration,
                 idempotencyKey: $this->idempotencyKey,
                 customerNote: $this->note ?: null,
+                reviewInvite: ! $this->noReviewInvite,
             ));
         } catch (CheckoutException $e) {
             $this->addError('order', $e->getMessage());
@@ -135,10 +155,10 @@ class Checkout extends Component
         return redirect()->route('checkout.success', $order);
     }
 
-    public function render(CartService $carts, CartComplianceEvaluator $evaluator, CheckoutService $checkout)
+    public function render(CartService $carts, CartComplianceEvaluator $evaluator, CheckoutService $checkout, CartCodeService $codes)
     {
         $cart = $carts->current();
-        $cart?->load('items.product.legalClass', 'items.product.taxRate', 'items.product.media', 'items.product.caliber', 'items.variant');
+        $cart?->load('items.product.legalClass', 'items.product.taxRate', 'items.product.media', 'items.product.caliber', 'items.product.categories', 'items.variant');
         $evaluation = $evaluator->evaluate($cart, Auth::user());
         $shippingMethods = $checkout->shippingMethodsFor($evaluation);
         $selected = $shippingMethods->firstWhere('code', $this->shippingMethod);
@@ -148,7 +168,9 @@ class Checkout extends Component
         }
         $subtotal = $carts->subtotal($cart);
         $shippingCost = $selected?->priceFor($subtotal) ?? 0;
+        [$totals, $codeNotices] = $codes->totals($cart, Auth::user(), $shippingCost);
+        $covered = $totals->giftVoucherTotal() > 0 && $totals->amountDue() === 0;
 
-        return view('livewire.checkout', compact('cart', 'evaluation', 'shippingMethods', 'payments', 'subtotal', 'shippingCost', 'selected'));
+        return view('livewire.checkout', compact('cart', 'evaluation', 'shippingMethods', 'payments', 'subtotal', 'shippingCost', 'selected', 'totals', 'codeNotices', 'covered'));
     }
 }

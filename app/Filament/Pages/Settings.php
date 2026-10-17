@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\DB;
 
 /**
  * Backend-pflegbare Einstellungen (Tabelle `settings`, gelesen über App\Support\Settings).
- * Gespeichert wird je Bereich ein Schlüssel: home, product_why, community, promo_bar, seo, elite, payment_methods.
+ * Gespeichert wird je Bereich ein Schlüssel: home, product_why, community, promo_bar, seo, elite, payment_methods, reviews.
  *
  * @property Form $form
  */
@@ -77,7 +77,7 @@ class Settings extends Page implements HasForms
         unset($home['hero']['headline']);
 
         $payments = [];
-        foreach (PaymentMethod::cases() as $method) {
+        foreach (PaymentMethod::selectable() as $method) {
             $payments[$method->value] = $method->isEnabled();
         }
 
@@ -92,6 +92,10 @@ class Settings extends Page implements HasForms
             ],
             'elite_price' => (int) $settings->get('elite.price', 9900),
             'payment_methods' => $payments,
+            'reviews' => [
+                'request_enabled' => (bool) $settings->get('reviews.request_enabled', config('shop.reviews.request_enabled', true)),
+                'request_days' => (int) $settings->get('reviews.request_days', config('shop.reviews.request_days', 7)),
+            ],
         ];
     }
 
@@ -124,6 +128,16 @@ class Settings extends Page implements HasForms
                     FormFields::euro('elite_price', 'Jahresbeitrag (brutto)', true)->helperText('Wird auf der Elite-Club-Seite angezeigt.'),
                 ]),
                 $this->paymentTab(),
+                Forms\Components\Tabs\Tab::make('Bewertungen')->icon('heroicon-o-star')->schema([
+                    Forms\Components\Section::make('Bewertungseinladung per E-Mail')
+                        ->description('Eine Bewertungsbitte ist Werbung (BGH VI ZR 225/17). Versendet wird nur an Kunden, die an der Kasse auf ihr Widerspruchsrecht hingewiesen wurden und nicht widersprochen haben (§ 7 Abs. 3 UWG), einmal je Bestellung, mit Abmeldelink.')
+                        ->columns(2)
+                        ->schema([
+                            Forms\Components\Toggle::make('reviews.request_enabled')->label('Einladungen versenden')->columnSpanFull(),
+                            Forms\Components\TextInput::make('reviews.request_days')->label('Tage nach Zustellung')->numeric()->integer()
+                                ->minValue(1)->maxValue(60)->required()->suffix('Tage'),
+                        ]),
+                ]),
             ]),
         ]);
     }
@@ -208,7 +222,7 @@ class Settings extends Page implements HasForms
             Forms\Components\Section::make('Zahlarten an/aus')
                 ->description('Online-Zahlarten werden nur aktiv, wenn die Zugangsdaten in der .env hinterlegt sind. Welche Zahlart für welche Ware erlaubt ist, steuern die Rechtsklassen.')
                 ->columns(2)
-                ->schema(collect(PaymentMethod::cases())->map(fn (PaymentMethod $m) => Forms\Components\Toggle::make("payment_methods.{$m->value}")
+                ->schema(collect(PaymentMethod::selectable())->map(fn (PaymentMethod $m) => Forms\Components\Toggle::make("payment_methods.{$m->value}")
                     ->label($m->label())
                     ->helperText($m->isConfigured() ? $m->description() : 'Zugangsdaten fehlen – bleibt deaktiviert, bis sie in der .env stehen.'))
                     ->all()),
@@ -246,7 +260,11 @@ class Settings extends Page implements HasForms
                 'home_description' => filled($state['seo']['home_description'] ?? null) ? trim($state['seo']['home_description']) : null,
             ],
             'elite' => ['price' => (int) ($state['elite_price'] ?? 9900)],
-            'payment_methods' => collect(PaymentMethod::cases())->mapWithKeys(fn (PaymentMethod $m) => [$m->value => (bool) ($state['payment_methods'][$m->value] ?? false)])->all(),
+            'payment_methods' => collect(PaymentMethod::selectable())->mapWithKeys(fn (PaymentMethod $m) => [$m->value => (bool) ($state['payment_methods'][$m->value] ?? false)])->all(),
+            'reviews' => [
+                'request_enabled' => (bool) ($state['reviews']['request_enabled'] ?? false),
+                'request_days' => max(1, min(60, (int) ($state['reviews']['request_days'] ?? 7))),
+            ],
         ];
 
         DB::transaction(function () use ($values) {

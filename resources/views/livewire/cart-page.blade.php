@@ -22,8 +22,9 @@
                             <div class="flex items-start justify-between gap-3">
                                 <div class="min-w-0">
                                     <p class="text-xs text-muted">{{ $p->manufacturer?->name }} · Art.-Nr. {{ $item->variant?->sku ?? $p->sku }}</p>
-                                    <a href="{{ $p->url() }}" class="font-display font-bold hover:text-accent">{{ $p->name }}</a>
+                                    <a href="{{ $p->url() }}" class="font-display font-bold hover:text-accent">{{ $item->displayName() }}</a>
                                     @if ($item->variant)<p class="text-xs text-muted">{{ $item->variant->label() }}</p>@endif
+                                    @if ($item->isGiftVoucher() && ! empty($item->options['recipient_email']))<p class="text-xs text-muted">Für {{ $item->options['recipient_name'] ?? $item->options['recipient_email'] }} · Versand per E-Mail</p>@endif
                                 </div>
                                 <p class="font-display font-bold whitespace-nowrap">{{ \App\Support\Money::format($item->lineTotal()) }}</p>
                             </div>
@@ -48,8 +49,15 @@
                 <h2 class="font-display text-lg font-bold">Zusammenfassung</h2>
                 <dl class="space-y-2 text-sm">
                     <div class="flex justify-between"><dt class="text-muted">Zwischensumme</dt><dd>{{ \App\Support\Money::format($subtotal) }}</dd></div>
-                    <div class="flex justify-between"><dt class="text-muted">Versand</dt><dd>wird im nächsten Schritt berechnet</dd></div>
+                    @if ($totals->discount > 0)
+                        <div class="flex justify-between text-accent"><dt>Rabatt ({{ $totals->discountCode->code }})</dt><dd>−{{ \App\Support\Money::format($totals->discount) }}</dd></div>
+                    @endif
+                    <div class="flex justify-between"><dt class="text-muted">Versand</dt><dd>{{ $evaluation?->digitalOnly ? 'per E-Mail, kostenlos' : 'wird im nächsten Schritt berechnet' }}</dd></div>
+                    @if ($totals->giftVoucherTotal() > 0)
+                        <div class="flex justify-between text-accent"><dt>Geschenkgutschein</dt><dd>−{{ \App\Support\Money::format($totals->giftVoucherTotal()) }}</dd></div>
+                    @endif
                 </dl>
+                @include('livewire.partials.voucher-codes')
                 @if ($evaluation)
                     <div class="rounded-md bg-surface-2 p-3 text-xs text-muted">
                         <p><span class="text-fg">Versandart:</span> {{ $evaluation->shippingMode->label() }}</p>
@@ -62,8 +70,8 @@
                 @if ($freeShippingGap > 0 && $evaluation?->shippingMode->value === 'standard')
                     <p class="text-xs text-muted">Noch {{ \App\Support\Money::format($freeShippingGap) }} bis zum kostenlosen Standardversand.</p>
                 @endif
-                <div class="flex justify-between border-t border-line pt-4 font-display text-lg font-bold"><span>Gesamt</span><span>{{ \App\Support\Money::format($subtotal) }}</span></div>
-                <p class="-mt-2 text-xs text-muted">inkl. MwSt., zzgl. Versand</p>
+                <div class="flex justify-between border-t border-line pt-4 font-display text-lg font-bold"><span>{{ $totals->giftVoucherTotal() > 0 ? 'Zu zahlen' : 'Gesamt' }}</span><span>{{ \App\Support\Money::format($totals->amountDue()) }}</span></div>
+                <p class="-mt-2 text-xs text-muted">inkl. MwSt.{{ $evaluation?->digitalOnly ? '' : ', zzgl. Versand' }}</p>
 
                 @if ($evaluation && ! $evaluation->allowed())
                     <div class="rounded-md border border-amber-500/40 p-3 text-sm">

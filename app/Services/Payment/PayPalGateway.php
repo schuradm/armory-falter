@@ -40,7 +40,7 @@ class PayPalGateway
                 'purchase_units' => [[
                     'reference_id' => $order->order_number,
                     'invoice_id' => $order->order_number,
-                    'amount' => ['currency_code' => 'EUR', 'value' => number_format($order->total_gross / 100, 2, '.', '')],
+                    'amount' => ['currency_code' => 'EUR', 'value' => number_format($order->amountDue() / 100, 2, '.', '')],
                 ]],
                 'payment_source' => ['paypal' => ['experience_context' => [
                     'brand_name' => config('shop.company.name'),
@@ -56,7 +56,7 @@ class PayPalGateway
             'provider' => 'paypal',
             'provider_reference' => $res->json('id'),
             'status' => 'initiated',
-            'amount' => $order->total_gross,
+            'amount' => $order->amountDue(),
             'raw_response' => $res->json(),
         ]);
 
@@ -78,7 +78,7 @@ class PayPalGateway
         $capture = $res->json('purchase_units.0.payments.captures.0');
         $ok = $res->successful() && $res->json('status') === 'COMPLETED'
             && ($capture['status'] ?? null) === 'COMPLETED'
-            && (int) round(((float) ($capture['amount']['value'] ?? 0)) * 100) === $order->total_gross;
+            && (int) round(((float) ($capture['amount']['value'] ?? 0)) * 100) === $order->amountDue();
         $payment->update(['status' => $ok ? 'captured' : 'failed', 'raw_response' => $res->json()]);
 
         return $ok;
