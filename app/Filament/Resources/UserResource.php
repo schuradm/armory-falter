@@ -13,6 +13,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Validation\Rules\Password;
 
 class UserResource extends Resource
 {
@@ -93,7 +94,7 @@ class UserResource extends Resource
                         Forms\Components\TextInput::make('password')->label('Passwort')->password()->revealable()
                             ->required(fn (string $operation) => $operation === 'create')
                             ->dehydrated(fn (?string $state) => filled($state))
-                            ->rule(\Illuminate\Validation\Rules\Password::default())
+                            ->rule(Password::default())
                             ->helperText(fn (string $operation) => $operation === 'edit' ? 'Leer lassen, um das Passwort nicht zu ändern.' : null),
                     ]),
                 ]),

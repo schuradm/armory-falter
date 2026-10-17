@@ -17,10 +17,15 @@ class Documents extends Component
     use WithFileUploads;
 
     public string $type = 'id_card';
+
     public $file;
+
     public string $documentNumber = '';
+
     public string $issuingAuthority = '';
+
     public ?string $validUntil = null;
+
     public bool $confirm = false;
 
     public function mount(Seo $seo): void

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Faq;
-use App\Models\Manufacturer;
 use App\Models\WorkshopService;
 use App\Support\Seo;
 

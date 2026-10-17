@@ -5,6 +5,9 @@ namespace Tests\Feature\Admin;
 use App\Enums\PaymentMethod;
 use App\Filament\Pages\Settings as SettingsPage;
 use App\Filament\Resources;
+use App\Filament\Widgets\LatestOrders;
+use App\Filament\Widgets\ShopStatsOverview;
+use App\Mail\NewsletterConfirm;
 use App\Models\Appointment;
 use App\Models\Author;
 use App\Models\BlogCategory;
@@ -16,6 +19,7 @@ use App\Models\Faq;
 use App\Models\LocalPage;
 use App\Models\NewsletterCampaign;
 use App\Models\NewsletterSubscriber;
+use App\Models\Order;
 use App\Models\Page;
 use App\Models\Redirect;
 use App\Models\ShippingMethod;
@@ -25,8 +29,11 @@ use App\Models\User;
 use App\Models\WorkshopService;
 use App\Services\AuditLogger;
 use App\Support\Settings;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 use Livewire\Livewire;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
@@ -90,9 +97,9 @@ class AdminContentSmokeTest extends TestCase
 
         $this->get('/kms-login')->assertOk();
         // Widgets laden per Livewire nach (lazy) – direkt rendern
-        Livewire::test(\App\Filament\Widgets\ShopStatsOverview::class)
+        Livewire::test(ShopStatsOverview::class)
             ->assertSee('Bestellungen heute')->assertSee('Offene Compliance-Freigaben')->assertSee('1.199,00 €');
-        Livewire::test(\App\Filament\Widgets\LatestOrders::class)->assertSee('AF-TEST-1');
+        Livewire::test(LatestOrders::class)->assertSee('AF-TEST-1');
         $this->get(SettingsPage::getUrl())->assertOk()->assertSee('Einstellungen');
     }
 
@@ -211,7 +218,7 @@ class AdminContentSmokeTest extends TestCase
 
     public function test_contact_message_can_be_marked_handled_and_newsletter_invite_uses_double_opt_in(): void
     {
-        \Illuminate\Support\Facades\Mail::fake();
+        Mail::fake();
         $message = ContactMessage::create(['name' => 'Kunde', 'email' => 'kunde@example.test', 'subject' => 'Frage', 'message' => 'Hallo'])->fresh();
 
         Livewire::test(Resources\ContactMessageResource\Pages\ListContactMessages::class)
@@ -224,14 +231,14 @@ class AdminContentSmokeTest extends TestCase
         $sub = NewsletterSubscriber::where('email', 'neu@example.test')->firstOrFail();
         $this->assertSame('pending', $sub->status);
         $this->assertSame('backend', $sub->source);
-        \Illuminate\Support\Facades\Mail::assertQueued(\App\Mail\NewsletterConfirm::class);
+        Mail::assertQueued(NewsletterConfirm::class);
 
         Livewire::test(Resources\NewsletterSubscriberResource\Pages\ListNewsletterSubscribers::class)
             ->callAction('invite', ['email' => 'ohne@example.test', 'consent_note' => 'x', 'consent' => false])
             ->assertHasActionErrors(['consent']);
     }
 
-    /** @return array<class-string, \Illuminate\Database\Eloquent\Model> */
+    /** @return array<class-string, Model> */
     private function seedContent(): array
     {
         $service = WorkshopService::create(['slug' => 'optikmontage', 'name' => 'Optikmontage', 'price_from_gross' => 4900, 'duration_minutes' => 60]);
@@ -259,11 +266,11 @@ class AdminContentSmokeTest extends TestCase
         $audit = app(AuditLogger::class)->log('smoke.test', $post, ['status' => 'draft'], ['status' => 'published', 'nested' => ['a' => 1]]);
 
         // Bestellung für Dashboard-Kennzahlen und „Neueste Bestellungen“
-        \App\Models\Order::forceCreate([
+        Order::forceCreate([
             'order_number' => 'AF-TEST-1', 'user_id' => $this->admin->id, 'status' => 'pending_compliance', 'compliance_status' => 'pending',
             'billing_address' => ['first_name' => 'Test'], 'shipping_method_code' => 'dhl_standard', 'payment_method_code' => 'prepayment',
             'subtotal_gross' => 119900, 'shipping_gross' => 0, 'total_gross' => 119900, 'total_tax' => 19144,
-            'terms_accepted_at' => now(), 'idempotency_key' => (string) \Illuminate\Support\Str::uuid(), 'placed_at' => now(),
+            'terms_accepted_at' => now(), 'idempotency_key' => (string) Str::uuid(), 'placed_at' => now(),
         ]);
 
         return [

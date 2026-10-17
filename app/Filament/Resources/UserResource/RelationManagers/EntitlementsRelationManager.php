@@ -52,7 +52,7 @@ class EntitlementsRelationManager extends RelationManager
                     ->requiresConfirmation()
                     ->action(function (CustomerEntitlement $record) {
                         $record->update(['status' => 'revoked']);
-                        app(AuditLogger::class)->log("entitlement.revoked", $record);
+                        app(AuditLogger::class)->log('entitlement.revoked', $record);
                     }),
             ])
             ->bulkActions([]);

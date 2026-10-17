@@ -6,6 +6,7 @@ use App\Enums\ShippingMode;
 use App\Filament\Resources\ShippingMethodResource\Pages;
 use App\Filament\Support\FormFields;
 use App\Models\ShippingMethod;
+use App\Support\Money;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -60,8 +61,8 @@ class ShippingMethodResource extends Resource
                 Tables\Columns\TextColumn::make('carrier')->label('Dienstleister')->placeholder('–'),
                 Tables\Columns\TextColumn::make('allowed_shipping_modes')->label('Modus')->badge()
                     ->formatStateUsing(fn ($state) => ShippingMode::tryFrom($state)?->label() ?? $state),
-                Tables\Columns\TextColumn::make('price_gross')->label('Preis')->formatStateUsing(fn ($state) => \App\Support\Money::format((int) $state)),
-                Tables\Columns\TextColumn::make('free_from_gross')->label('Frei ab')->formatStateUsing(fn ($state) => \App\Support\Money::format((int) $state))->placeholder('–'),
+                Tables\Columns\TextColumn::make('price_gross')->label('Preis')->formatStateUsing(fn ($state) => Money::format((int) $state)),
+                Tables\Columns\TextColumn::make('free_from_gross')->label('Frei ab')->formatStateUsing(fn ($state) => Money::format((int) $state))->placeholder('–'),
                 Tables\Columns\ToggleColumn::make('is_active')->label('Aktiv'),
             ])
             ->actions([Tables\Actions\EditAction::make()])

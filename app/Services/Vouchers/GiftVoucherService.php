@@ -8,6 +8,7 @@ use App\Models\GiftVoucher;
 use App\Models\Order;
 use App\Models\User;
 use App\Services\AuditLogger;
+use App\Services\Orders\OrderService;
 use App\Support\Money;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Carbon;
@@ -102,7 +103,7 @@ class GiftVoucherService
 
         $digitalOnly = $order->items->isNotEmpty() && $order->items->every->isGiftVoucher();
         if ($issued && $digitalOnly && in_array($order->status, [OrderStatus::Paid, OrderStatus::Processing], true)) {
-            app(\App\Services\Orders\OrderService::class)->transition($order, OrderStatus::Completed, null,
+            app(OrderService::class)->transition($order, OrderStatus::Completed, null,
                 'Gutschein per E-Mail versendet.', notify: false); // die Gutscheinmail selbst ist die Nachricht
         }
 

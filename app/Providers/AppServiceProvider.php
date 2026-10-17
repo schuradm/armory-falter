@@ -3,7 +3,34 @@
 namespace App\Providers;
 
 use App\Http\Middleware\PageCache;
+use App\Models\Appointment;
+use App\Models\BlogPost;
+use App\Models\Caliber;
+use App\Models\Category;
+use App\Models\CustomerDocument;
+use App\Models\CustomerEntitlement;
+use App\Models\DiscountCode;
+use App\Models\Event;
+use App\Models\Faq;
+use App\Models\GiftVoucher;
+use App\Models\LocalPage;
+use App\Models\Manufacturer;
+use App\Models\NewsletterCampaign;
+use App\Models\Order;
+use App\Models\Page;
+use App\Models\Product;
+use App\Models\ProductMedia;
+use App\Models\ProductReview;
+use App\Models\ProductVariant;
+use App\Models\Redirect;
+use App\Models\Testimonial;
+use App\Models\TradeRequest;
+use App\Models\User;
+use App\Models\WeaponItem;
+use App\Models\Withdrawal;
+use App\Models\WorkshopService;
 use App\Support\Seo;
+use App\Support\Settings;
 use App\View\Composers\NavigationComposer;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
@@ -20,7 +47,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(Seo::class);
-        $this->app->singleton(\App\Support\Settings::class);
+        $this->app->singleton(Settings::class);
     }
 
     public function boot(): void
@@ -29,26 +56,26 @@ class AppServiceProvider extends ServiceProvider
         Model::preventSilentlyDiscardingAttributes(! $this->app->isProduction());
 
         Relation::enforceMorphMap([
-            'user' => \App\Models\User::class,
-            'withdrawal' => \App\Models\Withdrawal::class,
-            'product' => \App\Models\Product::class,
-            'category' => \App\Models\Category::class,
-            'manufacturer' => \App\Models\Manufacturer::class,
-            'caliber' => \App\Models\Caliber::class,
-            'order' => \App\Models\Order::class,
-            'customer_document' => \App\Models\CustomerDocument::class,
-            'customer_entitlement' => \App\Models\CustomerEntitlement::class,
-            'trade_request' => \App\Models\TradeRequest::class,
-            'appointment' => \App\Models\Appointment::class,
-            'blog_post' => \App\Models\BlogPost::class,
-            'page' => \App\Models\Page::class,
-            'weapon_item' => \App\Models\WeaponItem::class,
-            'newsletter_campaign' => \App\Models\NewsletterCampaign::class,
-            'event' => \App\Models\Event::class,
-            'local_page' => \App\Models\LocalPage::class,
-            'product_review' => \App\Models\ProductReview::class,
-            'discount_code' => \App\Models\DiscountCode::class,
-            'gift_voucher' => \App\Models\GiftVoucher::class,
+            'user' => User::class,
+            'withdrawal' => Withdrawal::class,
+            'product' => Product::class,
+            'category' => Category::class,
+            'manufacturer' => Manufacturer::class,
+            'caliber' => Caliber::class,
+            'order' => Order::class,
+            'customer_document' => CustomerDocument::class,
+            'customer_entitlement' => CustomerEntitlement::class,
+            'trade_request' => TradeRequest::class,
+            'appointment' => Appointment::class,
+            'blog_post' => BlogPost::class,
+            'page' => Page::class,
+            'weapon_item' => WeaponItem::class,
+            'newsletter_campaign' => NewsletterCampaign::class,
+            'event' => Event::class,
+            'local_page' => LocalPage::class,
+            'product_review' => ProductReview::class,
+            'discount_code' => DiscountCode::class,
+            'gift_voucher' => GiftVoucher::class,
         ]);
 
         Password::defaults(fn () => Password::min(10)->letters()->mixedCase()->numbers()->uncompromised());
@@ -61,9 +88,9 @@ class AppServiceProvider extends ServiceProvider
         // Kein zusätzliches Event::listen, sonst gehen Bestellbestätigung und Staff-Mail doppelt raus.
 
         // Ganzseiten-Cache leeren, sobald sich öffentlich sichtbare Inhalte ändern
-        foreach ([\App\Models\Product::class, \App\Models\ProductVariant::class, \App\Models\ProductMedia::class, \App\Models\Category::class,
-            \App\Models\Manufacturer::class, \App\Models\Caliber::class, \App\Models\Page::class, \App\Models\BlogPost::class,
-            \App\Models\Faq::class, \App\Models\WorkshopService::class, \App\Models\Redirect::class, \App\Models\Testimonial::class, \App\Models\Event::class, \App\Models\LocalPage::class] as $model) {
+        foreach ([Product::class, ProductVariant::class, ProductMedia::class, Category::class,
+            Manufacturer::class, Caliber::class, Page::class, BlogPost::class,
+            Faq::class, WorkshopService::class, Redirect::class, Testimonial::class, Event::class, LocalPage::class] as $model) {
             $model::saved(fn () => PageCache::flush());
             $model::deleted(fn () => PageCache::flush());
         }

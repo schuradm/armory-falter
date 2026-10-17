@@ -25,23 +25,41 @@ class TradeRequestForm extends Component
     public string $type = 'consignment';
 
     public string $name = '';
+
     public string $street = '';
+
     public string $postal_code = '';
+
     public string $city = '';
+
     public string $phone = '';
+
     public string $email = '';
+
     public string $weapon_type = '';
+
     public ?string $manufacturer_id = null;
+
     public string $manufacturer_name = '';
+
     public string $model = '';
+
     public string $caliber = '';
+
     public string $condition_code = 'very_good';
+
     public string $desired_price = '';
+
     public string $description = '';
+
     public array $photos = [];
+
     public bool $privacy = false;
+
     public string $website = '';
+
     public string $captcha = '';
+
     public ?string $reference = null;
 
     public function mount(string $type = 'consignment'): void

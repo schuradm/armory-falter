@@ -193,7 +193,7 @@ HTML;
 <p>Wenn Sie uns über ein Formular, per E-Mail, Telefon oder WhatsApp kontaktieren, einen Werkstatt- oder Beratungstermin buchen oder uns eine Waffe zum Ankauf bzw. Verkauf anbieten, speichern wir Ihre Angaben und hochgeladenen Fotos zur Bearbeitung Ihrer Anfrage und für Anschlussfragen (Art. 6 Abs. 1 lit. b DSGVO). Wir löschen die Daten, sobald sie nicht mehr erforderlich sind, spätestens zwei Jahre nach Abschluss der Anfrage, sofern keine gesetzlichen Aufbewahrungsfristen bestehen.</p>
 
 <h2>9. Newsletter und Waffenratgeber (Double-Opt-in)</h2>
-HTML.self::newsletter($todo).<<<HTML
+HTML.self::newsletter($todo).<<<'HTML'
 
 <h2>10. Spamschutz</h2>
 <p>Unsere Formulare schützen wir mit einem unsichtbaren Feld gegen automatisierte Anfragen und mit einer Begrenzung der Anfragen pro IP-Adresse. Falls aktiviert, nutzen wir zusätzlich Cloudflare Turnstile (Cloudflare, Inc., 101 Townsend St., San Francisco, CA 94107, USA). Dabei werden technische Merkmale Ihres Browsers und Ihre IP-Adresse an Cloudflare übermittelt (Art. 6 Abs. 1 lit. f DSGVO). Cloudflare ist unter dem EU-US Data Privacy Framework zertifiziert.</p>

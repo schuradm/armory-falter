@@ -10,6 +10,7 @@ use App\Models\Product;
 use App\Models\TaxRate;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 /**
  * Demo-Produkte quer durch den Katalog (Preise in Cent, brutto). Bilder werden im Backend ergänzt.
@@ -155,7 +156,7 @@ class ProductSeeder extends Seeder
             }
             $product = Product::updateOrCreate(['sku' => $p['sku']], [
                 'name' => $p['name'],
-                'slug' => \Illuminate\Support\Str::slug($p['name']),
+                'slug' => Str::slug($p['name']),
                 'manufacturer_id' => $p['manufacturer'] ? $m[$p['manufacturer']] : null,
                 'caliber_id' => isset($p['caliber']) ? $cal[$p['caliber']] : null,
                 'legal_class_id' => $legal[$p['legal']],

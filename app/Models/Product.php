@@ -160,7 +160,7 @@ class Product extends Model
     }
 
     /** „Passend dazu“: Zubehör-Empfehlungen (Upsell), im Backend je Produkt gepflegt. */
-    public function accessories(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    public function accessories(): BelongsToMany
     {
         return $this->belongsToMany(Product::class, 'product_relations', 'product_id', 'related_product_id')
             ->wherePivot('type', 'accessory')->withPivot('sort_order')->orderByPivot('sort_order');

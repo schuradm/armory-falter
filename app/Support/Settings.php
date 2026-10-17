@@ -6,7 +6,6 @@ use App\Http\Middleware\PageCache;
 use App\Models\Setting;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Schema;
 use Throwable;
 
 /**

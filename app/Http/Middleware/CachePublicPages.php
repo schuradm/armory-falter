@@ -19,6 +19,7 @@ use Symfony\Component\HttpFoundation\Response;
 class CachePublicPages
 {
     private const TOKEN = '__AF_CSRF__';
+
     private const NONCE = '__AF_NONCE__';
 
     public function handle(Request $request, Closure $next): Response

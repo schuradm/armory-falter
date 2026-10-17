@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\ProductType;
+use App\Support\Money;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -31,7 +33,7 @@ class CartItem extends Model
 
     public function isGiftVoucher(): bool
     {
-        return $this->product->product_type === \App\Enums\ProductType::Voucher;
+        return $this->product->product_type === ProductType::Voucher;
     }
 
     /** Geschenkgutscheine: frei gewählter Betrag aus den Optionen, sonst Varianten- bzw. Produktpreis. */
@@ -47,7 +49,7 @@ class CartItem extends Model
     /** Anzeigename inkl. Gutscheinbetrag, z. B. „Geschenkgutschein 50,00 €“. */
     public function displayName(): string
     {
-        return $this->isGiftVoucher() ? 'Geschenkgutschein '.\App\Support\Money::format($this->unitPrice()) : $this->product->name;
+        return $this->isGiftVoucher() ? 'Geschenkgutschein '.Money::format($this->unitPrice()) : $this->product->name;
     }
 
     public function lineTotal(): int

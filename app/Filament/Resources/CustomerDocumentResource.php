@@ -10,6 +10,7 @@ use App\Models\Caliber;
 use App\Models\CustomerDocument;
 use App\Services\AuditLogger;
 use App\Services\Documents\DocumentService;
+use Filament\Actions\Action;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Infolists;
@@ -220,7 +221,7 @@ class CustomerDocumentResource extends Resource
     /**
      * Download der entschlüsselten Datei als Livewire-Download (kein öffentlicher Pfad, kein Cache).
      *
-     * @param  class-string<\Filament\Actions\Action|\Filament\Tables\Actions\Action>  $class
+     * @param  class-string<Action|Tables\Actions\Action>  $class
      */
     public static function downloadAction(string $class)
     {
@@ -251,7 +252,7 @@ class CustomerDocumentResource extends Resource
             });
     }
 
-    /** @param  class-string<\Filament\Actions\Action|\Filament\Tables\Actions\Action>  $class */
+    /** @param  class-string<Action|Tables\Actions\Action>  $class */
     public static function approveAction(string $class)
     {
         return $class::make('approve')->label('Freigeben')->icon('heroicon-o-check-badge')->color('success')
@@ -308,7 +309,7 @@ class CustomerDocumentResource extends Resource
             });
     }
 
-    /** @param  class-string<\Filament\Actions\Action|\Filament\Tables\Actions\Action>  $class */
+    /** @param  class-string<Action|Tables\Actions\Action>  $class */
     public static function rejectAction(string $class)
     {
         return $class::make('reject')->label('Ablehnen')->icon('heroicon-o-x-circle')->color('danger')

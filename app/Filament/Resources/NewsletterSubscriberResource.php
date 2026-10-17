@@ -53,7 +53,9 @@ class NewsletterSubscriberResource extends Resource
                 Infolists\Components\TextEntry::make('first_name')->label('Vorname')->placeholder('–'),
                 Infolists\Components\TextEntry::make('status')->label('Status')->badge()
                     ->formatStateUsing(fn ($state) => self::STATUSES[$state] ?? $state)
-                    ->color(fn ($state) => match ($state) { 'confirmed' => 'success', 'pending' => 'warning', default => 'gray' }),
+                    ->color(fn ($state) => match ($state) {
+                        'confirmed' => 'success', 'pending' => 'warning', default => 'gray'
+                    }),
                 Infolists\Components\TextEntry::make('interests')->label('Interessen')->badge()
                     ->formatStateUsing(fn ($state) => self::INTERESTS[$state] ?? $state)->placeholder('–'),
                 Infolists\Components\TextEntry::make('source')->label('Quelle')->placeholder('–'),
@@ -78,7 +80,9 @@ class NewsletterSubscriberResource extends Resource
                 Tables\Columns\TextColumn::make('first_name')->label('Vorname')->searchable()->toggleable(),
                 Tables\Columns\TextColumn::make('status')->label('Status')->badge()
                     ->formatStateUsing(fn ($state) => self::STATUSES[$state] ?? $state)
-                    ->color(fn ($state) => match ($state) { 'confirmed' => 'success', 'pending' => 'warning', default => 'gray' }),
+                    ->color(fn ($state) => match ($state) {
+                        'confirmed' => 'success', 'pending' => 'warning', default => 'gray'
+                    }),
                 Tables\Columns\TextColumn::make('interests')->label('Interessen')->badge()
                     ->formatStateUsing(fn ($state) => self::INTERESTS[$state] ?? $state)->toggleable(),
                 Tables\Columns\TextColumn::make('source')->label('Quelle')->toggleable(),

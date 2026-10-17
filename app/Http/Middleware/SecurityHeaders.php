@@ -32,7 +32,7 @@ class SecurityHeaders
             "style-src 'self' 'unsafe-inline'",
             "img-src 'self' data: blob: https:",
             "font-src 'self'",
-            "frame-src https://challenges.cloudflare.com https://www.youtube-nocookie.com https://www.paypal.com",
+            'frame-src https://challenges.cloudflare.com https://www.youtube-nocookie.com https://www.paypal.com',
             "connect-src 'self' https://challenges.cloudflare.com",
             "media-src 'self' blob:",
             "form-action 'self' https://www.paypal.com",

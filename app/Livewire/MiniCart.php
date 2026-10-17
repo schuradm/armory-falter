@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\Product;
 use App\Services\Cart\CartService;
 use App\Services\Compliance\CartComplianceEvaluator;
 use Livewire\Attributes\On;
@@ -58,7 +59,7 @@ class MiniCart extends Component
         // Upsell: Zubehör zum zuletzt hinzugefügten Artikel, das noch nicht im Warenkorb liegt
         $inCart = $hasItems ? $current->items->pluck('product_id')->all() : [];
         $suggestions = $this->justAdded
-            ? \App\Models\Product::find($this->justAdded)?->accessories()->with(['media', 'legalClass', 'taxRate', 'variants'])
+            ? Product::find($this->justAdded)?->accessories()->with(['media', 'legalClass', 'taxRate', 'variants'])
                 ->whereNotIn('products.id', $inCart)->take(6)->get()->filter->isPurchasable()->take(3)
             : collect();
 

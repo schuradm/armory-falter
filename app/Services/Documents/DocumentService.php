@@ -9,6 +9,7 @@ use App\Models\CustomerEntitlement;
 use App\Models\User;
 use App\Notifications\DocumentReviewed;
 use App\Services\AuditLogger;
+use App\Support\BlindIndex;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -89,7 +90,7 @@ class DocumentService
             $flags[] = 'Identische Datei bei einem anderen Kundenkonto vorhanden';
         }
         if ($doc->document_number) {
-            $bidx = \App\Support\BlindIndex::make($doc->document_number);
+            $bidx = BlindIndex::make($doc->document_number);
             if (CustomerDocument::where('document_number_bidx', $bidx)->where('user_id', '!=', $user->id)->exists()) {
                 $flags[] = 'Dokumentnummer bei einem anderen Kundenkonto hinterlegt';
             }

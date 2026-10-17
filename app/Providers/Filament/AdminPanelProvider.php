@@ -2,6 +2,10 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\Auth\Login;
+use App\Filament\Widgets\LatestOrders;
+use App\Filament\Widgets\ShopStatsOverview;
+use App\Http\Middleware\RequireStaffTwoFactor;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -10,7 +14,6 @@ use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
-use Filament\Widgets;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -26,7 +29,7 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('kms-login') // Backend-Adresse laut Kundenwunsch
-            ->login(\App\Filament\Pages\Auth\Login::class)
+            ->login(Login::class)
             ->brandName('Armory Falter')
             ->brandLogo(asset('images/brand/armory-falter-logo.svg'))
             ->darkModeBrandLogo(asset('images/brand/armory-falter-logo-light.svg'))
@@ -48,8 +51,8 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
-                \App\Filament\Widgets\ShopStatsOverview::class,
-                \App\Filament\Widgets\LatestOrders::class,
+                ShopStatsOverview::class,
+                LatestOrders::class,
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -64,7 +67,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-                \App\Http\Middleware\RequireStaffTwoFactor::class,
+                RequireStaffTwoFactor::class,
             ]);
     }
 }

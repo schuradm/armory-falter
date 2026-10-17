@@ -18,7 +18,9 @@ class Reviews extends Component
     public ?string $productSlug = null;
 
     public int $rating = 0;
+
     public string $title = '';
+
     public string $body = '';
 
     public function mount(Seo $seo): void

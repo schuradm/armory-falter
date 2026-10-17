@@ -18,15 +18,25 @@ class AppointmentBooking extends Component
     public string $type = 'workshop';
 
     public ?int $serviceId = null;
+
     public ?string $date = null;
+
     public ?string $time = null;
+
     public string $name = '';
+
     public string $email = '';
+
     public string $phone = '';
+
     public string $weapon = '';
+
     public string $notes = '';
+
     public bool $privacy = false;
+
     public string $website = '';
+
     public bool $booked = false;
 
     public function mount(string $type = 'workshop', ?int $serviceId = null): void

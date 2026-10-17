@@ -16,8 +16,8 @@ use App\Filament\Resources\OrderResource\Pages\ViewOrder;
 use App\Filament\Resources\ProductResource;
 use App\Filament\Resources\ProductResource\Pages\CreateProduct;
 use App\Filament\Resources\ProductResource\Pages\EditProduct;
-use App\Filament\Resources\TradeRequestResource\Pages\ListTradeRequests;
 use App\Filament\Resources\TradeRequestResource;
+use App\Filament\Resources\TradeRequestResource\Pages\ListTradeRequests;
 use App\Filament\Resources\UserResource;
 use App\Filament\Support\Euro;
 use App\Models\Caliber;
@@ -286,6 +286,7 @@ class AdminCoreSmokeTest extends TestCase
             ->callAction('download')
             ->assertFileDownloaded('dokument-'.$this->document->id.'-wbk_green.png');
     }
+
     public function test_product_edit_keeps_price_and_accessories(): void
     {
         $accessory = Product::where('sku', 'ZB-1')->first();

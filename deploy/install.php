@@ -19,6 +19,9 @@
  */
 
 declare(strict_types=1);
+use Illuminate\Contracts\Console\Kernel;
+use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\DB;
 
 const AF_MIN_TOKEN_LENGTH = 32;
 const AF_CONFIRM_WORD = 'INSTALLIEREN';
@@ -214,11 +217,11 @@ foreach (glob($basePath.'/bootstrap/cache/{config,routes-v7,events,routes}.php',
 // ---------------------------------------------------------------------------
 try {
     require $basePath.'/vendor/autoload.php';
-    /** @var \Illuminate\Foundation\Application $app */
+    /** @var Application $app */
     $app = require $basePath.'/bootstrap/app.php';
-    $kernel = $app->make(\Illuminate\Contracts\Console\Kernel::class);
+    $kernel = $app->make(Kernel::class);
     $kernel->bootstrap();
-} catch (\Throwable $e) {
+} catch (Throwable $e) {
     $add('Laravel starten', false, get_class($e).': '.$e->getMessage());
     af_render($log, false);
 }
@@ -229,7 +232,7 @@ $run = function (string $label, string $command, array $params = []) use ($kerne
         $add($label, $code === 0, $kernel->output());
 
         return $code === 0;
-    } catch (\Throwable $e) {
+    } catch (Throwable $e) {
         $add($label, false, get_class($e).': '.$e->getMessage());
 
         return false;
@@ -237,9 +240,9 @@ $run = function (string $label, string $command, array $params = []) use ($kerne
 };
 
 try {
-    \Illuminate\Support\Facades\DB::connection()->getPdo();
+    DB::connection()->getPdo();
     $add('Datenbankverbindung', true);
-} catch (\Throwable $e) {
+} catch (Throwable $e) {
     $add('Datenbankverbindung', false, 'Verbindung fehlgeschlagen – DB_HOST, DB_DATABASE, DB_USERNAME, DB_PASSWORD in .env prüfen. ('.get_class($e).')');
     af_render($log, false);
 }

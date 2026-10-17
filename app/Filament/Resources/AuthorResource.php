@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\AuthorResource\Pages;
 use App\Filament\Support\FormFields;
 use App\Models\Author;
+use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -35,7 +36,7 @@ class AuthorResource extends Resource
                 FormFields::slug('slug', 140, '/blog/autor/'),
                 Forms\Components\TextInput::make('role_title')->label('Funktion')->placeholder('z. B. Büchsenmachermeister')->maxLength(120),
                 Forms\Components\Select::make('user_id')->label('Verknüpfter Benutzer')
-                    ->options(fn () => \App\Models\User::where('is_staff', true)->orderBy('last_name')->get(['id', 'first_name', 'last_name', 'email'])
+                    ->options(fn () => User::where('is_staff', true)->orderBy('last_name')->get(['id', 'first_name', 'last_name', 'email'])
                         ->mapWithKeys(fn ($u) => [$u->id => trim("{$u->first_name} {$u->last_name}")." ({$u->email})"]))
                     ->searchable(),
                 Forms\Components\Textarea::make('bio')->label('Kurzbiografie')->rows(4)->columnSpanFull(),

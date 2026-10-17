@@ -2,8 +2,8 @@
 
 namespace App\Livewire;
 
-use App\Services\Cart\CartService;
 use App\Livewire\Concerns\HandlesVoucherCodes;
+use App\Services\Cart\CartService;
 use App\Services\Compliance\CartComplianceEvaluator;
 use App\Services\Vouchers\CartCodeService;
 use App\Support\Seo;

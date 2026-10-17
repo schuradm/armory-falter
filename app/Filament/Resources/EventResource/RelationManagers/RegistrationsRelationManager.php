@@ -53,7 +53,9 @@ class RegistrationsRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('persons')->label('Personen'),
                 Tables\Columns\TextColumn::make('status')->label('Status')->badge()
                     ->formatStateUsing(fn ($state) => self::STATUSES[$state] ?? $state)
-                    ->color(fn ($state) => match ($state) { 'registered' => 'success', 'waitlist' => 'warning', default => 'danger' }),
+                    ->color(fn ($state) => match ($state) {
+                        'registered' => 'success', 'waitlist' => 'warning', default => 'danger'
+                    }),
             ])
             ->filters([Tables\Filters\SelectFilter::make('status')->label('Status')->options(self::STATUSES)])
             ->headerActions([

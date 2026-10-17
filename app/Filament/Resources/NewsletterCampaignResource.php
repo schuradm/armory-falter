@@ -70,7 +70,9 @@ class NewsletterCampaignResource extends Resource
                 Tables\Columns\TextColumn::make('segment.name')->label('Segment')->placeholder('Alle'),
                 Tables\Columns\TextColumn::make('status')->label('Status')->badge()
                     ->formatStateUsing(fn ($state) => self::STATUSES[$state] ?? $state)
-                    ->color(fn ($state) => match ($state) { 'sent' => 'success', 'scheduled', 'sending' => 'warning', default => 'gray' }),
+                    ->color(fn ($state) => match ($state) {
+                        'sent' => 'success', 'scheduled', 'sending' => 'warning', default => 'gray'
+                    }),
                 Tables\Columns\TextColumn::make('scheduled_at')->label('Geplant')->dateTime('d.m.Y H:i')->placeholder('–')->sortable(),
                 Tables\Columns\TextColumn::make('sent_at')->label('Versendet')->dateTime('d.m.Y H:i')->placeholder('–')->sortable(),
                 Tables\Columns\TextColumn::make('opens_count')->label('Öffnungen')->toggleable(),

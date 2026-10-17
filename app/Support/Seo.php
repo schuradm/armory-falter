@@ -11,13 +11,20 @@ use Illuminate\Support\Str;
 class Seo
 {
     public string $title = '';
+
     public string $description = '';
+
     public ?string $canonical = null;
+
     public string $robots = 'index,follow';
+
     public ?string $image = null;
+
     public string $type = 'website';
+
     /** @var list<array{name:string,url:string}> */
     public array $breadcrumbs = [];
+
     /** @var list<array> */
     public array $jsonLd = [];
 

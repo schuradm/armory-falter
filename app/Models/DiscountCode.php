@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\Money;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -48,6 +49,6 @@ class DiscountCode extends Model
     {
         return $this->type === 'percent'
             ? rtrim(rtrim(number_format((float) $this->percent, 2, ',', ''), '0'), ',').' %'
-            : \App\Support\Money::format((int) $this->amount_gross);
+            : Money::format((int) $this->amount_gross);
     }
 }

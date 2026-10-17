@@ -7,6 +7,7 @@ use App\Models\Invoice;
 use App\Models\Order;
 use App\Models\ProductDocument;
 use App\Services\AuditLogger;
+use App\Services\Reviews\ReviewService;
 use App\Support\Seo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -146,7 +147,7 @@ class AccountController extends Controller
             'bewertungen' => $u->reviews->map(fn ($r) => ['produkt' => $r->product?->name, 'sterne' => $r->rating, 'titel' => $r->title, 'text' => $r->body, 'status' => $r->statusLabel(), 'datum' => $r->created_at]),
         ];
 
-        return response()->streamDownload(fn () => print(json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)), 'armory-falter-datenauskunft.json', ['Content-Type' => 'application/json']);
+        return response()->streamDownload(fn () => print (json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)), 'armory-falter-datenauskunft.json', ['Content-Type' => 'application/json']);
     }
 
     /**
@@ -166,7 +167,7 @@ class AccountController extends Controller
         $user->addresses()->delete();
         $user->wishlists()->delete();
         // Bewertungen tragen den Namen: mit dem Konto löschen, Produktdurchschnitt neu berechnen
-        $reviewService = app(\App\Services\Reviews\ReviewService::class);
+        $reviewService = app(ReviewService::class);
         $user->reviews()->get()->each(fn ($review) => $reviewService->delete($review));
         $user->tokens()->delete();
         $user->forceFill([

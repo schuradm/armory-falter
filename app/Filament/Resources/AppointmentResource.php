@@ -77,7 +77,9 @@ class AppointmentResource extends Resource
                 Tables\Columns\TextColumn::make('resource')->label('Ressource')->formatStateUsing(fn ($state) => config("shop.appointments.resources.$state", $state))->toggleable(),
                 Tables\Columns\TextColumn::make('status')->label('Status')->badge()
                     ->formatStateUsing(fn ($state) => self::STATUSES[$state] ?? $state)
-                    ->color(fn ($state) => match ($state) { 'requested' => 'warning', 'confirmed' => 'success', 'cancelled' => 'danger', default => 'gray' }),
+                    ->color(fn ($state) => match ($state) {
+                        'requested' => 'warning', 'confirmed' => 'success', 'cancelled' => 'danger', default => 'gray'
+                    }),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')->label('Status')->options(self::STATUSES),

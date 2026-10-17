@@ -7,8 +7,11 @@ use App\Enums\OrderStatus;
 use App\Enums\PaymentMethod;
 use App\Filament\Resources\OrderResource\Pages;
 use App\Filament\Support\Euro;
+use App\Models\DiscountCode;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Support\Money;
+use Filament\Forms\Components\DatePicker;
 use Filament\Infolists;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
@@ -96,8 +99,8 @@ class OrderResource extends Resource
                 Tables\Filters\SelectFilter::make('payment_method_code')->label('Zahlart')->options(PaymentMethod::class),
                 Tables\Filters\Filter::make('placed_at')->label('Zeitraum')
                     ->form([
-                        \Filament\Forms\Components\DatePicker::make('from')->label('Von'),
-                        \Filament\Forms\Components\DatePicker::make('until')->label('Bis'),
+                        DatePicker::make('from')->label('Von'),
+                        DatePicker::make('until')->label('Bis'),
                     ])
                     ->query(fn (Builder $query, array $data) => $query
                         ->when($data['from'] ?? null, fn ($q, $d) => $q->whereDate('placed_at', '>=', $d))
@@ -130,16 +133,16 @@ class OrderResource extends Resource
                             Euro::entry('shipping_gross', 'Versand'),
                             Euro::entry('discount_gross', 'Rabatt'),
                             Euro::entry('total_gross', 'Gesamt (brutto)')->weight('bold')
-                                ->helperText(fn (Order $record) => 'enthält MwSt. '.\App\Support\Money::format($record->total_tax)),
+                                ->helperText(fn (Order $record) => 'enthält MwSt. '.Money::format($record->total_tax)),
                         ]),
                         Infolists\Components\Grid::make(4)
                             ->visible(fn (Order $record) => $record->discount_code || $record->gift_voucher_gross > 0)
                             ->schema([
                                 Infolists\Components\TextEntry::make('discount_code')->label('Rabattcode')->placeholder('—')
-                                    ->url(fn (Order $record) => ($id = \App\Models\DiscountCode::where('code', $record->discount_code)->value('id')) ? DiscountCodeResource::getUrl('edit', ['record' => $id]) : null),
+                                    ->url(fn (Order $record) => ($id = DiscountCode::where('code', $record->discount_code)->value('id')) ? DiscountCodeResource::getUrl('edit', ['record' => $id]) : null),
                                 Euro::entry('gift_voucher_gross', 'Per Geschenkgutschein bezahlt'),
                                 Infolists\Components\TextEntry::make('amount_due')->label('Zahlbetrag')->weight('bold')
-                                    ->getStateUsing(fn (Order $record) => \App\Support\Money::format($record->amountDue())),
+                                    ->getStateUsing(fn (Order $record) => Money::format($record->amountDue())),
                             ]),
                         Infolists\Components\TextEntry::make('customer_note')->label('Anmerkung des Kunden')
                             ->visible(fn (Order $record) => filled($record->customer_note)),

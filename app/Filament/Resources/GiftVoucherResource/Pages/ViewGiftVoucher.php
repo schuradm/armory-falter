@@ -26,7 +26,7 @@ class ViewGiftVoucher extends ViewRecord
         return [
             Actions\Action::make('pdf')->label('PDF herunterladen')->icon('heroicon-o-document-arrow-down')->color('gray')
                 ->action(fn (GiftVoucher $record) => response()->streamDownload(
-                    fn () => print(app(GiftVoucherService::class)->renderPdf($record)), 'Gutschein-'.$record->formattedCode().'.pdf', ['Content-Type' => 'application/pdf'])),
+                    fn () => print (app(GiftVoucherService::class)->renderPdf($record)), 'Gutschein-'.$record->formattedCode().'.pdf', ['Content-Type' => 'application/pdf'])),
             Actions\Action::make('resend')->label('Erneut senden')->icon('heroicon-o-paper-airplane')->color('gray')
                 ->visible(fn (GiftVoucher $record) => $record->isRedeemable() && ($record->recipient_email || $record->purchaser_id))
                 ->requiresConfirmation()

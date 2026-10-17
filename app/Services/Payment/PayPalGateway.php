@@ -3,6 +3,7 @@
 namespace App\Services\Payment;
 
 use App\Models\Order;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use RuntimeException;
@@ -85,7 +86,7 @@ class PayPalGateway
     }
 
     /** Prüft die Webhook-Signatur über die PayPal-API (kein lokales Zertifikats-Handling nötig). */
-    public function verifyWebhook(\Illuminate\Http\Request $request): bool
+    public function verifyWebhook(Request $request): bool
     {
         $webhookId = config('shop.payment_methods.paypal.webhook_id');
         if (! $webhookId) {

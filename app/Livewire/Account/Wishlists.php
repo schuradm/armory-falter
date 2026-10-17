@@ -14,6 +14,7 @@ use Livewire\Component;
 class Wishlists extends Component
 {
     public ?int $activeId = null;
+
     public string $newName = '';
 
     public function mount(Seo $seo): void

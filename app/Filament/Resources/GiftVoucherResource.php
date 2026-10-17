@@ -87,7 +87,9 @@ class GiftVoucherResource extends Resource
                 Euro::column('balance', 'Restguthaben')->sortable(),
                 Tables\Columns\TextColumn::make('status')->label('Status')->badge()
                     ->getStateUsing(fn (GiftVoucher $record) => $record->statusLabel())
-                    ->color(fn (string $state) => match ($state) { 'Aktiv' => 'success', 'Eingelöst' => 'gray', default => 'danger' }),
+                    ->color(fn (string $state) => match ($state) {
+                        'Aktiv' => 'success', 'Eingelöst' => 'gray', default => 'danger'
+                    }),
                 Tables\Columns\TextColumn::make('expires_at')->label('Gültig bis')->date('d.m.Y')->sortable(),
                 Tables\Columns\TextColumn::make('order.order_number')->label('Bestellung')->placeholder('manuell'),
                 Tables\Columns\TextColumn::make('recipient_email')->label('Empfänger')->placeholder(fn (GiftVoucher $record) => $record->purchaser?->email)->searchable(),

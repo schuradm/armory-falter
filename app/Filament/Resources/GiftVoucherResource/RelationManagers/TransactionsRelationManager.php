@@ -27,7 +27,9 @@ class TransactionsRelationManager extends RelationManager
             ->columns([
                 Tables\Columns\TextColumn::make('created_at')->label('Zeit')->dateTime('d.m.Y H:i'),
                 Tables\Columns\TextColumn::make('type')->label('Art')->badge()->formatStateUsing(fn (GiftVoucherTransaction $r) => $r->typeLabel())
-                    ->color(fn (string $state) => match ($state) { 'redeem' => 'warning', 'issue', 'release' => 'success', 'cancel' => 'danger', default => 'gray' }),
+                    ->color(fn (string $state) => match ($state) {
+                        'redeem' => 'warning', 'issue', 'release' => 'success', 'cancel' => 'danger', default => 'gray'
+                    }),
                 Tables\Columns\TextColumn::make('amount')->label('Betrag')->alignEnd()
                     ->formatStateUsing(fn (int $state) => ($state > 0 ? '+' : ($state < 0 ? '−' : '')).Money::format(abs($state))),
                 Tables\Columns\TextColumn::make('balance_after')->label('Saldo')->alignEnd()->formatStateUsing(fn (int $state) => Money::format($state)),

@@ -13,6 +13,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Str;
 
 /**
  * Moderation der Produktbewertungen: wartend → veröffentlicht/abgelehnt, öffentliche Antwort.
@@ -90,11 +91,13 @@ class ProductReviewResource extends Resource
                 Tables\Columns\TextColumn::make('rating')->label('Sterne')->sortable()
                     ->formatStateUsing(fn (int $state) => str_repeat('★', $state).str_repeat('☆', 5 - $state))->color('warning'),
                 Tables\Columns\TextColumn::make('title')->label('Bewertung')->limit(60)->wrap()
-                    ->description(fn (ProductReview $r) => \Illuminate\Support\Str::limit((string) $r->body, 100))->searchable(['title', 'body']),
+                    ->description(fn (ProductReview $r) => Str::limit((string) $r->body, 100))->searchable(['title', 'body']),
                 Tables\Columns\TextColumn::make('author_name')->label('Kunde')->description(fn (ProductReview $r) => $r->user?->email),
                 Tables\Columns\TextColumn::make('status')->label('Status')->badge()
                     ->formatStateUsing(fn (string $state) => ProductReview::STATUSES[$state] ?? $state)
-                    ->color(fn (string $state) => match ($state) { 'approved' => 'success', 'pending' => 'warning', default => 'danger' }),
+                    ->color(fn (string $state) => match ($state) {
+                        'approved' => 'success', 'pending' => 'warning', default => 'danger'
+                    }),
                 Tables\Columns\IconColumn::make('reply')->label('Antwort')->boolean()->getStateUsing(fn (ProductReview $r) => filled($r->reply)),
             ])
             ->filters([

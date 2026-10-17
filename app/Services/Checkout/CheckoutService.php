@@ -22,6 +22,7 @@ use App\Services\Vouchers\CartCodeService;
 use App\Services\Vouchers\DiscountCodeService;
 use App\Services\Vouchers\GiftVoucherService;
 use App\Services\Vouchers\VoucherException;
+use App\Support\Money;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -101,7 +102,7 @@ class CheckoutService
         // Deckt das Gutscheinguthaben alles, ist keine weitere Zahlungsart nötig
         $payment = $totals->amountDue() === 0 && $totals->giftVoucherTotal() > 0 ? PaymentMethod::GiftVoucher : $data->paymentMethod;
         if ($payment === PaymentMethod::GiftVoucher && $totals->amountDue() > 0) {
-            throw new CheckoutException('Bitte wählen Sie eine Zahlungsart für den Restbetrag von '.\App\Support\Money::format($totals->amountDue()).'.');
+            throw new CheckoutException('Bitte wählen Sie eine Zahlungsart für den Restbetrag von '.Money::format($totals->amountDue()).'.');
         }
         if ($payment !== PaymentMethod::GiftVoucher && ! in_array($payment, $this->paymentMethodsFor($evaluation, $shipping), true)) {
             throw new CheckoutException('Die gewählte Zahlungsart ist für diesen Warenkorb nicht zulässig.');

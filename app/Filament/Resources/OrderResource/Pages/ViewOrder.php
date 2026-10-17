@@ -8,6 +8,7 @@ use App\Filament\Resources\OrderResource;
 use App\Models\Order;
 use App\Services\Orders\InvoiceService;
 use App\Services\Orders\OrderService;
+use App\Support\Money;
 use Filament\Actions;
 use Filament\Forms;
 use Filament\Notifications\Notification;
@@ -139,7 +140,7 @@ class ViewOrder extends ViewRecord
                 ->visible(fn (Order $record) => $record->status === OrderStatus::PendingPayment
                     && ! in_array($record->compliance_status, [ComplianceStatus::Pending, ComplianceStatus::Rejected], true))
                 ->modalHeading('Zahlungseingang buchen')
-                ->modalDescription(fn (Order $record) => 'Betrag: '.\App\Support\Money::format($record->amountDue()).'. Die Rechnung wird automatisch erstellt.')
+                ->modalDescription(fn (Order $record) => 'Betrag: '.Money::format($record->amountDue()).'. Die Rechnung wird automatisch erstellt.')
                 ->form([
                     Forms\Components\TextInput::make('reference')->label('Referenz (z. B. Kontoauszug, Verwendungszweck)')
                         ->default('manuell')->required()->maxLength(60),

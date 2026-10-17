@@ -11,13 +11,21 @@ use Livewire\Component;
 class ContactForm extends Component
 {
     public string $name = '';
+
     public string $email = '';
+
     public string $phone = '';
+
     public string $subject = '';
+
     public string $message = '';
+
     public bool $privacy = false;
+
     public string $website = '';
+
     public int $startedAt = 0;
+
     public bool $sent = false;
 
     public function mount(?string $subject = null): void

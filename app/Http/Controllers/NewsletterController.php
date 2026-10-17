@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Console\Commands\BuildRatgeber;
 use App\Models\NewsletterCampaign;
 use App\Models\NewsletterEvent;
 use App\Models\NewsletterSubscriber;
 use App\Rules\Honeypot;
 use App\Services\Newsletter\NewsletterService;
+use App\Support\Settings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class NewsletterController extends Controller
@@ -64,11 +67,11 @@ class NewsletterController extends Controller
     {
         abort_unless($subscriber->status === 'confirmed', 403);
         // Im Backend hochgeladenes PDF hat Vorrang, sonst der mitgelieferte Ratgeber (php artisan ratgeber:pdf)
-        $file = app(\App\Support\Settings::class)->get('home.lead.file');
-        if ($file && \Illuminate\Support\Facades\Storage::disk('public')->exists($file)) {
-            return \Illuminate\Support\Facades\Storage::disk('public')->download($file, 'Armory-Falter-Waffenratgeber.pdf');
+        $file = app(Settings::class)->get('home.lead.file');
+        if ($file && Storage::disk('public')->exists($file)) {
+            return Storage::disk('public')->download($file, 'Armory-Falter-Waffenratgeber.pdf');
         }
-        abort_unless(is_readable($bundled = resource_path(\App\Console\Commands\BuildRatgeber::FILE)), 404);
+        abort_unless(is_readable($bundled = resource_path(BuildRatgeber::FILE)), 404);
 
         return response()->download($bundled, 'Armory-Falter-Waffenratgeber.pdf');
     }

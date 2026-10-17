@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Middleware\CachePublicPages;
+use App\Http\Middleware\SecurityHeaders;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -12,7 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->web(append: [\App\Http\Middleware\SecurityHeaders::class, \App\Http\Middleware\CachePublicPages::class]);
+        $middleware->web(append: [SecurityHeaders::class, CachePublicPages::class]);
         // Cloudflare vor dem Shared Hosting: echte Client-IP aus CF-Connecting-IP / X-Forwarded-For übernehmen
         $middleware->trustProxies(at: '*');
         $middleware->encryptCookies(except: ['af_consent']);

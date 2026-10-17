@@ -10,6 +10,7 @@ use App\Filament\Support\Euro;
 use App\Models\TradeRequest;
 use App\Models\User;
 use App\Services\Trade\TradeRequestService;
+use Filament\Actions\Action;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
@@ -18,8 +19,8 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
-use Illuminate\Support\HtmlString;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\HtmlString;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Throwable;
 
@@ -178,7 +179,7 @@ class TradeRequestResource extends Resource
             ]);
     }
 
-    /** @param  class-string<\Filament\Actions\Action|\Filament\Tables\Actions\Action>  $class */
+    /** @param  class-string<Action|Tables\Actions\Action>  $class */
     public static function pdfAction(string $class)
     {
         return $class::make('pdf')->label('PDF-Dossier')->icon('heroicon-o-document-text')->color('gray')

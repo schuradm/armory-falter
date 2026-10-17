@@ -18,11 +18,17 @@ class EventRegistrationForm extends Component
     public int $eventId;
 
     public string $name = '';
+
     public string $email = '';
+
     public string $phone = '';
+
     public int $persons = 1;
+
     public bool $privacy = false;
+
     public string $website = '';
+
     public ?string $result = null;
 
     public function mount(Event $event): void

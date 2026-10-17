@@ -11,6 +11,7 @@ use App\Filament\Support\SeoFields;
 use App\Models\AttributeDefinition;
 use App\Models\Category;
 use App\Models\Product;
+use App\Support\Money;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
@@ -262,7 +263,7 @@ class ProductResource extends Resource
                 Tables\Columns\TextColumn::make('legalClass.name')->label('Rechtsklasse')->badge()->color('gray')->toggleable(),
                 Euro::column('price_gross', 'Preis')->sortable()
                     ->description(fn (Product $record) => $record->hasActiveSpecialPrice()
-                        ? 'Aktion: '.\App\Support\Money::format($record->special_price_gross) : null),
+                        ? 'Aktion: '.Money::format($record->special_price_gross) : null),
                 Tables\Columns\TextColumn::make('stock_quantity')->label('Bestand')->numeric()->sortable()->alignEnd()
                     ->color(fn (Product $record) => $record->stock_quantity <= 0 ? 'danger' : ($record->stock_quantity <= 2 ? 'warning' : null)),
                 Tables\Columns\TextColumn::make('availability')->label('Verfügbarkeit')->badge()->toggleable(isToggledHiddenByDefault: true),

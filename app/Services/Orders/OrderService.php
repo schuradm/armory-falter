@@ -11,6 +11,7 @@ use App\Models\Shipment;
 use App\Models\User;
 use App\Notifications\OrderStatusChanged;
 use App\Services\AuditLogger;
+use App\Services\Payment\KlarnaGateway;
 use App\Services\Vouchers\DiscountCodeService;
 use App\Services\Vouchers\GiftVoucherService;
 use Illuminate\Support\Facades\DB;
@@ -141,7 +142,7 @@ class OrderService
         ]);
         // Klarna Rechnung/Raten: Abbuchung erst beim Versand (Klarna-Vorgabe)
         if ($payment = $order->payments()->where('provider', 'klarna')->where('status', 'authorized')->first()) {
-            app(\App\Services\Payment\KlarnaGateway::class)->capture($payment, $trackingNumber, $carrier);
+            app(KlarnaGateway::class)->capture($payment, $trackingNumber, $carrier);
         }
         $this->transition($order, $order->shippingMethod->isPickup() ? OrderStatus::ReadyForPickup : OrderStatus::Shipped, $by,
             $trackingNumber ? "Sendungsnummer: {$trackingNumber}" : null);

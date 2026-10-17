@@ -5,6 +5,7 @@ namespace App\Notifications;
 use App\Enums\OrderStatus;
 use App\Enums\PaymentMethod;
 use App\Models\Order;
+use App\Support\Money;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -40,7 +41,7 @@ class OrderStatusChanged extends Notification implements ShouldQueue
         }
         if ($this->status === OrderStatus::PendingPayment && $o->payment_method_code === PaymentMethod::Prepayment) {
             $bank = config('shop.company.bank');
-            $mail->line('Bitte überweisen Sie jetzt '.\App\Support\Money::format($o->amountDue()).' an:')
+            $mail->line('Bitte überweisen Sie jetzt '.Money::format($o->amountDue()).' an:')
                 ->line("{$bank['holder']} · IBAN {$bank['iban']}".(filled($bank['bic'] ?? null) ? " · BIC {$bank['bic']}" : ''))
                 ->line("Verwendungszweck: {$o->order_number}");
         }

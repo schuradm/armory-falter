@@ -16,14 +16,20 @@ class AddToCart extends Component
     public int $productId;
 
     public int $quantity = 1;
+
     public ?int $variantId = null;
 
     // Geschenkgutschein: Betrag in Euro (Vorgabe oder frei) und optional Beschenkter
     public string $voucherAmount = '50';
+
     public string $customAmount = '';
+
     public bool $forSomeoneElse = false;
+
     public string $recipientName = '';
+
     public string $recipientEmail = '';
+
     public string $message = '';
 
     public function mount(Product $product): void

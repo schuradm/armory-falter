@@ -5,6 +5,7 @@ use App\Http\Controllers\BlogController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CaliberController;
 use App\Http\Controllers\ConsentController;
+use App\Http\Controllers\CronController;
 use App\Http\Controllers\FallbackController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MarketingController;
@@ -12,13 +13,20 @@ use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\ShopActionController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\SitemapController;
+use App\Http\Controllers\WithdrawalController;
+use App\Http\Middleware\CachePublicPages;
 use App\Livewire;
+use App\Support\Seo;
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Route;
+use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 Route::get('/', HomeController::class)->name('home');
 
@@ -26,7 +34,7 @@ Route::get('/', HomeController::class)->name('home');
 Route::get('/shop', [ShopController::class, 'index'])->name('shop.index');
 Route::get('/shop/{path}', [ShopController::class, 'category'])->where('path', '[a-z0-9\-/]+')->name('shop.category');
 Route::get('/produkt/{product:slug}', [ProductController::class, 'show'])->name('product.show');
-Route::get('/produkt/{product:slug}/bewertungen', [\App\Http\Controllers\ReviewController::class, 'index'])->name('product.reviews');
+Route::get('/produkt/{product:slug}/bewertungen', [ReviewController::class, 'index'])->name('product.reviews');
 Route::get('/hersteller', [BrandController::class, 'index'])->name('brands.index');
 Route::get('/hersteller/{manufacturer:slug}', [BrandController::class, 'show'])->name('brands.show');
 Route::get('/kaliber/{caliber:slug}', [CaliberController::class, 'show'])->name('calibers.show');
@@ -43,9 +51,9 @@ Route::middleware('auth')->group(function () {
 Route::get('/verkaufsservice', [ServiceController::class, 'consignment'])->name('trade.consignment');
 Route::get('/waffen-ankauf', [ServiceController::class, 'buyback'])->name('trade.buyback');
 Route::get('/werkstatt', [ServiceController::class, 'workshop'])->name('workshop.index');
-Route::get('/werkstatt/termin', fn (\App\Support\Seo $seo) => app(ServiceController::class)->booking($seo, 'workshop'))->name('appointments.workshop');
+Route::get('/werkstatt/termin', fn (Seo $seo) => app(ServiceController::class)->booking($seo, 'workshop'))->name('appointments.workshop');
 Route::get('/werkstatt/{service:slug}', [ServiceController::class, 'workshopService'])->name('workshop.show');
-Route::get('/beratung', fn (\App\Support\Seo $seo) => app(ServiceController::class)->booking($seo, 'consultation'))->name('appointments.consultation');
+Route::get('/beratung', fn (Seo $seo) => app(ServiceController::class)->booking($seo, 'consultation'))->name('appointments.consultation');
 
 // Marketing: Events, Club, regionale Seiten
 Route::get('/events', [MarketingController::class, 'events'])->name('events.index');
@@ -63,29 +71,29 @@ Route::get('/kontakt', [PageController::class, 'contact'])->name('contact');
 Route::get('/{slug}', [PageController::class, 'show'])->whereIn('slug', PageController::SLUGS)->name('page.show');
 
 // Widerrufsbutton (Art. 11a Verbraucherrechte-RL, seit 19.06.2026): Angaben → „Widerruf bestätigen“ → Eingangsbestätigung
-Route::get('/vertrag-widerrufen', [\App\Http\Controllers\WithdrawalController::class, 'create'])->name('withdrawal.create');
-Route::post('/vertrag-widerrufen/pruefen', [\App\Http\Controllers\WithdrawalController::class, 'review'])->middleware('throttle:20,1')->name('withdrawal.review');
-Route::post('/vertrag-widerrufen', [\App\Http\Controllers\WithdrawalController::class, 'store'])->middleware('throttle:10,1')->name('withdrawal.store');
-Route::get('/vertrag-widerrufen/eingegangen', [\App\Http\Controllers\WithdrawalController::class, 'done'])->name('withdrawal.done');
+Route::get('/vertrag-widerrufen', [WithdrawalController::class, 'create'])->name('withdrawal.create');
+Route::post('/vertrag-widerrufen/pruefen', [WithdrawalController::class, 'review'])->middleware('throttle:20,1')->name('withdrawal.review');
+Route::post('/vertrag-widerrufen', [WithdrawalController::class, 'store'])->middleware('throttle:10,1')->name('withdrawal.store');
+Route::get('/vertrag-widerrufen/eingegangen', [WithdrawalController::class, 'done'])->name('withdrawal.done');
 
 // Newsletter, Consent, SEO
 Route::post('/newsletter', [NewsletterController::class, 'subscribe'])->middleware('throttle:20,1')->name('newsletter.subscribe');
 Route::get('/newsletter/bestaetigen/{token}', [NewsletterController::class, 'confirm'])->name('newsletter.confirm');
 Route::get('/newsletter/abmelden/{subscriber}', [NewsletterController::class, 'unsubscribe'])->middleware('signed')->name('newsletter.unsubscribe');
-Route::post('/newsletter/abmelden/{subscriber}', [NewsletterController::class, 'unsubscribe'])->middleware('signed')->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class);
+Route::post('/newsletter/abmelden/{subscriber}', [NewsletterController::class, 'unsubscribe'])->middleware('signed')->withoutMiddleware(VerifyCsrfToken::class);
 Route::get('/newsletter/ratgeber/{subscriber}', [NewsletterController::class, 'ratgeber'])->middleware('signed')->name('newsletter.ratgeber');
-Route::get('/bewertungen/abbestellen/{user}', [\App\Http\Controllers\ReviewController::class, 'optOut'])->middleware('signed')->name('reviews.opt-out');
-Route::post('/bewertungen/abbestellen/{user}', [\App\Http\Controllers\ReviewController::class, 'optOut'])->middleware('signed')->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class);
+Route::get('/bewertungen/abbestellen/{user}', [ReviewController::class, 'optOut'])->middleware('signed')->name('reviews.opt-out');
+Route::post('/bewertungen/abbestellen/{user}', [ReviewController::class, 'optOut'])->middleware('signed')->withoutMiddleware(VerifyCsrfToken::class);
 Route::get('/newsletter/o/{campaign}/{subscriber}', [NewsletterController::class, 'open'])->middleware('signed')->name('newsletter.open');
 Route::post('/consent', [ConsentController::class, 'store'])->middleware('throttle:30,1')->name('consent.store');
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 Route::get('/robots.txt', [SitemapController::class, 'robots']);
 // Scheduler-Auslösung für Hosting ohne Cronjob (Token aus CRON_TOKEN, siehe CronController). Ohne Session/CSRF.
-Route::get('/cron/{token}', \App\Http\Controllers\CronController::class)
+Route::get('/cron/{token}', CronController::class)
     ->where('token', '[A-Za-z0-9_\-]{16,128}')
     ->middleware('throttle:10,1')
-    ->withoutMiddleware([\Illuminate\Session\Middleware\StartSession::class, \Illuminate\View\Middleware\ShareErrorsFromSession::class,
-        \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class, \App\Http\Middleware\CachePublicPages::class])
+    ->withoutMiddleware([StartSession::class, ShareErrorsFromSession::class,
+        VerifyCsrfToken::class, CachePublicPages::class])
     ->name('cron');
 Route::get('/downloads/{document}', [AccountController::class, 'productDocument'])->name('product-document.download');
 
@@ -99,7 +107,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 // Zahlungs-Webhooks (ohne Session/CSRF, Authentizität wird im Controller geprüft)
-Route::withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])->middleware('throttle:120,1')->group(function () {
+Route::withoutMiddleware([VerifyCsrfToken::class])->middleware('throttle:120,1')->group(function () {
     Route::post('/webhooks/paypal', [PaymentController::class, 'paypalWebhook'])->name('payment.paypal.webhook');
     Route::post('/webhooks/klarna/{order:order_number}', [PaymentController::class, 'klarnaWebhook'])->name('payment.klarna.webhook');
 });

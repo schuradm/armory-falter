@@ -7,8 +7,11 @@ use App\Models\CustomerEntitlement;
 final class ComplianceResult
 {
     public const HINT_LOGIN = 'login';
+
     public const HINT_VERIFY_AGE = 'verify_age';
+
     public const HINT_UPLOAD_ENTITLEMENT = 'upload_entitlement';
+
     public const HINT_CONTACT = 'contact';
 
     /**

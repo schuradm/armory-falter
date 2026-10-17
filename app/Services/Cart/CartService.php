@@ -6,6 +6,7 @@ use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Product;
 use App\Models\User;
+use App\Support\Money;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Str;
@@ -82,7 +83,7 @@ class CartService
         $max = (int) config('shop.gift_vouchers.max', 100000);
         if ($amount < $min || $amount > $max || $amount % 100 !== 0) {
             throw new InvalidArgumentException('Bitte wählen Sie einen Gutscheinbetrag in ganzen Euro zwischen '
-                .\App\Support\Money::format($min).' und '.\App\Support\Money::format($max).'.');
+                .Money::format($min).' und '.Money::format($max).'.');
         }
         $email = trim((string) ($options['recipient_email'] ?? ''));
         if ($email !== '' && ! filter_var($email, FILTER_VALIDATE_EMAIL)) {

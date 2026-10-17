@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\AuditLogResource\Pages;
 use App\Models\AuditLog;
+use Filament\Forms\Components\TextInput;
 use Filament\Infolists;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
@@ -11,6 +12,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\HtmlString;
 
 /** Revisionssicheres Protokoll (Hash-Kette): nur lesen, niemals ändern oder löschen. */
 class AuditLogResource extends Resource
@@ -77,7 +79,7 @@ class AuditLogResource extends Resource
     {
         return Infolists\Components\TextEntry::make($field)->label($label)->placeholder('–')
             ->getStateUsing(fn (AuditLog $r) => $r->{$field} ? json_encode($r->{$field}, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : null)
-            ->formatStateUsing(fn (string $state) => new \Illuminate\Support\HtmlString('<pre class="whitespace-pre-wrap text-xs">'.e($state).'</pre>'));
+            ->formatStateUsing(fn (string $state) => new HtmlString('<pre class="whitespace-pre-wrap text-xs">'.e($state).'</pre>'));
     }
 
     public static function table(Table $table): Table
@@ -98,8 +100,8 @@ class AuditLogResource extends Resource
                 Tables\Filters\SelectFilter::make('actor_type')->label('Typ')->options(['admin' => 'Mitarbeiter', 'user' => 'Kunde', 'system' => 'System']),
                 Tables\Filters\Filter::make('subject')->label('Objekt')
                     ->form([
-                        \Filament\Forms\Components\TextInput::make('subject_type')->label('Objekt-Typ (z. B. order)'),
-                        \Filament\Forms\Components\TextInput::make('subject_id')->label('Objekt-ID')->numeric(),
+                        TextInput::make('subject_type')->label('Objekt-Typ (z. B. order)'),
+                        TextInput::make('subject_id')->label('Objekt-ID')->numeric(),
                     ])
                     ->query(fn (Builder $query, array $data) => $query
                         ->when($data['subject_type'] ?? null, fn ($query, $v) => $query->where('subject_type', $v))

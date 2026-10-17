@@ -2,6 +2,7 @@
 
 namespace App\Enums;
 
+use App\Support\Settings;
 use Filament\Support\Contracts\HasLabel as FilamentLabel;
 
 /**
@@ -88,7 +89,7 @@ enum PaymentMethod: string implements FilamentLabel
         if ($this === self::GiftVoucher) {
             return true;
         }
-        $override = app(\App\Support\Settings::class)->get("payment_methods.{$this->value}");
+        $override = app(Settings::class)->get("payment_methods.{$this->value}");
         if ($override === null) {
             return (bool) config("shop.payment_methods.{$this->value}.enabled", false);
         }

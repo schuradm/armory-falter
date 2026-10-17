@@ -10,6 +10,7 @@ use App\Models\ProductReview;
 use App\Models\User;
 use App\Services\AuditLogger;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 
@@ -137,7 +138,7 @@ class ReviewService
             'rating_avg' => $stats->c ? round((float) $stats->a, 2) : null,
         ]);
         PageCache::flush();
-        \Illuminate\Support\Facades\Cache::forget('home.v2'); // Produktkarten der Startseite
+        Cache::forget('home.v2'); // Produktkarten der Startseite
     }
 
     /** @return array<int,int> Sterne (5…1) => Anzahl freigegebener Bewertungen */

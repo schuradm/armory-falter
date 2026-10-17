@@ -12,6 +12,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Str;
 
 class CommentResource extends Resource
 {
@@ -47,7 +48,7 @@ class CommentResource extends Resource
                     ->options(fn (Forms\Get $get, ?Comment $record) => $get('blog_post_id')
                         ? Comment::where('blog_post_id', $get('blog_post_id'))->whereNull('parent_id')->when($record, fn ($query) => $query->whereKeyNot($record->id))
                             ->latest()->limit(200)->get(['id', 'author_name', 'body'])
-                            ->mapWithKeys(fn (Comment $c) => [$c->id => "{$c->author_name}: ".\Illuminate\Support\Str::limit($c->body, 60)])
+                            ->mapWithKeys(fn (Comment $c) => [$c->id => "{$c->author_name}: ".Str::limit($c->body, 60)])
                         : [])
                     ->searchable()
                     ->placeholder('Kein (Hauptkommentar)'),
@@ -71,7 +72,9 @@ class CommentResource extends Resource
                 Tables\Columns\TextColumn::make('post.title')->label('Beitrag')->limit(40),
                 Tables\Columns\TextColumn::make('status')->label('Status')->badge()
                     ->formatStateUsing(fn ($state) => self::STATUSES[$state] ?? $state)
-                    ->color(fn ($state) => match ($state) { 'approved' => 'success', 'pending' => 'warning', default => 'danger' }),
+                    ->color(fn ($state) => match ($state) {
+                        'approved' => 'success', 'pending' => 'warning', default => 'danger'
+                    }),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')->label('Status')->options(self::STATUSES),

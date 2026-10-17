@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\WorkshopServiceResource\Pages;
 use App\Filament\Support\FormFields;
 use App\Models\WorkshopService;
+use App\Support\Money;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -52,7 +53,7 @@ class WorkshopServiceResource extends Resource
             ->reorderable('sort_order')
             ->columns([
                 Tables\Columns\TextColumn::make('name')->label('Bezeichnung')->searchable(),
-                Tables\Columns\TextColumn::make('price_from_gross')->label('Preis ab')->formatStateUsing(fn ($state) => \App\Support\Money::format((int) $state))->placeholder('auf Anfrage'),
+                Tables\Columns\TextColumn::make('price_from_gross')->label('Preis ab')->formatStateUsing(fn ($state) => Money::format((int) $state))->placeholder('auf Anfrage'),
                 Tables\Columns\TextColumn::make('duration_minutes')->label('Dauer')->suffix(' Min.'),
                 Tables\Columns\IconColumn::make('is_bookable')->label('Buchbar')->boolean(),
             ])

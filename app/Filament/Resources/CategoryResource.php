@@ -56,7 +56,7 @@ class CategoryResource extends Resource
                     Forms\Components\Select::make('parent_id')->label('Übergeordnete Kategorie')
                         ->relationship('parent', 'name', fn (Builder $query, ?Category $record) => $record ? $query->whereKeyNot($record->getKey())
                             ->where('path', 'not like', $record->path.'/%') : $query)
-                        ->getOptionLabelFromRecordUsing(fn (Category $record) => str_replace("/", " › ", $record->path))
+                        ->getOptionLabelFromRecordUsing(fn (Category $record) => str_replace('/', ' › ', $record->path))
                         ->searchable()->preload()
                         ->placeholder('Hauptkategorie (oberste Ebene)'),
                     Forms\Components\Select::make('default_legal_class_id')->label('Standard-Rechtsklasse für neue Produkte')

@@ -17,10 +17,15 @@ class CommentForm extends Component
     public int $postId;
 
     public ?int $parentId = null;
+
     public string $author = '';
+
     public string $body = '';
+
     public string $website = '';
+
     public bool $privacy = false;
+
     public bool $sent = false;
 
     public function mount(BlogPost $post): void

@@ -4,8 +4,8 @@ namespace App\Livewire;
 
 use App\Enums\PaymentMethod;
 use App\Livewire\Concerns\HandlesVoucherCodes;
+use App\Models\Address;
 use App\Models\Order;
-use App\Models\ShippingMethod;
 use App\Services\Cart\CartService;
 use App\Services\Checkout\CheckoutData;
 use App\Services\Checkout\CheckoutException;
@@ -26,15 +26,23 @@ class Checkout extends Component
     public int $step = 1;
 
     public array $billing = [];
+
     public bool $differentShipping = false;
+
     public array $shipping = [];
+
     public bool $saveAddress = true;
 
     public ?string $shippingMethod = null;
+
     public ?string $paymentMethod = null;
+
     public string $note = '';
+
     public bool $terms = false;
+
     public bool $legalDeclaration = false;
+
     public bool $noReviewInvite = false; // Widerspruch gegen Bewertungseinladung direkt beim Bestellen
 
     #[Locked]
@@ -113,9 +121,9 @@ class Checkout extends Component
     protected function storeAddresses(): void
     {
         $user = Auth::user();
-        $user->addresses()->updateOrCreate(['type' => 'billing', 'is_default' => true], collect($this->billing)->only((new \App\Models\Address)->getFillable())->all());
+        $user->addresses()->updateOrCreate(['type' => 'billing', 'is_default' => true], collect($this->billing)->only((new Address)->getFillable())->all());
         if ($this->differentShipping) {
-            $user->addresses()->updateOrCreate(['type' => 'shipping', 'is_default' => true], collect($this->shipping)->only((new \App\Models\Address)->getFillable())->all());
+            $user->addresses()->updateOrCreate(['type' => 'shipping', 'is_default' => true], collect($this->shipping)->only((new Address)->getFillable())->all());
         }
     }
 

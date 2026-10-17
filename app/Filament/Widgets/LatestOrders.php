@@ -4,6 +4,7 @@ namespace App\Filament\Widgets;
 
 use App\Filament\Resources\OrderResource;
 use App\Models\Order;
+use App\Support\Money;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget;
@@ -35,11 +36,13 @@ class LatestOrders extends TableWidget
                 Tables\Columns\TextColumn::make('placed_at')->label('Datum')->dateTime('d.m.Y H:i'),
                 Tables\Columns\TextColumn::make('customer')->label('Kunde')
                     ->getStateUsing(fn (Order $r) => $r->user?->company_name ?: trim(($r->user?->first_name ?? '').' '.($r->user?->last_name ?? ''))),
-                Tables\Columns\TextColumn::make('total_gross')->label('Summe')->formatStateUsing(fn ($state) => \App\Support\Money::format((int) $state)),
+                Tables\Columns\TextColumn::make('total_gross')->label('Summe')->formatStateUsing(fn ($state) => Money::format((int) $state)),
                 Tables\Columns\TextColumn::make('payment_method_code')->label('Zahlart'),
                 Tables\Columns\TextColumn::make('status')->label('Status')->badge(),
                 Tables\Columns\TextColumn::make('compliance_status')->label('Freigabe')->badge()
-                    ->color(fn ($state) => match ($state?->value) { 'pending' => 'warning', 'approved' => 'success', 'rejected' => 'danger', default => 'gray' }),
+                    ->color(fn ($state) => match ($state?->value) {
+                        'pending' => 'warning', 'approved' => 'success', 'rejected' => 'danger', default => 'gray'
+                    }),
             ])
             ->emptyStateHeading('Noch keine Bestellungen');
     }

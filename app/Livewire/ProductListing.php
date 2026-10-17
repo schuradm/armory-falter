@@ -18,25 +18,35 @@ class ProductListing extends Component
     use WithPagination;
 
     public ?int $categoryId = null;
+
     public ?int $manufacturerId = null;
+
     public ?int $caliberId = null;
 
     #[Url(as: 'q', except: '')]
     public string $search = '';
+
     #[Url(as: 'hersteller', except: [])]
     public array $brands = [];
+
     #[Url(as: 'kaliber', except: [])]
     public array $calibers = [];
+
     #[Url(as: 'preis_von', except: null)]
     public ?int $priceFrom = null;
+
     #[Url(as: 'preis_bis', except: null)]
     public ?int $priceTo = null;
+
     #[Url(as: 'verfuegbar', except: false)]
     public bool $inStock = false;
+
     #[Url(as: 'zustand', except: '')]
     public string $condition = '';
+
     #[Url(as: 'einsatz', except: '')]
     public string $usage = '';
+
     #[Url(as: 'sortierung', except: 'relevanz')]
     public string $sort = 'relevanz';
 

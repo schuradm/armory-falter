@@ -6,6 +6,7 @@ use App\Filament\Resources\EventResource\Pages;
 use App\Filament\Resources\EventResource\RelationManagers;
 use App\Filament\Support\FormFields;
 use App\Models\Event;
+use App\Support\Money;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -71,7 +72,7 @@ class EventResource extends Resource
                 Tables\Columns\TextColumn::make('booked_persons')->label('Anmeldungen')
                     ->formatStateUsing(fn ($state, Event $r) => ((int) $state).($r->capacity ? " / {$r->capacity}" : ''))
                     ->default(0),
-                Tables\Columns\TextColumn::make('price_gross')->label('Preis')->formatStateUsing(fn ($state) => \App\Support\Money::format((int) $state))->placeholder('kostenlos'),
+                Tables\Columns\TextColumn::make('price_gross')->label('Preis')->formatStateUsing(fn ($state) => Money::format((int) $state))->placeholder('kostenlos'),
                 Tables\Columns\IconColumn::make('is_published')->label('Online')->boolean(),
             ])
             ->filters([

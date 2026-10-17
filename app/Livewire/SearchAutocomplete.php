@@ -12,6 +12,7 @@ use Livewire\Component;
 class SearchAutocomplete extends Component
 {
     public bool $mobile = false;
+
     public string $q = '';
 
     public function render()
