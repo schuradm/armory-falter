@@ -119,7 +119,7 @@ return [
     'home' => [
         'hero' => [
             'eyebrow' => 'Willkommen bei Armory Falter',
-            'headline' => 'Präzision.|Vertrauen.|Leidenschaft.',
+            'headline' => 'Präzision.|Vertrauen.|Waffenkunde.',
             'text' => 'Ihr Partner für Jagd, Sport und Präzision. Die erste Anlaufstelle für Jäger, Sportschützen, Sammler und Behörden, die höchste Qualität, echte Expertise und persönlichen Service erwarten.',
             'cta_primary' => ['label' => 'Shop entdecken', 'url' => '/shop'],
             'cta_secondary' => ['label' => 'Beratung vereinbaren', 'url' => '/beratung'],
