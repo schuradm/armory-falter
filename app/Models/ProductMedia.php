@@ -51,13 +51,18 @@ class ProductMedia extends Model
         return Storage::disk('public')->url($this->path);
     }
 
-    public function srcset(): ?string
+    /** srcset aller Varianten; $max begrenzt die größte angebotene Breite (z. B. Karten: 800 statt 2000). */
+    public function srcset(?int $max = null): ?string
     {
         if ($this->isExternal() || empty($this->variant_widths)) {
             return null;
         }
+        $widths = collect($this->variant_widths)->sort()->values();
+        if ($max) {
+            $widths = $widths->filter(fn ($w) => $w <= $max)->whenEmpty(fn () => collect([$this->variant_widths[0]]));
+        }
 
-        return collect($this->variant_widths)->sort()
+        return $widths
             ->map(fn ($w) => Storage::disk('public')->url(ImageVariants::path($this->path, $w))." {$w}w")->join(', ');
     }
 }

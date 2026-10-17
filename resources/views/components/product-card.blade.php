@@ -4,7 +4,7 @@
     <div class="relative">
         <a href="{{ $product->url() }}" data-vt-product class="relative block aspect-[4/3] overflow-hidden bg-gradient-to-br from-surface-2 to-bg" tabindex="-1" aria-hidden="true">
             @if ($img)
-                <x-img :media="$img" size="card" :priority="$priority" class="size-full object-contain p-4 transition duration-700 ease-out-expo group-hover:scale-[1.06]"/>
+                <x-img :media="$img" size="card" sizes="(min-width: 1024px) 330px, (min-width: 640px) calc(50vw - 34px), calc(100vw - 32px)" :priority="$priority" class="size-full object-contain transition duration-700 ease-out-expo group-hover:scale-[1.06]"/>
             @else
                 <div class="grid size-full place-items-center text-muted/40"><x-icon :name="match($product->product_type->value) { 'weapon' => $product->weapon_kind === 'kurzwaffe' ? 'pistol' : 'rifle', 'optic' => 'scope', 'ammo' => 'target', 'knife' => 'knife', 'apparel' => 'shirt', default => 'box' }" class="size-16"/></div>
             @endif

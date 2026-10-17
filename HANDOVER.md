@@ -22,6 +22,14 @@ Dieses Dokument ist der Arbeitsauftrag für die Weiterentwicklung auf dem HOME-S
 - Performance: Ganzseiten-Cache für Gäste (`CachePublicPages`), WebP-Varianten mit srcset (`ImageVariants`, Job), Inline-CSS, Font-Preload mit Fallback-Metriken, Speculation Rules (Prerender), View Transitions, `content-visibility`, keine Livewire-Komponente pro Produktkarte.
 - Backend: Panel unter `/kms-login`, Login läuft über die Shop-Anmeldung (wegen 2FA), Staff braucht 2FA. Ressourcen sind **roh generiert** (siehe offene Punkte).
 
+## Demo-Produktbilder
+
+- 24 Studio-Illustrationen (20 Produkte, Hauptbild + Detailansicht für Glock 17, Walther PDP, Blaser R8, Zeiss V4), 2000×1500 WebP, je 12–42 kB, in `resources/demo/products/`. Keine Herstellerlogos.
+- Einspielen in eine bestehende DB (ohne Reseed): `php artisan demo:images` (idempotent). Kopiert nach `storage/app/public/products/demo/`, legt `ProductMedia` an und erzeugt die WebP-Varianten synchron (kein Queue-Worker nötig). Bei `php artisan db:seed` läuft es automatisch (`DemoProductImageSeeder`).
+- Voraussetzung: `public/storage` erreichbar (lokal `php artisan storage:link`, auf One.com bildet die Root-`.htaccess` `/storage` ab).
+- Echte Fotos ersetzen die Demo-Bilder einfach im Backend (Produkt → Medien); Demo-Einträge dort löschen.
+- Neu rendern (nur Entwicklung, Node + Playwright): `resources/demo/generator/build.mjs` (SVG → PNG), danach WebP q80 (siehe Kommentar in `build.mjs`).
+
 ## Offene Punkte (Reihenfolge = Priorität)
 
 1. **Lokale Umgebung** aufsetzen (PHP 8.3+/8.5 mit Extensions pdo_mysql, gd, intl, zip, bcmath; Composer; MySQL 8/MariaDB 10.6+; Node 20+ nur für den Build). `composer install`, `npm ci && npm run build`, `.env` aus `.env.example`, `php artisan key:generate`, `php artisan migrate --seed`, `php artisan storage:link`.

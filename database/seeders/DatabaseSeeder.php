@@ -29,6 +29,7 @@ class DatabaseSeeder extends Seeder
             PageSeeder::class,
             FaqSeeder::class,
             ProductSeeder::class,
+            DemoProductImageSeeder::class,
             MarketingSeeder::class,
             AdminUserSeeder::class,
         ]);

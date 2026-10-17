@@ -8,8 +8,8 @@
                 <div class="card fx-zoom relative grid aspect-[4/3] place-items-center overflow-hidden bg-gradient-to-br from-surface-2 to-bg" style="view-transition-name: product-hero"
                      x-data="{ zx: 50, zy: 50, z: false }" @pointermove="if ($event.pointerType === 'mouse') { const r = $el.getBoundingClientRect(); zx = ($event.clientX - r.left) / r.width * 100; zy = ($event.clientY - r.top) / r.height * 100; z = true }" @pointerleave="z = false">
                     @forelse ($images as $i => $img)
-                        <x-img :media="$img" size="large" sizes="(min-width: 1024px) 55vw, 100vw" :priority="$i === 0" x-show="active === {{ $i }}" :x-cloak="$i > 0"
-                               class="size-full object-contain p-6 transition-transform duration-300 ease-out" ::style="z && `transform: scale(1.8); transform-origin: ${zx}% ${zy}%`"/>
+                        <x-img :media="$img" size="large" sizes="(min-width: 1280px) 616px, (min-width: 1024px) 50vw, calc(100vw - 32px)" :priority="$i === 0" x-show="active === {{ $i }}" :x-cloak="$i > 0"
+                               class="size-full object-contain transition-transform duration-300 ease-out" ::style="z && `transform: scale(1.8); transform-origin: ${zx}% ${zy}%`"/>
                     @empty
                         <x-icon :name="$product->weapon_kind === 'kurzwaffe' ? 'pistol' : ($product->product_type->value === 'optic' ? 'scope' : 'rifle')" class="size-32 text-muted/30"/>
                     @endforelse
