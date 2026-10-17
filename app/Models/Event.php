@@ -17,6 +17,7 @@ class Event extends Model
         return 'slug';
     }
 
+    /** @return HasMany<EventRegistration, $this> */
     public function registrations(): HasMany
     {
         return $this->hasMany(EventRegistration::class);

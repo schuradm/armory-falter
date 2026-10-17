@@ -11,6 +11,7 @@ class Payment extends Model
 
     protected $casts = ['raw_response' => 'array'];
 
+    /** @return BelongsTo<Order, $this> */
     public function order(): BelongsTo
     {
         return $this->belongsTo(Order::class);

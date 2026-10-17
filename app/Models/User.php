@@ -49,6 +49,7 @@ class User extends Authenticatable implements FilamentUser, HasName, MustVerifyE
         });
     }
 
+    /** @return Attribute<string, never> */
     protected function name(): Attribute
     {
         return Attribute::get(fn () => trim("{$this->first_name} {$this->last_name}"));
@@ -79,31 +80,37 @@ class User extends Authenticatable implements FilamentUser, HasName, MustVerifyE
         return in_array($this->customer_type, ['authority', 'dealer'], true);
     }
 
+    /** @return HasMany<Address, $this> */
     public function addresses(): HasMany
     {
         return $this->hasMany(Address::class);
     }
 
+    /** @return HasMany<CustomerDocument, $this> */
     public function documents(): HasMany
     {
         return $this->hasMany(CustomerDocument::class);
     }
 
+    /** @return HasMany<CustomerEntitlement, $this> */
     public function entitlements(): HasMany
     {
         return $this->hasMany(CustomerEntitlement::class);
     }
 
+    /** @return HasMany<CustomerEntitlement, $this> */
     public function activeEntitlements(): HasMany
     {
         return $this->entitlements()->active();
     }
 
+    /** @return HasMany<Order, $this> */
     public function orders(): HasMany
     {
         return $this->hasMany(Order::class);
     }
 
+    /** @return HasMany<Wishlist, $this> */
     public function wishlists(): HasMany
     {
         return $this->hasMany(Wishlist::class);
@@ -114,16 +121,19 @@ class User extends Authenticatable implements FilamentUser, HasName, MustVerifyE
         return $this->wishlists()->firstOrCreate(['is_default' => true], ['name' => 'Favoriten']);
     }
 
+    /** @return HasMany<TradeRequest, $this> */
     public function tradeRequests(): HasMany
     {
         return $this->hasMany(TradeRequest::class);
     }
 
+    /** @return HasMany<ProductReview, $this> */
     public function reviews(): HasMany
     {
         return $this->hasMany(ProductReview::class);
     }
 
+    /** @return HasMany<Appointment, $this> */
     public function appointments(): HasMany
     {
         return $this->hasMany(Appointment::class);

@@ -11,16 +11,19 @@ class DiscountCodeRedemption extends Model
 
     protected $casts = ['released_at' => 'datetime'];
 
+    /** @return BelongsTo<DiscountCode, $this> */
     public function discountCode(): BelongsTo
     {
         return $this->belongsTo(DiscountCode::class);
     }
 
+    /** @return BelongsTo<Order, $this> */
     public function order(): BelongsTo
     {
         return $this->belongsTo(Order::class);
     }
 
+    /** @return BelongsTo<User, $this> */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class)->withTrashed();

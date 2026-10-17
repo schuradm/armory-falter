@@ -9,6 +9,7 @@ class ProductDocument extends Model
 {
     protected $fillable = ['product_id', 'type', 'title', 'path', 'language', 'visibility'];
 
+    /** @return BelongsTo<Product, $this> */
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);

@@ -28,26 +28,31 @@ class BlogPost extends Model
         return $q->where('status', 'published')->where('published_at', '<=', now());
     }
 
+    /** @return BelongsTo<BlogCategory, $this> */
     public function category(): BelongsTo
     {
         return $this->belongsTo(BlogCategory::class, 'blog_category_id');
     }
 
+    /** @return BelongsTo<Author, $this> */
     public function author(): BelongsTo
     {
         return $this->belongsTo(Author::class);
     }
 
+    /** @return HasMany<Comment, $this> */
     public function comments(): HasMany
     {
         return $this->hasMany(Comment::class);
     }
 
+    /** @return HasMany<Comment, $this> */
     public function approvedComments(): HasMany
     {
         return $this->comments()->where('status', 'approved')->whereNull('parent_id')->with('replies')->oldest();
     }
 
+    /** @return MorphMany<Faq, $this> */
     public function faqs(): MorphMany
     {
         return $this->morphMany(Faq::class, 'faqable')->orderBy('sort_order');

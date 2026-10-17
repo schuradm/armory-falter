@@ -13,21 +13,25 @@ class OrderComplianceCheck extends Model
 
     protected $casts = ['details' => 'array', 'checked_at' => 'datetime'];
 
+    /** @return BelongsTo<Order, $this> */
     public function order(): BelongsTo
     {
         return $this->belongsTo(Order::class);
     }
 
+    /** @return BelongsTo<OrderItem, $this> */
     public function orderItem(): BelongsTo
     {
         return $this->belongsTo(OrderItem::class);
     }
 
+    /** @return BelongsTo<CustomerEntitlement, $this> */
     public function entitlement(): BelongsTo
     {
         return $this->belongsTo(CustomerEntitlement::class, 'customer_entitlement_id');
     }
 
+    /** @return BelongsTo<User, $this> */
     public function checker(): BelongsTo
     {
         return $this->belongsTo(User::class, 'checked_by');

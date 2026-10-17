@@ -38,6 +38,7 @@ class DiscountCode extends Model
         return mb_strtoupper(preg_replace('/[\s\-_]+/u', '', (string) $code));
     }
 
+    /** @return HasMany<DiscountCodeRedemption, $this> */
     public function redemptions(): HasMany
     {
         return $this->hasMany(DiscountCodeRedemption::class);

@@ -11,6 +11,7 @@ class Caliber extends Model
 
     protected $casts = ['aliases' => 'array', 'is_large_bore' => 'boolean', 'faqs' => 'array'];
 
+    /** @return HasMany<Product, $this> */
     public function products(): HasMany
     {
         return $this->hasMany(Product::class);

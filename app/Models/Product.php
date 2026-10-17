@@ -129,26 +129,31 @@ class Product extends Model
 
     // ---- Relationen ----------------------------------------------------
 
+    /** @return BelongsTo<Manufacturer, $this> */
     public function manufacturer(): BelongsTo
     {
         return $this->belongsTo(Manufacturer::class);
     }
 
+    /** @return BelongsTo<Caliber, $this> */
     public function caliber(): BelongsTo
     {
         return $this->belongsTo(Caliber::class);
     }
 
+    /** @return BelongsTo<LegalClass, $this> */
     public function legalClass(): BelongsTo
     {
         return $this->belongsTo(LegalClass::class);
     }
 
+    /** @return BelongsTo<TaxRate, $this> */
     public function taxRate(): BelongsTo
     {
         return $this->belongsTo(TaxRate::class);
     }
 
+    /** @return BelongsToMany<Category, $this> */
     public function categories(): BelongsToMany
     {
         return $this->belongsToMany(Category::class)->withPivot('is_primary');
@@ -161,21 +166,25 @@ class Product extends Model
             ->wherePivot('type', 'accessory')->withPivot('sort_order')->orderByPivot('sort_order');
     }
 
+    /** @return HasMany<ProductVariant, $this> */
     public function variants(): HasMany
     {
         return $this->hasMany(ProductVariant::class);
     }
 
+    /** @return HasMany<ProductMedia, $this> */
     public function media(): HasMany
     {
         return $this->hasMany(ProductMedia::class)->orderBy('sort_order');
     }
 
+    /** @return HasMany<ProductDocument, $this> */
     public function downloads(): HasMany
     {
         return $this->hasMany(ProductDocument::class);
     }
 
+    /** @return BelongsToMany<AttributeDefinition, $this> */
     public function attributes(): BelongsToMany
     {
         return $this->belongsToMany(AttributeDefinition::class, 'product_attribute_values')
@@ -183,16 +192,19 @@ class Product extends Model
             ->orderBy('sort_order');
     }
 
+    /** @return HasMany<WeaponItem, $this> */
     public function weaponItems(): HasMany
     {
         return $this->hasMany(WeaponItem::class);
     }
 
+    /** @return HasMany<ProductReview, $this> */
     public function reviews(): HasMany
     {
         return $this->hasMany(ProductReview::class);
     }
 
+    /** @return MorphMany<Faq, $this> */
     public function faqs(): MorphMany
     {
         return $this->morphMany(Faq::class, 'faqable')->orderBy('sort_order');

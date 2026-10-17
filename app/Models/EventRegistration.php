@@ -9,6 +9,7 @@ class EventRegistration extends Model
 {
     protected $fillable = ['event_id', 'user_id', 'name', 'email', 'phone', 'persons', 'status'];
 
+    /** @return BelongsTo<Event, $this> */
     public function event(): BelongsTo
     {
         return $this->belongsTo(Event::class);

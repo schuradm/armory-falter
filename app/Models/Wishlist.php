@@ -12,11 +12,13 @@ class Wishlist extends Model
 
     protected $casts = ['is_default' => 'boolean'];
 
+    /** @return BelongsTo<User, $this> */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /** @return BelongsToMany<Product, $this> */
     public function products(): BelongsToMany
     {
         return $this->belongsToMany(Product::class, 'wishlist_items')->withPivot(['notify_price_drop', 'notify_back_in_stock', 'added_at']);

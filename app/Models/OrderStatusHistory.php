@@ -15,6 +15,7 @@ class OrderStatusHistory extends Model
 
     protected $casts = ['notify_customer' => 'boolean'];
 
+    /** @return BelongsTo<User, $this> */
     public function changer(): BelongsTo
     {
         return $this->belongsTo(User::class, 'changed_by');

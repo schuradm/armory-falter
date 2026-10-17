@@ -16,6 +16,7 @@ class Author extends Model
         return 'slug';
     }
 
+    /** @return HasMany<BlogPost, $this> */
     public function posts(): HasMany
     {
         return $this->hasMany(BlogPost::class);

@@ -22,21 +22,25 @@ class TradeRequest extends Model
         'privacy_accepted_at' => 'datetime',
     ];
 
+    /** @return HasMany<TradeRequestMedia, $this> */
     public function media(): HasMany
     {
         return $this->hasMany(TradeRequestMedia::class)->orderBy('sort_order');
     }
 
+    /** @return BelongsTo<User, $this> */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /** @return BelongsTo<Manufacturer, $this> */
     public function manufacturer(): BelongsTo
     {
         return $this->belongsTo(Manufacturer::class);
     }
 
+    /** @return BelongsTo<User, $this> */
     public function assignee(): BelongsTo
     {
         return $this->belongsTo(User::class, 'assigned_to');

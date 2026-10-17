@@ -11,11 +11,13 @@ class Appointment extends Model
 
     protected $casts = ['contact' => 'array', 'starts_at' => 'datetime', 'ends_at' => 'datetime'];
 
+    /** @return BelongsTo<WorkshopService, $this> */
     public function service(): BelongsTo
     {
         return $this->belongsTo(WorkshopService::class, 'workshop_service_id');
     }
 
+    /** @return BelongsTo<User, $this> */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

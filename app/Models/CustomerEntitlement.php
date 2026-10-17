@@ -30,21 +30,25 @@ class CustomerEntitlement extends Model
         return $this->quantity_total === null ? null : max(0, $this->quantity_total - $this->quantity_used);
     }
 
+    /** @return BelongsTo<User, $this> */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /** @return BelongsTo<CustomerDocument, $this> */
     public function document(): BelongsTo
     {
         return $this->belongsTo(CustomerDocument::class, 'document_id');
     }
 
+    /** @return BelongsTo<Caliber, $this> */
     public function caliber(): BelongsTo
     {
         return $this->belongsTo(Caliber::class);
     }
 
+    /** @return BelongsTo<User, $this> */
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');

@@ -14,11 +14,13 @@ class GiftVoucherTransaction extends Model
 
     protected $fillable = ['gift_voucher_id', 'order_id', 'type', 'amount', 'balance_after', 'note', 'created_by'];
 
+    /** @return BelongsTo<GiftVoucher, $this> */
     public function giftVoucher(): BelongsTo
     {
         return $this->belongsTo(GiftVoucher::class);
     }
 
+    /** @return BelongsTo<Order, $this> */
     public function order(): BelongsTo
     {
         return $this->belongsTo(Order::class);

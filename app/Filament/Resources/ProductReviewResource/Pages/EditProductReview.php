@@ -44,7 +44,11 @@ class EditProductReview extends EditRecord
                 ->form([Forms\Components\Select::make('reason')->label('Grund')->required()
                     ->options(array_combine(ProductReviewResource::REJECT_REASONS, ProductReviewResource::REJECT_REASONS))])
                 ->action(fn (array $data, ProductReview $record) => app(ReviewService::class)->reject($record, auth()->user(), $data['reason'])),
-            Actions\DeleteAction::make()->using(fn (ProductReview $record) => app(ReviewService::class)->delete($record) ?? true),
+            Actions\DeleteAction::make()->using(function (ProductReview $record): bool {
+                app(ReviewService::class)->delete($record);
+
+                return true;
+            }),
         ];
     }
 }

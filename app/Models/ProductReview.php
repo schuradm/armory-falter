@@ -24,16 +24,19 @@ class ProductReview extends Model
         return $query->where('status', 'approved');
     }
 
+    /** @return BelongsTo<Product, $this> */
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
     }
 
+    /** @return BelongsTo<User, $this> */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class)->withTrashed();
     }
 
+    /** @return BelongsTo<OrderItem, $this> */
     public function orderItem(): BelongsTo
     {
         return $this->belongsTo(OrderItem::class);

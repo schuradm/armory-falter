@@ -36,16 +36,19 @@ class CustomerDocument extends Model
         });
     }
 
+    /** @return BelongsTo<User, $this> */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /** @return BelongsTo<User, $this> */
     public function reviewer(): BelongsTo
     {
         return $this->belongsTo(User::class, 'reviewed_by');
     }
 
+    /** @return HasMany<CustomerEntitlement, $this> */
     public function entitlements(): HasMany
     {
         return $this->hasMany(CustomerEntitlement::class, 'document_id');

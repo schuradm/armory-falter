@@ -1,0 +1,385 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Instanceof between App\\Models\\User and Illuminate\\Contracts\\Auth\\MustVerifyEmail will always evaluate to true\.$#'
+			identifier: instanceof.alwaysTrue
+			count: 1
+			path: app/Actions/Fortify/UpdateUserProfileInformation.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Carbon\\Carbon\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Console/Commands/VerifyAuditLog.php
+
+		-
+			message: '#^Parameter \#1 \$array \(array\{App\\Enums\\PaymentMethod\:\:Prepayment, App\\Enums\\PaymentMethod\:\:CashPickup, App\\Enums\\PaymentMethod\:\:PayPal, App\\Enums\\PaymentMethod\:\:Card, App\\Enums\\PaymentMethod\:\:Sofort, App\\Enums\\PaymentMethod\:\:Klarna, App\\Enums\\PaymentMethod\:\:WeaponPsp\}\) of array_values is already a list, call has no effect\.$#'
+			identifier: arrayValues.list
+			count: 1
+			path: app/Enums/PaymentMethod.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\:\:awaitingReview\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Filament/Resources/CustomerDocumentResource.php
+
+		-
+			message: '#^Cannot call method format\(\) on string\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Filament/Resources/CustomerDocumentResource.php
+
+		-
+			message: '#^Cannot call method toDateString\(\) on string\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Filament/Resources/CustomerDocumentResource.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$type\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Resources/CustomerDocumentResource/Pages/ViewCustomerDocument.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Resources/CustomerDocumentResource/Pages/ViewCustomerDocument.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$slug\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Resources/EventResource/RelationManagers/RegistrationsRelationManager.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:registrations\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Filament/Resources/EventResource/RelationManagers/RegistrationsRelationManager.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:formattedCode\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Filament/Resources/GiftVoucherResource/Pages/ViewGiftVoucher.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Resources/NewsletterCampaignResource.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$order_number\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Resources/OrderResource/Pages/ViewOrder.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\AttributeDefinition\:\:\$pivot\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Filament/Resources/ProductResource/Pages/CreateProduct.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\AttributeDefinition\:\:\$pivot\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Filament/Resources/ProductResource/Pages/EditProduct.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$stock_reserved\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Resources/ProductResource/Pages/EditProduct.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Support\\Collection\<\(int\|string\),Illuminate\\Database\\Eloquent\\Model\>\:\:each\(\) expects callable\(Illuminate\\Database\\Eloquent\\Model, int\|string\)\: mixed, Closure\(App\\Models\\ProductReview\)\: void given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Filament/Resources/ProductReviewResource.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$product\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Resources/ProductReviewResource/Pages/EditProductReview.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>reference" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Filament/Resources/TradeRequestResource.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$reference\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Resources/TradeRequestResource/Pages/EditTradeRequest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$customer_number\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Resources/UserResource.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Resources/UserResource.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:hasRole\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Filament/Resources/UserResource.php
+
+		-
+			message: '#^Cannot call method format\(\) on string\.$#'
+			identifier: method.nonObject
+			count: 3
+			path: app/Filament/Resources/UserResource.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>customer_number" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Filament/Resources/UserResource.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$is_staff\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Resources/UserResource/Pages/EditUser.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:syncRoles\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Filament/Resources/UserResource/Pages/EditUser.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Filament/Resources/WeaponBookEntryResource.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$direction\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Resources/WeaponBookEntryResource/Pages/CreateWeaponBookEntry.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Resources/WeaponBookEntryResource/Pages/CreateWeaponBookEntry.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$weaponItem\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Resources/WeaponBookEntryResource/Pages/CreateWeaponBookEntry.php
+
+		-
+			message: '#^Cannot access property \$id on Illuminate\\Database\\Eloquent\\Model\|int\|string\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Filament/Resources/WeaponBookEntryResource/Pages/EditWeaponBookEntry.php
+
+		-
+			message: '#^Cannot access property \$nwr_reference on Illuminate\\Database\\Eloquent\\Model\|int\|string\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Filament/Resources/WeaponBookEntryResource/Pages/EditWeaponBookEntry.php
+
+		-
+			message: '#^Cannot access property \$weaponItem on Illuminate\\Database\\Eloquent\\Model\|int\|string\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Filament/Resources/WeaponBookEntryResource/Pages/EditWeaponBookEntry.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>first_name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Filament/Widgets/LatestOrders.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>last_name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Filament/Widgets/LatestOrders.php
+
+		-
+			message: '#^Parameter \#1 \$meta of method App\\Support\\Seo\:\:applyOverrides\(\) expects App\\Models\\SeoMeta\|null, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/BlogController.php
+
+		-
+			message: '#^Parameter \#1 \$meta of method App\\Support\\Seo\:\:applyOverrides\(\) expects App\\Models\\SeoMeta\|null, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/BrandController.php
+
+		-
+			message: '#^Parameter \#1 \$meta of method App\\Support\\Seo\:\:applyOverrides\(\) expects App\\Models\\SeoMeta\|null, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/PageController.php
+
+		-
+			message: '#^Parameter \#1 \$meta of method App\\Support\\Seo\:\:applyOverrides\(\) expects App\\Models\\SeoMeta\|null, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/ProductController.php
+
+		-
+			message: '#^Parameter \#1 \$meta of method App\\Support\\Seo\:\:applyOverrides\(\) expects App\\Models\\SeoMeta\|null, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/ShopController.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>first_name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Livewire/CommentForm.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Support\\HigherOrderCollectionProxy\<string, Illuminate\\Database\\Eloquent\\Model, Illuminate\\Database\\Eloquent\\Collection\<int, Illuminate\\Database\\Eloquent\\Model\>\>\:\:isPurchasable\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Livewire/MiniCart.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>price_gross" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Models/CartItem.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Models/TradeRequest.php
+
+		-
+			message: '#^Cannot access property \$age on string\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Models/User.php
+
+		-
+			message: '#^Parameter \#1 \$user of method App\\Services\\Cart\\CartService\:\:mergeGuestCartInto\(\) expects App\\Models\\User, Illuminate\\Contracts\\Auth\\Authenticatable given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Providers/FortifyServiceProvider.php
+
+		-
+			message: '#^Parameter \#2 \$subject of method App\\Services\\AuditLogger\:\:log\(\) expects Illuminate\\Database\\Eloquent\\Model\|null, Illuminate\\Contracts\\Auth\\Authenticatable given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Providers/FortifyServiceProvider.php
+
+		-
+			message: '#^Parameter \#2 \$subject of method App\\Services\\AuditLogger\:\:log\(\) expects Illuminate\\Database\\Eloquent\\Model\|null, Illuminate\\Contracts\\Auth\\Authenticatable\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Providers/FortifyServiceProvider.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>sku" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Services/Checkout/CheckoutService.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>quantity" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 2
+			path: app/Services/Orders/OrderService.php
+
+		-
+			message: '#^Offset ''rating'' on array\{rating\: int, title\?\: string\|null, body\?\: string\|null\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: app/Services/Reviews/ReviewService.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>id" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Services/Vouchers/CartCodeService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$amount\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Services/Vouchers/GiftVoucherService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$balance\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Services/Vouchers/GiftVoucherService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$gift_voucher_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Services/Vouchers/GiftVoucherService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$initial_value\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/Vouchers/GiftVoucherService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/Vouchers/GiftVoucherService.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:formattedCode\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Services/Vouchers/GiftVoucherService.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:transactions\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Services/Vouchers/GiftVoucherService.php
+
+		-
+			message: '#^Called ''env'' outside of the config directory which returns null when the config is cached, use ''config''\.$#'
+			identifier: larastan.noEnvCallsOutsideOfConfig
+			count: 2
+			path: database/seeders/AdminUserSeeder.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Console\\Command\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 2
+			path: database/seeders/AdminUserSeeder.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Console\\Command\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 3
+			path: database/seeders/DemoProductImageSeeder.php
+
+		-
+			message: '#^Comparison operation "\>" between 1\|2\|3\|4\|5\|6\|8\|10\|12\|20\|30\|80 and 0 is always true\.$#'
+			identifier: greater.alwaysTrue
+			count: 2
+			path: database/seeders/ProductSeeder.php

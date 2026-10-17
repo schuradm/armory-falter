@@ -200,7 +200,7 @@ class TradeRequestResource extends Resource
     public static function egunCsvResponse(Collection $records): StreamedResponse
     {
         $service = app(TradeRequestService::class);
-        $records = TradeRequest::with('manufacturer')->whereKey($records->modelKeys())->orderBy('reference')->get();
+        $records = TradeRequest::with('manufacturer')->whereKey($records->map(fn (TradeRequest $r) => $r->getKey())->all())->orderBy('reference')->get();
 
         return response()->streamDownload(function () use ($records, $service) {
             $out = fopen('php://output', 'w');

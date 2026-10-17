@@ -33,46 +33,55 @@ class Order extends Model
         return 'order_number';
     }
 
+    /** @return BelongsTo<User, $this> */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /** @return HasMany<OrderItem, $this> */
     public function items(): HasMany
     {
         return $this->hasMany(OrderItem::class);
     }
 
+    /** @return HasMany<OrderComplianceCheck, $this> */
     public function complianceChecks(): HasMany
     {
         return $this->hasMany(OrderComplianceCheck::class);
     }
 
+    /** @return HasMany<OrderStatusHistory, $this> */
     public function statusHistory(): HasMany
     {
         return $this->hasMany(OrderStatusHistory::class)->latest('id');
     }
 
+    /** @return HasMany<Payment, $this> */
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class);
     }
 
+    /** @return HasMany<Shipment, $this> */
     public function shipments(): HasMany
     {
         return $this->hasMany(Shipment::class);
     }
 
+    /** @return HasMany<Invoice, $this> */
     public function invoices(): HasMany
     {
         return $this->hasMany(Invoice::class);
     }
 
+    /** @return BelongsTo<ShippingMethod, $this> */
     public function shippingMethod(): BelongsTo
     {
         return $this->belongsTo(ShippingMethod::class, 'shipping_method_code', 'code');
     }
 
+    /** @return HasOne<DiscountCodeRedemption, $this> */
     public function discountRedemption(): HasOne
     {
         return $this->hasOne(DiscountCodeRedemption::class)->latestOfMany();

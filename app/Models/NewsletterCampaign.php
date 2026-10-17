@@ -12,11 +12,13 @@ class NewsletterCampaign extends Model
 
     protected $casts = ['scheduled_at' => 'datetime', 'sent_at' => 'datetime'];
 
+    /** @return BelongsTo<NewsletterSegment, $this> */
     public function segment(): BelongsTo
     {
         return $this->belongsTo(NewsletterSegment::class, 'newsletter_segment_id');
     }
 
+    /** @return HasMany<NewsletterEvent, $this> */
     public function events(): HasMany
     {
         return $this->hasMany(NewsletterEvent::class);

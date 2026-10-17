@@ -24,21 +24,25 @@ class Category extends Model
         });
     }
 
+    /** @return BelongsTo<Category, $this> */
     public function parent(): BelongsTo
     {
         return $this->belongsTo(Category::class, 'parent_id');
     }
 
+    /** @return HasMany<Category, $this> */
     public function children(): HasMany
     {
         return $this->hasMany(Category::class, 'parent_id')->where('is_active', true)->orderBy('sort_order');
     }
 
+    /** @return BelongsToMany<Product, $this> */
     public function products(): BelongsToMany
     {
         return $this->belongsToMany(Product::class)->withPivot('is_primary');
     }
 
+    /** @return BelongsTo<LegalClass, $this> */
     public function defaultLegalClass(): BelongsTo
     {
         return $this->belongsTo(LegalClass::class, 'default_legal_class_id');

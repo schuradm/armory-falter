@@ -23,11 +23,13 @@ class WeaponItem extends Model
         });
     }
 
+    /** @return BelongsTo<Product, $this> */
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
     }
 
+    /** @return HasMany<WeaponBookEntry, $this> */
     public function bookEntries(): HasMany
     {
         return $this->hasMany(WeaponBookEntry::class);

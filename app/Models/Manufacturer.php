@@ -21,11 +21,13 @@ class Manufacturer extends Model
         return 'slug';
     }
 
+    /** @return HasMany<Product, $this> */
     public function products(): HasMany
     {
         return $this->hasMany(Product::class);
     }
 
+    /** @return MorphMany<Faq, $this> */
     public function faqs(): MorphMany
     {
         return $this->morphMany(Faq::class, 'faqable')->orderBy('sort_order');

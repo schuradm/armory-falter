@@ -19,16 +19,19 @@ class GiftVoucher extends Model
 
     protected $casts = ['expires_at' => 'date', 'sent_at' => 'datetime'];
 
+    /** @return BelongsTo<Order, $this> */
     public function order(): BelongsTo
     {
         return $this->belongsTo(Order::class);
     }
 
+    /** @return BelongsTo<User, $this> */
     public function purchaser(): BelongsTo
     {
         return $this->belongsTo(User::class, 'purchaser_id')->withTrashed();
     }
 
+    /** @return HasMany<GiftVoucherTransaction, $this> */
     public function transactions(): HasMany
     {
         return $this->hasMany(GiftVoucherTransaction::class)->orderByDesc('id');

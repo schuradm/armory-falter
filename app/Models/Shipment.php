@@ -12,16 +12,19 @@ class Shipment extends Model
 
     protected $casts = ['shipped_at' => 'datetime', 'delivered_at' => 'datetime', 'last_tracking_sync_at' => 'datetime'];
 
+    /** @return BelongsTo<Order, $this> */
     public function order(): BelongsTo
     {
         return $this->belongsTo(Order::class);
     }
 
+    /** @return BelongsTo<ShippingMethod, $this> */
     public function method(): BelongsTo
     {
         return $this->belongsTo(ShippingMethod::class, 'shipping_method_id');
     }
 
+    /** @return HasMany<ShipmentEvent, $this> */
     public function events(): HasMany
     {
         return $this->hasMany(ShipmentEvent::class)->latest('occurred_at');

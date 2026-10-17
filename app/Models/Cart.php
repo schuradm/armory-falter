@@ -12,11 +12,13 @@ class Cart extends Model
 
     protected $casts = ['expires_at' => 'datetime', 'gift_voucher_codes' => 'array'];
 
+    /** @return HasMany<CartItem, $this> */
     public function items(): HasMany
     {
         return $this->hasMany(CartItem::class);
     }
 
+    /** @return BelongsTo<User, $this> */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

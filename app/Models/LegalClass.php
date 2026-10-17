@@ -37,6 +37,7 @@ class LegalClass extends Model
         return array_values(array_filter(array_map(fn ($v) => PaymentMethod::tryFrom($v), $this->allowed_payment_codes ?? [])));
     }
 
+    /** @return HasMany<Product, $this> */
     public function products(): HasMany
     {
         return $this->hasMany(Product::class);

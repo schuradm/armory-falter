@@ -11,6 +11,7 @@ class Invoice extends Model
 
     protected $casts = ['issued_at' => 'datetime'];
 
+    /** @return BelongsTo<Order, $this> */
     public function order(): BelongsTo
     {
         return $this->belongsTo(Order::class);

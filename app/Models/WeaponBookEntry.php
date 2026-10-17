@@ -26,16 +26,19 @@ class WeaponBookEntry extends Model
         static::deleting(fn () => throw new LogicException('Waffenbuch-Einträge können nicht gelöscht werden.'));
     }
 
+    /** @return BelongsTo<WeaponItem, $this> */
     public function weaponItem(): BelongsTo
     {
         return $this->belongsTo(WeaponItem::class);
     }
 
+    /** @return BelongsTo<Order, $this> */
     public function order(): BelongsTo
     {
         return $this->belongsTo(Order::class);
     }
 
+    /** @return BelongsTo<User, $this> */
     public function booker(): BelongsTo
     {
         return $this->belongsTo(User::class, 'booked_by');
