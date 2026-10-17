@@ -15,7 +15,7 @@ class AppointmentService
     public function __construct(private AuditLogger $audit) {}
 
     /** @return array<string, list<string>> Datum => freie Uhrzeiten */
-    public function availableSlots(string $resource, int $days = null): array
+    public function availableSlots(string $resource, ?int $days = null): array
     {
         $days ??= config('shop.appointments.days_ahead');
         $slot = config('shop.appointments.slot_minutes');
