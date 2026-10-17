@@ -10,6 +10,7 @@ return [
         'country' => 'DE',
         'phone' => env('SHOP_COMPANY_PHONE', '+49 151 29107670'),
         'email' => env('SHOP_COMPANY_EMAIL', 'info@armory-falter.de'),
+        'web' => env('SHOP_COMPANY_WEB', 'www.armory-falter.de'),
         'vat_id' => env('SHOP_COMPANY_VAT_ID', 'DE…'),            // TODO: echte USt-IdNr.
         'tax_number' => env('SHOP_COMPANY_TAX_NUMBER'),
         'weapon_license_authority' => env('SHOP_WEAPON_AUTHORITY', 'Landratsamt Esslingen'), // TODO bestätigen

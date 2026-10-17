@@ -15,4 +15,10 @@ class NewsletterSubscriber extends Model
     {
         return \URL::signedRoute('newsletter.unsubscribe', ['subscriber' => $this->id]);
     }
+
+    /** Download-Link für den Waffenratgeber (Leadmagnet), 30 Tage gültig. */
+    public function ratgeberUrl(): string
+    {
+        return \URL::temporarySignedRoute('newsletter.ratgeber', now()->addDays(30), ['subscriber' => $this->id]);
+    }
 }

@@ -18,13 +18,16 @@ class NewsletterConfirm extends Mailable implements ShouldQueue
 
     public function envelope(): Envelope
     {
-        return new Envelope(subject: 'Bitte bestätigen Sie Ihre Newsletter-Anmeldung');
+        return new Envelope(subject: $this->subscriber->source === 'ratgeber'
+            ? 'Ihr Waffenratgeber: bitte E-Mail-Adresse bestätigen'
+            : 'Bitte bestätigen Sie Ihre Newsletter-Anmeldung');
     }
 
     public function content(): Content
     {
         return new Content(markdown: 'mail.newsletter-confirm', with: [
             'url' => route('newsletter.confirm', $this->subscriber->confirm_token),
+            'ratgeber' => $this->subscriber->source === 'ratgeber',
         ]);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Services\Newsletter;
 
 use App\Mail\NewsletterConfirm;
+use App\Mail\RatgeberDownload;
 use App\Models\NewsletterSubscriber;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
@@ -17,6 +18,9 @@ class NewsletterService
 
         if ($sub->exists && $sub->status === 'confirmed') {
             $sub->update(['interests' => array_values(array_unique(array_merge($sub->interests ?? [], $interests)))]);
+            if ($source === 'ratgeber') {
+                Mail::to($sub->email)->queue(new RatgeberDownload($sub));
+            }
 
             return $sub;
         }

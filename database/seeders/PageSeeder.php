@@ -51,8 +51,8 @@ HTML],
 <p>PayPal (Europe) S.à r.l. et Cie, S.C.A. und Klarna Bank AB (publ) für frei verkäufliche Ware. {$todo('Angaben zur Datenübermittlung und Rechtsgrundlage')}</p>
 <h2>6. Versand</h2>
 <p>{$todo('DHL / Deutsche Post, Übermittlung von Name, Anschrift, ggf. E-Mail für Sendungsverfolgung')}</p>
-<h2>7. Newsletter (Double-Opt-in)</h2>
-<p>{$todo('Einwilligung, Protokollierung, Abmeldung, Öffnungsmessung')}</p>
+<h2>7. Newsletter und Waffenratgeber (Double-Opt-in)</h2>
+HTML.\App\Support\LegalTexts::newsletter($todo).<<<HTML
 <h2>8. Cookies und Einwilligung</h2>
 <p>{$todo('Technisch notwendige Cookies, Cookie-Banner, ggf. Statistik')}</p>
 <h2>9. Spamschutz</h2>

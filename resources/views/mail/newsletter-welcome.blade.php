@@ -9,6 +9,14 @@ Guten Tag,
 @case(1)
 schön, dass Sie dabei sind! Armory Falter ist Ihr Waffenfachhandel in Wolfschlugen bei Stuttgart, für Jäger, Sportschützen, Sammler und Behörden.
 
+@if ($subscriber->source === 'ratgeber')
+Wie versprochen, hier noch einmal Ihr **großer Waffenratgeber** zum Herunterladen:
+
+<x-mail::button :url="$subscriber->ratgeberUrl()" color="success">
+Waffenratgeber herunterladen (PDF)
+</x-mail::button>
+@endif
+
 Bei uns haben Sie **einen festen Ansprechpartner**, der Ihr Vorhaben kennt: vor Ort, am Telefon, per Video oder WhatsApp. Ob erste Büchse, Wechsel auf Geradezug oder die passende Optik für den Ansitz: Wir beraten ehrlich und ohne Verkaufsdruck.
 
 <x-mail::button :url="route('appointments.consultation')">

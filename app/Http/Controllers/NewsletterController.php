@@ -12,13 +12,11 @@ class NewsletterController extends Controller
     public function confirm(string $token, NewsletterService $service)
     {
         $sub = $service->confirm($token);
-        $download = $sub && $sub->source === 'ratgeber' && app(\App\Support\Settings::class)->get('home.lead.file')
-            ? \Illuminate\Support\Facades\URL::temporarySignedRoute('newsletter.ratgeber', now()->addDays(7), ['subscriber' => $sub->id])
-            : null;
+        $download = $sub && $sub->source === 'ratgeber' ? $sub->ratgeberUrl() : null;
 
         return view('pages.message', [
             'title' => $sub ? 'Anmeldung bestätigt' : 'Link ungültig',
-            'message' => $sub ? 'Vielen Dank! Sie erhalten ab sofort unseren Newsletter.' : 'Der Bestätigungslink ist abgelaufen oder wurde bereits verwendet. Bitte melden Sie sich erneut an.',
+            'message' => $sub ? ($download ? 'Vielen Dank! Ihr Waffenratgeber steht zum Download bereit. Den Link finden Sie außerdem in unserer Willkommensmail.' : 'Vielen Dank! Sie erhalten ab sofort unseren Newsletter.') : 'Der Bestätigungslink ist abgelaufen oder wurde bereits verwendet. Bitte melden Sie sich erneut an.',
             'action' => $download ? ['label' => 'Waffenratgeber herunterladen (PDF)', 'url' => $download] : null,
         ]);
     }
@@ -27,10 +25,14 @@ class NewsletterController extends Controller
     public function ratgeber(NewsletterSubscriber $subscriber)
     {
         abort_unless($subscriber->status === 'confirmed', 403);
+        // Im Backend hochgeladenes PDF hat Vorrang, sonst der mitgelieferte Ratgeber (php artisan ratgeber:pdf)
         $file = app(\App\Support\Settings::class)->get('home.lead.file');
-        abort_unless($file && \Illuminate\Support\Facades\Storage::disk('public')->exists($file), 404);
+        if ($file && \Illuminate\Support\Facades\Storage::disk('public')->exists($file)) {
+            return \Illuminate\Support\Facades\Storage::disk('public')->download($file, 'Armory-Falter-Waffenratgeber.pdf');
+        }
+        abort_unless(is_readable($bundled = resource_path(\App\Console\Commands\BuildRatgeber::FILE)), 404);
 
-        return \Illuminate\Support\Facades\Storage::disk('public')->download($file, 'Armory-Falter-Waffenratgeber.pdf');
+        return response()->download($bundled, 'Armory-Falter-Waffenratgeber.pdf');
     }
 
     public function unsubscribe(NewsletterSubscriber $subscriber, NewsletterService $service)
