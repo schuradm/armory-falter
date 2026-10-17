@@ -97,6 +97,20 @@ return [
 
     'free_shipping_from' => 15000, // Cent, nur Standardversand
 
+    // Produktbewertungen: Einladung per E-Mail X Tage nach Zustellung (im Backend unter Einstellungen änderbar)
+    'reviews' => [
+        'request_enabled' => env('REVIEW_REQUESTS', true),
+        'request_days' => 7,
+        'per_page' => 5,
+    ],
+
+    // Geschenkgutscheine (Mehrzweck-Gutscheine): wählbare Beträge und Grenzen für den freien Betrag, in Cent
+    'gift_vouchers' => [
+        'amounts' => [2500, 5000, 10000, 25000],
+        'min' => 1000,
+        'max' => 100000,
+    ],
+
     // Scheduler-Auslösung per HTTP (/cron/{token}) für Hosting ohne Cronjob. Token: mind. 32 zufällige Zeichen.
     'cron' => [
         'token' => env('CRON_TOKEN'),
@@ -108,7 +122,7 @@ return [
     'page_cache' => [
         'enabled' => env('PAGE_CACHE', true),
         'ttl' => 900,
-        'except' => ['konto*', 'kasse*', 'warenkorb', 'zahlung*', 'kms-login*', 'livewire*', 'newsletter*', 'downloads*', 'suche', 'vergleich', 'sitemap.xml', 'robots.txt', 'up', 'cron/*'],
+        'except' => ['konto*', 'kasse*', 'warenkorb', 'zahlung*', 'kms-login*', 'livewire*', 'newsletter*', 'downloads*', 'bewertungen/*', 'suche', 'vergleich', 'sitemap.xml', 'robots.txt', 'up', 'cron/*'],
     ],
 
     // Performance-Schalter

@@ -23,6 +23,8 @@ class Product extends Model
         'uvp_gross', 'stock_quantity', 'availability', 'delivery_time', 'weight_grams', 'short_description', 'description',
         'video_url', 'is_featured', 'status', 'published_at'];
 
+    // rating_avg/rating_count pflegt ausschließlich ReviewService::refreshProductRating() (nicht fillable)
+
     protected $casts = [
         'product_type' => ProductType::class,
         'condition_code' => Condition::class,
@@ -35,6 +37,8 @@ class Product extends Model
         'special_from' => 'datetime',
         'special_to' => 'datetime',
         'published_at' => 'datetime',
+        'rating_avg' => 'float',
+        'rating_count' => 'integer',
     ];
 
     public function getRouteKeyName(): string
@@ -87,8 +91,23 @@ class Product extends Model
         return max(0, $this->stock_quantity - $this->stock_reserved);
     }
 
+    /** Geschenkgutscheine haben keinen Lagerbestand (digital, Code nach Zahlung). */
+    public function isGiftVoucher(): bool
+    {
+        return $this->product_type === ProductType::Voucher;
+    }
+
+    public function tracksStock(): bool
+    {
+        return ! $this->isGiftVoucher() && in_array($this->availability, [Availability::InStock, Availability::LowStock], true);
+    }
+
     public function isPurchasable(): bool
     {
+        if ($this->isGiftVoucher()) {
+            return $this->status === 'active';
+        }
+
         return $this->status === 'active' && $this->availability->purchasable()
             && ($this->availability !== Availability::InStock && $this->availability !== Availability::LowStock || $this->availableStock() > 0);
     }
@@ -167,6 +186,11 @@ class Product extends Model
     public function weaponItems(): HasMany
     {
         return $this->hasMany(WeaponItem::class);
+    }
+
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(ProductReview::class);
     }
 
     public function faqs(): MorphMany

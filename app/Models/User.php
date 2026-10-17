@@ -36,6 +36,7 @@ class User extends Authenticatable implements FilamentUser, HasName, MustVerifyE
             'last_login_at' => 'datetime',
             'two_factor_confirmed_at' => 'datetime',
             'is_staff' => 'boolean',
+            'review_requests_opted_out_at' => 'datetime',
             'is_active' => 'boolean',
             'password' => 'hashed',
         ];
@@ -116,6 +117,11 @@ class User extends Authenticatable implements FilamentUser, HasName, MustVerifyE
     public function tradeRequests(): HasMany
     {
         return $this->hasMany(TradeRequest::class);
+    }
+
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(ProductReview::class);
     }
 
     public function appointments(): HasMany

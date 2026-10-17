@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class ShippingMethod extends Model
 {
+    /** Versand per E-Mail: nur für Warenkörbe, die ausschließlich Geschenkgutscheine enthalten. */
+    public const DIGITAL = 'email';
+
     public $timestamps = false;
 
     protected $fillable = ['code', 'name', 'description', 'carrier', 'allowed_shipping_modes', 'price_gross', 'free_from_gross', 'is_active', 'sort_order'];
@@ -15,6 +18,11 @@ class ShippingMethod extends Model
     public function priceFor(int $subtotal): int
     {
         return $this->free_from_gross !== null && $subtotal >= $this->free_from_gross ? 0 : $this->price_gross;
+    }
+
+    public function isDigital(): bool
+    {
+        return $this->code === self::DIGITAL;
     }
 
     public function isPickup(): bool

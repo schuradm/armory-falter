@@ -8,9 +8,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Cart extends Model
 {
-    protected $fillable = ['token', 'user_id', 'expires_at'];
+    protected $fillable = ['token', 'user_id', 'expires_at', 'discount_code', 'gift_voucher_codes'];
 
-    protected $casts = ['expires_at' => 'datetime'];
+    protected $casts = ['expires_at' => 'datetime', 'gift_voucher_codes' => 'array'];
 
     public function items(): HasMany
     {

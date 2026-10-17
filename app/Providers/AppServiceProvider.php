@@ -45,6 +45,9 @@ class AppServiceProvider extends ServiceProvider
             'newsletter_campaign' => \App\Models\NewsletterCampaign::class,
             'event' => \App\Models\Event::class,
             'local_page' => \App\Models\LocalPage::class,
+            'product_review' => \App\Models\ProductReview::class,
+            'discount_code' => \App\Models\DiscountCode::class,
+            'gift_voucher' => \App\Models\GiftVoucher::class,
         ]);
 
         Password::defaults(fn () => Password::min(10)->letters()->mixedCase()->numbers()->uncompromised());

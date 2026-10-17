@@ -7,7 +7,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class CartItem extends Model
 {
-    protected $fillable = ['cart_id', 'product_id', 'product_variant_id', 'quantity'];
+    protected $fillable = ['cart_id', 'product_id', 'product_variant_id', 'quantity', 'options', 'options_key'];
+
+    protected $casts = ['options' => 'array'];
 
     public function cart(): BelongsTo
     {
@@ -24,9 +26,25 @@ class CartItem extends Model
         return $this->belongsTo(ProductVariant::class, 'product_variant_id');
     }
 
+    public function isGiftVoucher(): bool
+    {
+        return $this->product->product_type === \App\Enums\ProductType::Voucher;
+    }
+
+    /** Geschenkgutscheine: frei gewählter Betrag aus den Optionen, sonst Varianten- bzw. Produktpreis. */
     public function unitPrice(): int
     {
+        if ($this->isGiftVoucher() && isset($this->options['amount'])) {
+            return (int) $this->options['amount'];
+        }
+
         return $this->variant?->price_gross ?? $this->product->currentPrice();
+    }
+
+    /** Anzeigename inkl. Gutscheinbetrag, z. B. „Geschenkgutschein 50,00 €“. */
+    public function displayName(): string
+    {
+        return $this->isGiftVoucher() ? 'Geschenkgutschein '.\App\Support\Money::format($this->unitPrice()) : $this->product->name;
     }
 
     public function lineTotal(): int

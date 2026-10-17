@@ -20,6 +20,20 @@ enum PaymentMethod: string implements FilamentLabel
     case Sofort = 'sofort';
     case Klarna = 'klarna';
     case WeaponPsp = 'psp_weapon';
+    // Kein Zahlungsanbieter: vollständig per Geschenkgutschein bezahlt. Nie wählbar, setzt nur der Checkout.
+    case GiftVoucher = 'gift_voucher';
+
+    /** Zahlarten, die Kunde und Backend wählen bzw. Rechtsklassen zuordnen können (ohne Gutschein). */
+    public static function selectable(): array
+    {
+        return array_values(array_filter(self::cases(), fn (self $m) => $m !== self::GiftVoucher));
+    }
+
+    /** @return array<string,string> value => label, für Filament-Auswahlfelder */
+    public static function selectableOptions(): array
+    {
+        return collect(self::selectable())->mapWithKeys(fn (self $m) => [$m->value => $m->label()])->all();
+    }
 
     public function label(): string
     {
@@ -31,6 +45,7 @@ enum PaymentMethod: string implements FilamentLabel
             self::Sofort => 'Sofortüberweisung (Klarna)',
             self::Klarna => 'Klarna Rechnung / Ratenkauf',
             self::WeaponPsp => 'Kartenzahlung (waffenfreundlicher Zahlungsanbieter)',
+            self::GiftVoucher => 'Geschenkgutschein',
         };
     }
 
@@ -44,6 +59,7 @@ enum PaymentMethod: string implements FilamentLabel
             self::Sofort => 'Direkt über Ihr Online-Banking bezahlen, ohne Registrierung. Nur für frei verkäufliche Artikel.',
             self::Klarna => 'Erst kaufen, dann in 30 Tagen oder in Raten bezahlen. Nur für frei verkäufliche Artikel.',
             self::WeaponPsp => 'Sichere Kartenzahlung über unseren Zahlungspartner.',
+            self::GiftVoucher => 'Der Gesamtbetrag ist durch Ihre Geschenkgutscheine gedeckt.',
         };
     }
 
@@ -56,6 +72,7 @@ enum PaymentMethod: string implements FilamentLabel
     {
         return match ($this) {
             self::Prepayment, self::Sofort => 'bank',
+            self::GiftVoucher => 'sparkles',
             self::CashPickup => 'euro',
             self::PayPal => 'paypal',
             default => 'lock',
@@ -68,6 +85,9 @@ enum PaymentMethod: string implements FilamentLabel
      */
     public function isEnabled(): bool
     {
+        if ($this === self::GiftVoucher) {
+            return true;
+        }
         $override = app(\App\Support\Settings::class)->get("payment_methods.{$this->value}");
         if ($override === null) {
             return (bool) config("shop.payment_methods.{$this->value}.enabled", false);
