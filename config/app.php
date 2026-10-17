@@ -28,6 +28,9 @@ return [
 
     'env' => env('APP_ENV', 'production'),
 
+    // Test- und Vorschauumgebungen von Suchmaschinen fernhalten (robots.txt und X-Robots-Tag).
+    'noindex' => (bool) env('APP_NOINDEX', false),
+
     /*
     |--------------------------------------------------------------------------
     | Application Debug Mode

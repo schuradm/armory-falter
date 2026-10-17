@@ -8,8 +8,17 @@ if [ ! -s storage/app/.env.docker ]; then
 fi
 ln -sf storage/app/.env.docker .env
 
-if ! grep -q '^APP_KEY=base64:' .env; then
-    php artisan key:generate --force --no-interaction
+# Nur der Web-Container erzeugt den Schlüssel; startet der Scheduler gleichzeitig, wartet er darauf.
+# Zwei parallele key:generate hinterlassen sonst unterschiedliche Schlüssel und jede Seite liefert 500.
+if [ "${ARMORY_ROLE:-web}" = "web" ]; then
+    if ! grep -q '^APP_KEY=base64:' .env; then
+        php artisan key:generate --force --no-interaction
+    fi
+else
+    i=0
+    until grep -q '^APP_KEY=base64:' .env; do
+        i=$((i+1)); [ $i -gt 90 ] && echo "APP_KEY fehlt" && exit 1; sleep 2
+    done
 fi
 
 if [ "${ARMORY_ROLE:-web}" = "web" ]; then
