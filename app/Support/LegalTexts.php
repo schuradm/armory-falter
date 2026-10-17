@@ -29,7 +29,7 @@ final class LegalTexts
         $address = self::address();
         $vat = filled(config('shop.company.vat_id')) && config('shop.company.vat_id') !== 'DE…'
             ? 'Umsatzsteuer-Identifikationsnummer gemäß § 27a UStG: '.$c['vat_id']
-            : $todo('USt-IdNr. eintragen. Hinweis: Die WSSA nutzt die Kleinunternehmerregelung (§ 19 UStG). Für den Waffenhandel mit Ausweis der Umsatzsteuer auf Rechnungen muss das mit dem Steuerberater geklärt werden.');
+            : $todo('USt-IdNr. eintragen.');
 
         return <<<HTML
 <h2>Angaben gemäß § 5 Digitale-Dienste-Gesetz (DDG)</h2>
@@ -84,7 +84,7 @@ HTML;
 <p>(5) Ist eine Bestellung mangels Berechtigung nicht durchführbar, erstatten wir bereits geleistete Zahlungen unverzüglich in voller Höhe.</p>
 
 <h2>§ 4 Preise und Zahlung</h2>
-<p>(1) Alle Preise sind Endpreise in Euro {$todo('„inklusive der gesetzlichen Umsatzsteuer“ oder Hinweis nach § 19 UStG, je nach steuerlicher Einordnung')}, zuzüglich der im Bestellvorgang ausgewiesenen Versandkosten.</p>
+<p>(1) Alle Preise sind Endpreise in Euro inklusive der gesetzlichen Umsatzsteuer, zuzüglich der im Bestellvorgang ausgewiesenen Versandkosten.</p>
 <p>(2) Zur Verfügung stehen die im Bestellvorgang angezeigten Zahlungsarten. PayPal, Klarna und Kreditkarte sind nur für frei verkäufliche Ware möglich. Bei erlaubnispflichtiger Ware zahlen Sie per Vorkasse erst nach unserer Freigabe oder bar bzw. per EC-Karte bei Abholung.</p>
 <p>(3) Bei Vorkasse ist der Rechnungsbetrag innerhalb von 7 Tagen nach unserer Zahlungsaufforderung fällig. Wir reservieren die Ware für diesen Zeitraum.</p>
 <p>(4) Rabattcodes und Geschenkgutscheine sind nur im angegebenen Zeitraum und nicht nachträglich einlösbar. Geschenkgutscheine können nicht gegen Bargeld eingetauscht werden; ein Restguthaben bleibt erhalten. Geschenkgutscheine sind drei Jahre ab Ende des Ausstellungsjahres gültig.</p>
