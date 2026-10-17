@@ -54,6 +54,7 @@ class CachePublicPages
             && ! $request->user()
             && ! $request->hasCookie('af_cart')
             && ! $request->header('X-Livewire')
+            && empty($request->session()->get('_flash.old')) // Meldungen nach einem Formular (z. B. Newsletter) nie aus dem Cache
             && ! $request->is(...config('shop.page_cache.except', []))
             && count($request->query()) <= 3; // Filterkombinationen nicht unbegrenzt cachen
     }

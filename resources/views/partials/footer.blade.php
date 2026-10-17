@@ -37,7 +37,7 @@
         <div>
             <h2 class="font-display text-xs font-bold tracking-[0.2em] text-brand-400 uppercase">Newsletter</h2>
             <p class="mt-4 text-white/60">Neuheiten, Aktionen und Fachartikel. Abmeldung jederzeit.</p>
-            <livewire:newsletter-signup />
+            @include('partials.newsletter-footer')
         </div>
     </div>
     <div class="border-t border-white/10">

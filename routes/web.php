@@ -63,6 +63,7 @@ Route::get('/kontakt', [PageController::class, 'contact'])->name('contact');
 Route::get('/{slug}', [PageController::class, 'show'])->whereIn('slug', PageController::SLUGS)->name('page.show');
 
 // Newsletter, Consent, SEO
+Route::post('/newsletter', [NewsletterController::class, 'subscribe'])->middleware('throttle:20,1')->name('newsletter.subscribe');
 Route::get('/newsletter/bestaetigen/{token}', [NewsletterController::class, 'confirm'])->name('newsletter.confirm');
 Route::get('/newsletter/abmelden/{subscriber}', [NewsletterController::class, 'unsubscribe'])->middleware('signed')->name('newsletter.unsubscribe');
 Route::post('/newsletter/abmelden/{subscriber}', [NewsletterController::class, 'unsubscribe'])->middleware('signed')->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class);

@@ -247,7 +247,7 @@
                 <p class="eyebrow">Kostenloser Download</p>
                 <h2 class="mt-4 font-display text-3xl font-extrabold uppercase sm:text-4xl">{{ $home['lead']['title'] }}</h2>
                 <p class="mt-4 text-white/80">{{ $home['lead']['text'] }}</p>
-                <div class="mt-8"><livewire:newsletter-signup variant="lead"/></div>
+                <div class="mt-8">@include('partials.newsletter-lead')</div>
             </div>
             <div class="fx-glass rounded-card p-8">
                 <h2 class="font-display text-2xl font-extrabold uppercase">Armory Falter Community</h2>

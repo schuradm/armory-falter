@@ -54,3 +54,7 @@ Schedule::call($artisan('audit:verify'))->name('audit:verify')->description('Aud
 // Fehlgeschlagene Jobs und Sanctum-Tokens aufräumen
 Schedule::call($artisan('queue:prune-failed', ['--hours' => 24 * 14]))->name('queue:prune-failed')->dailyAt('04:30');
 Schedule::call($artisan('sanctum:prune-expired', ['--hours' => 24]))->name('sanctum:prune-expired')->dailyAt('04:40');
+
+// Newsletter-Löschkonzept: unbestätigte Anmeldungen nach 30 Tagen, Sperrliste nach 3 Jahren
+Schedule::call($artisan('newsletter:prune'))->name('newsletter:prune')->description('Newsletter-Adressen aufräumen')
+    ->dailyAt('04:20')->withoutOverlapping(30);

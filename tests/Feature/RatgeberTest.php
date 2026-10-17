@@ -2,14 +2,12 @@
 
 namespace Tests\Feature;
 
-use App\Livewire\NewsletterSignup;
 use App\Mail\NewsletterConfirm;
 use App\Mail\NewsletterWelcome;
 use App\Mail\RatgeberDownload;
 use App\Models\NewsletterSubscriber;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
-use Livewire\Livewire;
 use Tests\TestCase;
 
 /** Leadmagnet: E-Mail eintragen → Double-Opt-in → Ratgeber-PDF herunterladen. */
@@ -21,11 +19,12 @@ class RatgeberTest extends TestCase
     {
         Mail::fake();
 
-        Livewire::test(NewsletterSignup::class, ['variant' => 'lead'])
-            ->set('email', 'jaeger@example.test')
-            ->call('subscribe')->assertHasErrors('consent')
-            ->set('consent', true)
-            ->call('subscribe')->assertHasNoErrors()->assertSet('done', true)->assertSee('Fast geschafft');
+        // Normales Formular (POST), funktioniert ohne JavaScript
+        $this->from('/')->post(route('newsletter.subscribe'), ['variant' => 'lead', 'email' => 'jaeger@example.test'])
+            ->assertRedirect('/#ratgeber')->assertSessionHasErrors('consent', null, 'newsletter_lead');
+        $this->from('/')->post(route('newsletter.subscribe'), ['variant' => 'lead', 'email' => 'jaeger@example.test', 'consent' => '1'])
+            ->assertRedirect('/#ratgeber')->assertSessionHas('newsletter_done', 'lead');
+        $this->get('/')->assertSee('Fast geschafft');
 
         $sub = NewsletterSubscriber::where('email', 'jaeger@example.test')->firstOrFail();
         $this->assertSame('ratgeber', $sub->source);
@@ -56,8 +55,8 @@ class RatgeberTest extends TestCase
         Mail::fake();
         NewsletterSubscriber::create(['email' => 'stamm@example.test', 'status' => 'confirmed', 'confirmed_at' => now(), 'source' => 'footer']);
 
-        Livewire::test(NewsletterSignup::class, ['variant' => 'lead'])
-            ->set('email', 'stamm@example.test')->set('consent', true)->call('subscribe')->assertSet('done', true);
+        $this->from('/')->post(route('newsletter.subscribe'), ['variant' => 'lead', 'email' => 'stamm@example.test', 'consent' => '1'])
+            ->assertSessionHas('newsletter_done', 'lead');
 
         Mail::assertQueued(RatgeberDownload::class);
         Mail::assertNotQueued(NewsletterConfirm::class);
