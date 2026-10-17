@@ -35,10 +35,14 @@ class Checkout extends Component
     #[Locked]
     public string $idempotencyKey = '';
 
-    public function mount(Seo $seo, CartService $cart)
+    public function mount(Seo $seo, CartService $cart, CartComplianceEvaluator $evaluator)
     {
         $seo->title('Kasse')->noindex();
         if (! $cart->current() || $cart->current()->items()->doesntExist()) {
+            return $this->redirectRoute('cart');
+        }
+        // Fehlt ein Nachweis, zeigt der Warenkorb je Artikel den Grund – nicht erst nach vier Schritten beim Bestellen scheitern
+        if (! $evaluator->evaluate($cart->current(), Auth::user())->allowed()) {
             return $this->redirectRoute('cart');
         }
         $this->idempotencyKey = (string) Str::uuid();

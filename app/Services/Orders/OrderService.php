@@ -130,11 +130,26 @@ class OrderService
 
     public function cancel(Order $order, ?User $by, string $reason): void
     {
+        if (in_array($order->status, [OrderStatus::Cancelled, OrderStatus::Refunded], true)) {
+            throw new InvalidArgumentException('Diese Bestellung ist bereits storniert.'); // sonst Bestand doppelt zurückgebucht
+        }
+
         DB::transaction(function () use ($order) {
             foreach ($order->items()->with('product')->get() as $item) {
                 $item->product->increment('stock_quantity', $item->quantity);
-                if ($item->product->is_unique_item) {
+                // Beim Bestellen automatisch auf „ausverkauft“ gesetzte Artikel wieder verkaufbar machen
+                if ($item->product->is_unique_item || ($item->product->availability->value === 'out_of_stock' && $item->product->stock_quantity > 0)) {
                     $item->product->update(['availability' => 'in_stock']);
+                }
+            }
+
+            // Bei der Freigabe verbrauchte Erwerbsberechtigungen (z. B. Voreintrag) zurückgeben – die Waffe wurde nicht überlassen
+            foreach ($order->complianceChecks()->where('result', 'passed')->whereNotNull('customer_entitlement_id')->with('orderItem')->get() as $check) {
+                $ent = CustomerEntitlement::lockForUpdate()->find($check->customer_entitlement_id);
+                if ($ent && $ent->quantity_total !== null && $ent->quantity_used > 0) {
+                    $ent->quantity_used = max(0, $ent->quantity_used - ($check->orderItem?->quantity ?? 1));
+                    $ent->status = $ent->status === 'consumed' ? 'active' : $ent->status;
+                    $ent->save();
                 }
             }
         });
