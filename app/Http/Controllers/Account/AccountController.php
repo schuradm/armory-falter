@@ -80,10 +80,13 @@ class AccountController extends Controller
     {
         $allowed = $document->visibility === 'public'
             || ($document->visibility === 'customers' && Auth::check())
-            || Order::where('user_id', Auth::id())->whereHas('items', fn ($q) => $q->where('product_id', $document->product_id))->exists();
+            || (Auth::check() && Order::where('user_id', Auth::id())->whereHas('items', fn ($q) => $q->where('product_id', $document->product_id))->exists());
         abort_unless($allowed, 403);
 
-        return Storage::disk('public')->download($document->path, \Str::slug($document->title).'.pdf');
+        // Nur öffentliche Dokumente liegen im öffentlichen Speicher, alle anderen sind nur über diese Prüfung erreichbar
+        $disk = $document->visibility === 'public' ? 'public' : 'local';
+
+        return Storage::disk($disk)->download($document->path, \Str::slug($document->title).'.pdf');
     }
 
     public function appointments(Request $request, Seo $seo): View
@@ -172,7 +175,6 @@ class AccountController extends Controller
         // Bewertungen tragen den Namen: mit dem Konto löschen, Produktdurchschnitt neu berechnen
         $reviewService = app(ReviewService::class);
         $user->reviews()->get()->each(fn ($review) => $reviewService->delete($review));
-        $user->tokens()->delete();
         $user->forceFill([
             'first_name' => 'Gelöscht', 'last_name' => 'Kunde '.$user->id, 'email' => 'geloescht-'.$user->id.'@invalid.local',
             'phone' => null, 'company_name' => null, 'password' => Hash::make(\Str::random(40)), 'is_active' => false,

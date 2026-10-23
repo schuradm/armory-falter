@@ -56,6 +56,10 @@ class CartService
         if ($product->is_unique_item) {
             $quantity = 1;
         }
+        // Die Variante kommt vom Client: nur Varianten genau dieses Artikels zulassen (sonst falscher Preis)
+        if ($variantId !== null && ! $product->variants()->whereKey($variantId)->exists()) {
+            throw new InvalidArgumentException('Diese Variante gehört nicht zum Artikel.');
+        }
 
         $options = $product->isGiftVoucher() ? $this->giftVoucherOptions($product, $options) : [];
         $key = $options ? sha1(json_encode($options)) : '';

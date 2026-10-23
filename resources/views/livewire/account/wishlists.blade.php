@@ -8,7 +8,7 @@
     </div>
     <div class="flex flex-wrap gap-3 text-sm">
         <button type="button" wire:click="share" class="text-accent">Link zum Teilen erzeugen</button>
-        @if ($active->share_token)<span class="text-muted">Teilen-Code: <span class="font-mono">{{ $active->share_token }}</span></span>@endif
+        @if ($active->share_token)<span class="text-muted">Link zum Teilen: <a href="{{ route('wishlist.shared', $active->share_token) }}" class="break-all font-mono text-accent">{{ route('wishlist.shared', $active->share_token) }}</a></span>@endif
         @unless ($active->is_default)<button type="button" wire:click="deleteList" wire:confirm="Liste wirklich löschen?" class="text-red-400">Liste löschen</button>@endunless
     </div>
     <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">

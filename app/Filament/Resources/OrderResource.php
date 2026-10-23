@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Enums\ComplianceStatus;
 use App\Enums\OrderStatus;
 use App\Enums\PaymentMethod;
+use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Resources\OrderResource\Pages;
 use App\Filament\Support\Euro;
 use App\Models\DiscountCode;
@@ -21,6 +22,8 @@ use Illuminate\Database\Eloquent\Builder;
 
 class OrderResource extends Resource
 {
+    use RequiresPermission;
+
     protected static ?string $model = Order::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-shopping-bag';

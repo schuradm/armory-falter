@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Resources\ProductReviewResource\Pages;
 use App\Models\ProductReview;
 use App\Services\Reviews\ReviewService;
@@ -22,6 +23,8 @@ use Illuminate\Support\Str;
  */
 class ProductReviewResource extends Resource
 {
+    use RequiresPermission;
+
     protected static ?string $model = ProductReview::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-star';

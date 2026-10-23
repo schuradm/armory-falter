@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Resources\CommentResource\Pages;
 use App\Http\Middleware\PageCache;
 use App\Models\Comment;
@@ -16,6 +17,8 @@ use Illuminate\Support\Str;
 
 class CommentResource extends Resource
 {
+    use RequiresPermission;
+
     protected static ?string $model = Comment::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-chat-bubble-left-right';

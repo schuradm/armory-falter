@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\EntitlementType;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasName;
 use Filament\Panel;
@@ -14,7 +15,6 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Laravel\Fortify\TwoFactorAuthenticatable;
-use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
 /**
@@ -27,7 +27,7 @@ use Spatie\Permission\Traits\HasRoles;
  */
 class User extends Authenticatable implements FilamentUser, HasName, MustVerifyEmail
 {
-    use HasApiTokens, HasFactory, HasRoles, Notifiable, SoftDeletes, TwoFactorAuthenticatable;
+    use HasFactory, HasRoles, Notifiable, SoftDeletes, TwoFactorAuthenticatable;
 
     protected $fillable = [
         'customer_type', 'salutation', 'first_name', 'last_name', 'company_name', 'vat_id',
@@ -87,6 +87,19 @@ class User extends Authenticatable implements FilamentUser, HasName, MustVerifyE
     public function isAuthorityOrDealer(): bool
     {
         return in_array($this->customer_type, ['authority', 'dealer'], true);
+    }
+
+    private ?bool $verifiedAuthorityOrDealer = null;
+
+    /**
+     * Behörde/Händler mit vom Personal geprüftem Nachweis. Die Kundenart allein wählt der Kunde
+     * bei der Registrierung selbst und reicht daher nicht für Behörden-/Händlerartikel.
+     */
+    public function isVerifiedAuthorityOrDealer(): bool
+    {
+        return $this->verifiedAuthorityOrDealer ??= $this->isAuthorityOrDealer()
+            && $this->entitlements()->active()
+                ->whereIn('type', [EntitlementType::Dealer->value, EntitlementType::Authority->value])->exists();
     }
 
     /** @return HasMany<Address, $this> */

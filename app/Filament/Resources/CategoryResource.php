@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Resources\CategoryResource\Pages;
 use App\Filament\Support\SeoFields;
 use App\Models\Category;
@@ -18,6 +19,8 @@ use Illuminate\Validation\Rules\Unique;
 
 class CategoryResource extends Resource
 {
+    use RequiresPermission;
+
     protected static ?string $model = Category::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-folder';

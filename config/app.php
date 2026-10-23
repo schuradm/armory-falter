@@ -31,6 +31,10 @@ return [
     // Test- und Vorschauumgebungen von Suchmaschinen fernhalten (robots.txt und X-Robots-Tag).
     'noindex' => (bool) env('APP_NOINDEX', false),
 
+    // Proxys, deren X-Forwarded-*-Header gelten: "*" (alle), kommagetrennte IPs/Netze oder leer (keine).
+    // Ist der Server auch direkt erreichbar, nur die echten Proxys eintragen, sonst lässt sich die Client-IP fälschen.
+    'trusted_proxies' => env('TRUSTED_PROXIES', '*'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Debug Mode

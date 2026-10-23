@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Enums\Availability;
 use App\Enums\Condition;
 use App\Enums\ProductType;
+use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Resources\ProductResource\Pages;
 use App\Filament\Support\Euro;
 use App\Filament\Support\SeoFields;
@@ -25,6 +26,8 @@ use Illuminate\Support\Str;
 
 class ProductResource extends Resource
 {
+    use RequiresPermission;
+
     protected static ?string $model = Product::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-cube';

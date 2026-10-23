@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Resources\LocalPageResource\Pages;
 use App\Filament\Support\FormFields;
 use App\Models\LocalPage;
@@ -17,6 +18,8 @@ use Illuminate\Support\Str;
 /** Regionale Landingpages (/waffenhaendler/{ort}). Jede Seite braucht eigenen Inhalt, keine Textkopien. */
 class LocalPageResource extends Resource
 {
+    use RequiresPermission;
+
     protected static ?string $model = LocalPage::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-map-pin';

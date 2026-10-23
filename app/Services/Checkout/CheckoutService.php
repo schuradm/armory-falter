@@ -23,6 +23,7 @@ use App\Services\Vouchers\DiscountCodeService;
 use App\Services\Vouchers\GiftVoucherService;
 use App\Services\Vouchers\VoucherException;
 use App\Support\Money;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -115,6 +116,9 @@ class CheckoutService
             $order = DB::transaction(fn () => $this->createOrder($user, $cart, $data, $evaluation, $shipping, $totals, $payment));
         } catch (VoucherException $e) {
             throw new CheckoutException($e->getMessage()); // Limit/Guthaben hat sich parallel geändert
+        } catch (UniqueConstraintViolationException $e) {
+            // Paralleler Doppelklick: die andere Anfrage hat die Bestellung mit demselben Schlüssel angelegt
+            return Order::where('idempotency_key', $data->idempotencyKey)->first() ?? throw $e;
         }
 
         $this->audit->log('order.placed', $order, new: ['total' => $order->total_gross, 'status' => $order->status->value]);

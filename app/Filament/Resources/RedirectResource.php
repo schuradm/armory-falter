@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Resources\RedirectResource\Pages;
 use App\Models\Redirect;
 use Filament\Forms;
@@ -13,6 +14,8 @@ use Filament\Tables\Table;
 /** Weiterleitungen alter URLs (z. B. WordPress) – greifen nur, wenn keine Route passt (FallbackController). */
 class RedirectResource extends Resource
 {
+    use RequiresPermission;
+
     protected static ?string $model = Redirect::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-arrows-right-left';

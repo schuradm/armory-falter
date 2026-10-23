@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Resources\AuditLogResource\Pages;
 use App\Models\AuditLog;
 use Filament\Forms\Components\TextInput;
@@ -17,6 +18,8 @@ use Illuminate\Support\HtmlString;
 /** Revisionssicheres Protokoll (Hash-Kette): nur lesen, niemals ändern oder löschen. */
 class AuditLogResource extends Resource
 {
+    use RequiresPermission;
+
     protected static ?string $model = AuditLog::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-finger-print';

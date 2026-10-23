@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Resources\GiftVoucherResource\Pages;
 use App\Filament\Resources\GiftVoucherResource\RelationManagers;
 use App\Filament\Support\Euro;
@@ -18,6 +19,8 @@ use Illuminate\Database\Eloquent\Builder;
 /** Geschenkgutscheine (Mehrzweck-Gutscheine): Restguthaben, Ablauf, Einlösungsverlauf. */
 class GiftVoucherResource extends Resource
 {
+    use RequiresPermission;
+
     protected static ?string $model = GiftVoucher::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-gift';

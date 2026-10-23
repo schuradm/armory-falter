@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Resources\TaxRateResource\Pages;
 use App\Models\TaxRate;
 use Filament\Forms;
@@ -12,6 +13,8 @@ use Filament\Tables\Table;
 
 class TaxRateResource extends Resource
 {
+    use RequiresPermission;
+
     protected static ?string $model = TaxRate::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-receipt-percent';

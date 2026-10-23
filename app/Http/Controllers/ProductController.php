@@ -13,7 +13,7 @@ class ProductController extends Controller
 {
     public function show(Product $product, Seo $seo, ComplianceService $compliance, ReviewService $reviewService): View
     {
-        abort_unless($product->status === 'active' && (! $product->authority_only || auth()->user()?->isAuthorityOrDealer()), 404);
+        abort_unless($product->status === 'active' && (! $product->authority_only || auth()->user()?->isVerifiedAuthorityOrDealer()), 404);
 
         $product->load(['manufacturer', 'caliber', 'legalClass', 'taxRate', 'media', 'downloads', 'attributes', 'categories.parent', 'variants', 'faqs', 'seo', 'accessories.media', 'accessories.legalClass', 'accessories.taxRate']);
         $primary = $product->primaryCategory();

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Resources\NewsletterCampaignResource\Pages;
 use App\Models\NewsletterCampaign;
 use Filament\Forms;
@@ -14,6 +15,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class NewsletterCampaignResource extends Resource
 {
+    use RequiresPermission;
+
     protected static ?string $model = NewsletterCampaign::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-paper-airplane';
@@ -32,7 +35,7 @@ class NewsletterCampaignResource extends Resource
 
     public static function canEdit(Model $record): bool
     {
-        return $record instanceof NewsletterCampaign && in_array($record->status, ['draft', 'scheduled'], true);
+        return static::hasRequiredPermission() && $record instanceof NewsletterCampaign && in_array($record->status, ['draft', 'scheduled'], true);
     }
 
     public static function form(Form $form): Form

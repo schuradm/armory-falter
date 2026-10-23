@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\RelationManagers;
 use App\Models\User;
@@ -17,6 +18,8 @@ use Illuminate\Validation\Rules\Password;
 
 class UserResource extends Resource
 {
+    use RequiresPermission;
+
     protected static ?string $model = User::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-users';
@@ -43,10 +46,16 @@ class UserResource extends Resource
         return (bool) auth()->user()?->hasRole('super-admin');
     }
 
+    /** Kundenart und bestätigtes Geburtsdatum beeinflussen die Erwerbsprüfung. */
+    public static function canChangeComplianceData(): bool
+    {
+        return (bool) auth()->user()?->can('compliance.release');
+    }
+
     public static function canEdit(Model $record): bool
     {
         // Nur Super-Admins dürfen andere Super-Admins bearbeiten (keine Rechteausweitung)
-        return self::isSuperAdmin() || ($record instanceof User && ! $record->hasRole('super-admin'));
+        return self::isSuperAdmin() || (static::hasRequiredPermission() && $record instanceof User && ! $record->hasRole('super-admin'));
     }
 
     public static function canDelete(Model $record): bool
@@ -78,7 +87,9 @@ class UserResource extends Resource
                 Forms\Components\Group::make()->columnSpan(2)->schema([
                     Forms\Components\Section::make('Stammdaten')->columns(2)->schema([
                         Forms\Components\Select::make('customer_type')->label('Kundenart')->options(self::CUSTOMER_TYPES)
-                            ->default('private')->required()->live(),
+                            ->default('private')->required()->live()
+                            // Behörde/Händler schaltet gesperrte Artikel mit frei: nur mit Freigaberecht änderbar
+                            ->disabled(fn () => ! self::canChangeComplianceData()),
                         Forms\Components\Select::make('salutation')->label('Anrede')->options(self::SALUTATIONS)->default('none')->required(),
                         Forms\Components\TextInput::make('first_name')->label('Vorname')->required()->maxLength(100),
                         Forms\Components\TextInput::make('last_name')->label('Nachname')->required()->maxLength(100),
@@ -91,6 +102,7 @@ class UserResource extends Resource
                         Forms\Components\TextInput::make('phone')->label('Telefon')->tel()->maxLength(40),
                         Forms\Components\DatePicker::make('birth_date')->label('Geburtsdatum')->native(false)->displayFormat('d.m.Y')
                             ->maxDate(today())
+                            ->disabled(fn (?User $record) => $record?->age_verified_at !== null && ! self::canChangeComplianceData())
                             ->helperText('Änderungen heben die Altersbestätigung nicht auf. Bestätigt wird nur über die Dokumentenprüfung.'),
                         Forms\Components\TextInput::make('password')->label('Passwort')->password()->revealable()
                             ->required(fn (string $operation) => $operation === 'create')

@@ -25,7 +25,7 @@ class ComplianceService
         $product->loadMissing('legalClass', 'caliber');
         $legal = $product->legalClass;
 
-        if ($product->authority_only && ! $user?->isAuthorityOrDealer()) {
+        if ($product->authority_only && ! $user?->isVerifiedAuthorityOrDealer()) {
             return ComplianceResult::deny('Dieser Artikel ist nur für Behörden und Händler erhältlich.', ComplianceResult::HINT_CONTACT);
         }
 

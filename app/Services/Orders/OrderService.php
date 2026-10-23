@@ -133,21 +133,25 @@ class OrderService
 
     public function ship(Order $order, User $by, string $carrier, ?string $trackingNumber): Shipment
     {
-        $shipment = $order->shipments()->create([
-            'shipping_method_id' => $order->shippingMethod->id,
-            'carrier' => $carrier,
-            'tracking_number' => $trackingNumber,
-            'status' => 'handed_over',
-            'shipped_at' => now(),
-        ]);
-        // Klarna Rechnung/Raten: Abbuchung erst beim Versand (Klarna-Vorgabe)
+        // Klarna Rechnung/Raten: Abbuchung erst beim Versand (Klarna-Vorgabe). Zuerst abbuchen,
+        // damit bei einem Fehler keine Sendung ohne Statuswechsel zurückbleibt.
         if ($payment = $order->payments()->where('provider', 'klarna')->where('status', 'authorized')->first()) {
             app(KlarnaGateway::class)->capture($payment, $trackingNumber, $carrier);
         }
-        $this->transition($order, $order->shippingMethod->isPickup() ? OrderStatus::ReadyForPickup : OrderStatus::Shipped, $by,
-            $trackingNumber ? "Sendungsnummer: {$trackingNumber}" : null);
 
-        return $shipment;
+        return DB::transaction(function () use ($order, $by, $carrier, $trackingNumber) {
+            $shipment = $order->shipments()->create([
+                'shipping_method_id' => $order->shippingMethod->id,
+                'carrier' => $carrier,
+                'tracking_number' => $trackingNumber,
+                'status' => 'handed_over',
+                'shipped_at' => now(),
+            ]);
+            $this->transition($order, $order->shippingMethod->isPickup() ? OrderStatus::ReadyForPickup : OrderStatus::Shipped, $by,
+                $trackingNumber ? "Sendungsnummer: {$trackingNumber}" : null);
+
+            return $shipment;
+        });
     }
 
     /** Zugestellt (Versand) bzw. übergeben (Abholung). Ab hier darf der Kunde bewerten. */
@@ -167,6 +171,12 @@ class OrderService
         }
 
         $notes = DB::transaction(function () use ($order, $by) {
+            // Doppelklick oder zwei Mitarbeiter gleichzeitig: Status unter Sperre erneut prüfen
+            $current = Order::whereKey($order->id)->lockForUpdate()->firstOrFail();
+            if (in_array($current->status, [OrderStatus::Cancelled, OrderStatus::Refunded], true)) {
+                throw new InvalidArgumentException('Diese Bestellung ist bereits storniert.');
+            }
+
             // Rabattcode-Einlösung freigeben, eingelöstes Gutscheinguthaben zurückbuchen, gekaufte Gutscheine sperren
             app(DiscountCodeService::class)->release($order);
             $vouchers = app(GiftVoucherService::class);

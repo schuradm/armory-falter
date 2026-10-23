@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Resources\EventResource\Pages;
 use App\Filament\Resources\EventResource\RelationManagers;
 use App\Filament\Support\FormFields;
@@ -16,6 +17,8 @@ use Illuminate\Database\Eloquent\Builder;
 
 class EventResource extends Resource
 {
+    use RequiresPermission;
+
     protected static ?string $model = Event::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-ticket';

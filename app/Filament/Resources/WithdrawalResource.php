@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Resources\WithdrawalResource\Pages;
 use App\Models\Withdrawal;
 use Filament\Infolists;
@@ -14,6 +15,8 @@ use Illuminate\Database\Eloquent\Model;
 /** Online erklärte Widerrufe (Widerrufsbutton): nur lesen und als bearbeitet markieren. */
 class WithdrawalResource extends Resource
 {
+    use RequiresPermission;
+
     protected static ?string $model = Withdrawal::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-arrow-uturn-left';

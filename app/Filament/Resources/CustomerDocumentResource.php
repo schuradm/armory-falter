@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Enums\DocumentStatus;
 use App\Enums\DocumentType;
 use App\Enums\EntitlementType;
+use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Resources\CustomerDocumentResource\Pages;
 use App\Models\Caliber;
 use App\Models\CustomerDocument;
@@ -31,6 +32,8 @@ use Throwable;
  */
 class CustomerDocumentResource extends Resource
 {
+    use RequiresPermission;
+
     protected static ?string $model = CustomerDocument::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-identification';

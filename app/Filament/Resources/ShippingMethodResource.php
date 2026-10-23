@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Enums\ShippingMode;
+use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Resources\ShippingMethodResource\Pages;
 use App\Filament\Support\FormFields;
 use App\Models\ShippingMethod;
@@ -15,6 +16,8 @@ use Filament\Tables\Table;
 
 class ShippingMethodResource extends Resource
 {
+    use RequiresPermission;
+
     protected static ?string $model = ShippingMethod::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-truck';

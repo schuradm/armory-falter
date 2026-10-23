@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Resources\BlogPostResource\Pages;
 use App\Filament\Support\FormFields;
 use App\Models\BlogPost;
@@ -14,6 +15,8 @@ use Illuminate\Database\Eloquent\Builder;
 
 class BlogPostResource extends Resource
 {
+    use RequiresPermission;
+
     protected static ?string $model = BlogPost::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-newspaper';

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Resources\ManufacturerResource\Pages;
 use App\Filament\Support\FaqRepeater;
 use App\Filament\Support\SeoFields;
@@ -18,6 +19,8 @@ use Illuminate\Support\Str;
 
 class ManufacturerResource extends Resource
 {
+    use RequiresPermission;
+
     protected static ?string $model = Manufacturer::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-building-office-2';

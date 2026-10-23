@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Resources\NewsletterSubscriberResource\Pages;
 use App\Models\NewsletterSubscriber;
 use Filament\Infolists;
@@ -17,6 +18,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class NewsletterSubscriberResource extends Resource
 {
+    use RequiresPermission;
+
     protected static ?string $model = NewsletterSubscriber::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-user-group';

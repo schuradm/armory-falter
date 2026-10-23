@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Resources\WorkshopServiceResource\Pages;
 use App\Filament\Support\FormFields;
 use App\Models\WorkshopService;
@@ -14,6 +15,8 @@ use Filament\Tables\Table;
 
 class WorkshopServiceResource extends Resource
 {
+    use RequiresPermission;
+
     protected static ?string $model = WorkshopService::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-wrench-screwdriver';

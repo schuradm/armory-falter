@@ -131,6 +131,10 @@ class DiscountCodeService
         if ($locked->usage_limit !== null && $locked->times_used >= $locked->usage_limit) {
             throw new VoucherException('Dieser Rabattcode wurde inzwischen vollständig eingelöst.');
         }
+        // Kundenlimit ebenfalls unter Sperre prüfen (zwei parallele Bestellungen desselben Kunden)
+        if ($locked->usage_limit_per_customer !== null && $this->usedBy($locked, $user) >= $locked->usage_limit_per_customer) {
+            throw new VoucherException('Sie haben diesen Rabattcode bereits eingelöst.');
+        }
         $locked->increment('times_used');
 
         return $locked->redemptions()->create(['order_id' => $order->id, 'user_id' => $user->id, 'amount_gross' => $amount]);

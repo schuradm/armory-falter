@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Resources\CaliberResource\Pages;
 use App\Filament\Support\FaqRepeater;
 use App\Models\Caliber;
@@ -17,6 +18,8 @@ use Illuminate\Support\Str;
 
 class CaliberResource extends Resource
 {
+    use RequiresPermission;
+
     protected static ?string $model = Caliber::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-viewfinder-circle';

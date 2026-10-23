@@ -10,6 +10,7 @@ use App\Services\Orders\InvoiceService;
 use App\Services\Orders\OrderService;
 use App\Services\Payment\KlarnaGateway;
 use App\Services\Payment\PayPalGateway;
+use Illuminate\Contracts\Cache\LockTimeoutException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -103,14 +104,19 @@ class PaymentController extends Controller
     /** Idempotent: Rückleitung und Webhook können gleichzeitig eintreffen. */
     private function markPaid(Order $order, string $via): void
     {
-        Cache::lock('order-paid-'.$order->id, 10)->block(5, function () use ($order, $via) {
-            $order->refresh();
-            if ($order->status !== OrderStatus::PendingPayment) {
-                return;
-            }
-            app(OrderService::class)->transition($order, OrderStatus::Paid, null, "Zahlung per {$via} eingegangen.");
-            app(InvoiceService::class)->createFor($order);
-        });
+        try {
+            Cache::lock('order-paid-'.$order->id, 30)->block(10, function () use ($order, $via) {
+                $order->refresh();
+                if ($order->status !== OrderStatus::PendingPayment) {
+                    return;
+                }
+                app(OrderService::class)->transition($order, OrderStatus::Paid, null, "Zahlung per {$via} eingegangen.");
+                app(InvoiceService::class)->createFor($order);
+            });
+        } catch (LockTimeoutException) {
+            // Die parallele Anfrage (Rückleitung oder Webhook) bucht die Zahlung gerade, Kunde sieht trotzdem die Bestätigung
+            Log::warning('Zahlungsbuchung läuft bereits parallel', ['order' => $order->order_number, 'via' => $via]);
+        }
     }
 
     private function failed(Order $order): RedirectResponse

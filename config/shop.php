@@ -131,7 +131,7 @@ return [
     'page_cache' => [
         'enabled' => env('PAGE_CACHE', true),
         'ttl' => 900,
-        'except' => ['vertrag-widerrufen*', 'konto*', 'kasse*', 'warenkorb', 'zahlung*', 'kms-login*', 'livewire*', 'newsletter*', 'downloads*', 'bewertungen/*', 'suche', 'vergleich', 'sitemap.xml', 'robots.txt', 'up', 'cron/*'],
+        'except' => ['vertrag-widerrufen*', 'konto*', 'kasse*', 'warenkorb', 'zahlung*', 'kms-login*', 'livewire*', 'newsletter*', 'downloads*', 'bewertungen/*', 'suche', 'vergleich', 'merkliste*', 'sitemap.xml', 'robots.txt', 'up', 'cron/*'],
     ],
 
     // Performance-Schalter

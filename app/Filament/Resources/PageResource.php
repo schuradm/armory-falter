@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Resources\PageResource\Pages;
 use App\Filament\Support\FormFields;
 use App\Http\Controllers\PageController;
@@ -15,6 +16,8 @@ use Filament\Tables\Table;
 /** Statische Seiten (Rechtstexte, Über uns …). Erreichbar sind nur die in PageController::SLUGS hinterlegten Adressen. */
 class PageResource extends Resource
 {
+    use RequiresPermission;
+
     protected static ?string $model = Page::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';

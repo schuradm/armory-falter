@@ -35,6 +35,7 @@ use App\View\Composers\NavigationComposer;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Http\Middleware\TrustProxies;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
@@ -52,6 +53,10 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        // Vorgeschalteter Proxy (Traefik, Cloudflare): echte Client-IP aus X-Forwarded-For, siehe config/app.php
+        $proxies = (string) config('app.trusted_proxies');
+        TrustProxies::at($proxies === '*' ? '*' : array_values(array_filter(array_map('trim', explode(',', $proxies)))));
+
         Model::preventLazyLoading(! $this->app->isProduction());
         Model::preventSilentlyDiscardingAttributes(! $this->app->isProduction());
 

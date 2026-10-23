@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Enums\EntitlementType;
 use App\Enums\PaymentMethod;
 use App\Enums\ShippingMode;
+use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Resources\LegalClassResource\Pages;
 use App\Models\LegalClass;
 use Filament\Forms;
@@ -20,6 +21,8 @@ use Illuminate\Database\Eloquent\Builder;
  */
 class LegalClassResource extends Resource
 {
+    use RequiresPermission;
+
     protected static ?string $model = LegalClass::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-scale';

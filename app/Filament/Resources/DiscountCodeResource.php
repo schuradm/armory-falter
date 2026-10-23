@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Resources\DiscountCodeResource\Pages;
 use App\Filament\Resources\DiscountCodeResource\RelationManagers;
 use App\Filament\Support\Euro;
@@ -18,6 +19,8 @@ use Filament\Tables\Table;
 /** Rabattcodes (Prozent oder Festbetrag) mit Laufzeit, Limits und Einschränkung auf Kategorien/Produkte. */
 class DiscountCodeResource extends Resource
 {
+    use RequiresPermission;
+
     protected static ?string $model = DiscountCode::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-receipt-percent';

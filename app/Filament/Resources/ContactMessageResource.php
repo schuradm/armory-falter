@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Resources\ContactMessageResource\Pages;
 use App\Models\ContactMessage;
 use Filament\Infolists;
@@ -15,6 +16,8 @@ use Illuminate\Database\Eloquent\Model;
 /** Kontaktanfragen aus dem Formular: nur lesen und als erledigt markieren. */
 class ContactMessageResource extends Resource
 {
+    use RequiresPermission;
+
     protected static ?string $model = ContactMessage::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-envelope';

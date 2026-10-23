@@ -51,7 +51,7 @@ class Product extends Model
     public function scopeVisible(Builder $query, ?User $viewer = null): Builder
     {
         $query->where('status', 'active');
-        if (! $viewer?->isAuthorityOrDealer()) {
+        if (! $viewer?->isVerifiedAuthorityOrDealer()) {
             $query->where('authority_only', false);
         }
 

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Resources\FaqResource\Pages;
 use App\Models\BlogPost;
 use App\Models\Faq;
@@ -16,6 +17,8 @@ use Illuminate\Database\Eloquent\Builder;
 
 class FaqResource extends Resource
 {
+    use RequiresPermission;
+
     protected static ?string $model = Faq::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-question-mark-circle';

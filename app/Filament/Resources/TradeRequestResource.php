@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Enums\ItemCondition;
 use App\Enums\TradeRequestStatus;
 use App\Enums\TradeRequestType;
+use App\Filament\Concerns\RequiresPermission;
 use App\Filament\Resources\TradeRequestResource\Pages;
 use App\Filament\Support\Euro;
 use App\Models\TradeRequest;
@@ -26,6 +27,8 @@ use Throwable;
 
 class TradeRequestResource extends Resource
 {
+    use RequiresPermission;
+
     protected static ?string $model = TradeRequest::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-arrows-right-left';

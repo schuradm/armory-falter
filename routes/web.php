@@ -19,6 +19,7 @@ use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\ShopActionController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\SitemapController;
+use App\Http\Controllers\WishlistShareController;
 use App\Http\Controllers\WithdrawalController;
 use App\Http\Middleware\CachePublicPages;
 use App\Livewire;
@@ -40,6 +41,7 @@ Route::get('/hersteller/{manufacturer:slug}', [BrandController::class, 'show'])-
 Route::get('/kaliber/{caliber:slug}', [CaliberController::class, 'show'])->name('calibers.show');
 Route::get('/suche', [SearchController::class, 'index'])->middleware('throttle:search')->name('search');
 Route::get('/vergleich', [SearchController::class, 'compare'])->name('compare');
+Route::get('/merkliste/geteilt/{token}', [WishlistShareController::class, 'show'])->middleware('throttle:30,1')->name('wishlist.shared');
 Route::get('/warenkorb', Livewire\CartPage::class)->name('cart');
 Route::post('/warenkorb/artikel', [ShopActionController::class, 'addToCart'])->middleware('throttle:60,1')->name('cart.quick-add');
 Route::middleware('auth')->group(function () {

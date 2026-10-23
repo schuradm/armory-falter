@@ -53,13 +53,11 @@ class PayPalGateway
                 ]]],
             ])->throw();
 
-        $order->payments()->create([
-            'provider' => 'paypal',
-            'provider_reference' => $res->json('id'),
-            'status' => 'initiated',
-            'amount' => $order->amountDue(),
-            'raw_response' => $res->json(),
-        ]);
+        // Gleiche PayPal-Request-Id liefert beim zweiten Versuch dieselbe PayPal-Order: Zahlung wiederverwenden
+        $order->payments()->updateOrCreate(
+            ['provider' => 'paypal', 'provider_reference' => $res->json('id')],
+            ['status' => 'initiated', 'amount' => $order->amountDue(), 'raw_response' => $res->json()],
+        );
 
         $approve = collect($res->json('links'))->firstWhere('rel', 'payer-action')['href'] ?? null;
 
@@ -73,7 +71,7 @@ class PayPalGateway
             return true;
         }
         $res = Http::withToken($this->token())->withBody('{}', 'application/json')
-            ->withHeaders(['PayPal-Request-Id' => 'cap-'.$order->idempotency_key])
+            ->withHeaders(['PayPal-Request-Id' => 'cap-'.$paypalOrderId])
             ->post($this->base()."/v2/checkout/orders/{$paypalOrderId}/capture");
 
         $capture = $res->json('purchase_units.0.payments.captures.0');
