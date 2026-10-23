@@ -1,5 +1,5 @@
 {{-- Newsletter in der Fußzeile: normales Formular (POST), funktioniert auch bevor JavaScript geladen ist --}}
-@php($errs = $errors->getBag('newsletter_footer'))
+@php($errs = isset($errors) ? $errors->getBag('newsletter_footer') : new \Illuminate\Support\MessageBag)
 <div id="newsletter" class="mt-4 scroll-mt-28">
     @if (session('newsletter_done') === 'footer')
         <p class="flex items-start gap-2 text-white/80" role="status"><x-icon name="mail" class="mt-0.5 size-4 text-brand-400"/> Fast geschafft: Bitte bestätigen Sie die Anmeldung über den Link in der E-Mail.</p>

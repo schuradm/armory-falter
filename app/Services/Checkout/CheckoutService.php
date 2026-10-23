@@ -139,7 +139,8 @@ class CheckoutService
         $products = Product::whereIn('id', $cart->items->pluck('product_id'))->lockForUpdate()->get()->keyBy('id');
         foreach ($cart->items as $item) {
             $p = $products[$item->product_id];
-            if ($p->tracksStock() && $p->availableStock() < $item->quantity) {
+            // Frisch gesperrter Stand: ein parallel verkaufter letzter Artikel steht jetzt auf „ausverkauft“
+            if (! $p->isPurchasable() || ($p->tracksStock() && $p->availableStock() < $item->quantity)) {
                 throw new CheckoutException("„{$p->name}“ ist nicht mehr in der gewünschten Menge verfügbar.");
             }
         }

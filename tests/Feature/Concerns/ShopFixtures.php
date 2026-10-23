@@ -2,8 +2,11 @@
 
 namespace Tests\Feature\Concerns;
 
+use App\Enums\EntitlementType;
 use App\Livewire\CartPage;
 use App\Livewire\Checkout;
+use App\Models\CustomerDocument;
+use App\Models\CustomerEntitlement;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\User;
@@ -45,6 +48,27 @@ trait ShopFixtures
         $user->assignRole('customer');
 
         return $user;
+    }
+
+    /** Alter wie nach geprüftem Ausweis bestätigen (ohne Upload-Umweg). */
+    protected function verifyAge(User $user, string $birthDate = '1985-05-01'): User
+    {
+        $user->forceFill(['birth_date' => $birthDate, 'age_verified_at' => now(), 'age_verification_method' => 'document_review'])->save();
+
+        return $user;
+    }
+
+    /** Freigegebene Erwerbsberechtigung samt Belegdokument anlegen, wie es die Dokumentprüfung im Backend tut. */
+    protected function grantEntitlement(User $user, EntitlementType $type, array $attributes = []): CustomerEntitlement
+    {
+        $doc = new CustomerDocument(['type' => 'wbk_green', 'storage_path' => 'test/'.uniqid().'.bin', 'original_name' => 'wbk.png',
+            'mime_type' => 'image/png', 'file_size' => 1, 'sha256' => str_repeat('0', 64), 'status' => 'approved']);
+        $doc->user()->associate($user)->save();
+
+        return CustomerEntitlement::create($attributes + [
+            'user_id' => $user->id, 'document_id' => $doc->id, 'type' => $type->value, 'status' => 'active',
+            'valid_until' => now()->addYear(), 'created_by' => $this->admin->id,
+        ]);
     }
 
     /** @param array<string,int> $skus */

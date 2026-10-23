@@ -102,7 +102,7 @@ class TradeRequestForm extends Component
             'model' => ['required', 'string', 'max:160'],
             'caliber' => [$consignment ? 'nullable' : 'required', 'string', 'max:80'],
             'condition_code' => ['required', Rule::enum(ItemCondition::class)],
-            'desired_price' => ['nullable', 'regex:/^\d{1,7}([.,]\d{1,2})?$/'],
+            'desired_price' => ['nullable', 'regex:/^(\d{1,7}|\d{1,3}(\.\d{3}){1,2})([.,]\d{1,2})?$/'], // auch 1.250,50
             'description' => ['nullable', 'string', 'max:3000'],
             'photos' => [$consignment ? 'required' : 'nullable', 'array', "max:$max"],
             'photos.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:'.config('shop.trade_requests.max_photo_kb')],

@@ -18,8 +18,10 @@ class FallbackController extends Controller
 
             return redirect($redirect->to_path, $redirect->status_code);
         }
-        if ($path !== '/' && str_ends_with($path, '/')) {
-            return redirect(rtrim($path, '/'), 301);
+        // path() schneidet den Schrägstrich ab, deshalb den rohen Pfad prüfen
+        $raw = $request->getPathInfo();
+        if ($raw !== '/' && str_ends_with($raw, '/')) {
+            return redirect(rtrim($raw, '/'), 301);
         }
         abort(404);
     }

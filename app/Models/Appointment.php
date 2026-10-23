@@ -11,6 +11,16 @@ class Appointment extends Model
 
     protected $casts = ['contact' => 'array', 'starts_at' => 'datetime', 'ends_at' => 'datetime'];
 
+    protected static function booted(): void
+    {
+        // Eindeutig je Ressource und Startzeit, aber nur solange der Termin nicht abgesagt ist
+        static::saving(function (Appointment $appointment) {
+            $appointment->slot_key = $appointment->status === 'cancelled'
+                ? null
+                : $appointment->resource.'|'.$appointment->starts_at->format('Y-m-d H:i');
+        });
+    }
+
     /** @return BelongsTo<WorkshopService, $this> */
     public function service(): BelongsTo
     {
