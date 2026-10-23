@@ -66,7 +66,7 @@ class OrderService
             foreach ($order->complianceChecks()->where('result', 'pending')->with('orderItem')->get() as $check) {
                 if ($check->customer_entitlement_id) {
                     $ent = CustomerEntitlement::lockForUpdate()->find($check->customer_entitlement_id);
-                    $qty = $check->orderItem?->quantity ?? 1;
+                    $qty = $check->orderItem->quantity ?? 1;
                     if ($ent->quantity_total !== null) {
                         if ($ent->remaining() < $qty) {
                             throw new InvalidArgumentException('Die Erwerbsberechtigung ist bereits verbraucht: '.$ent->describe());
@@ -188,7 +188,7 @@ class OrderService
             foreach ($order->complianceChecks()->where('result', 'passed')->whereNotNull('customer_entitlement_id')->with('orderItem')->get() as $check) {
                 $ent = CustomerEntitlement::lockForUpdate()->find($check->customer_entitlement_id);
                 if ($ent && $ent->quantity_total !== null && $ent->quantity_used > 0) {
-                    $ent->quantity_used = max(0, $ent->quantity_used - ($check->orderItem?->quantity ?? 1));
+                    $ent->quantity_used = max(0, $ent->quantity_used - ($check->orderItem->quantity ?? 1));
                     $ent->status = $ent->status === 'consumed' ? 'active' : $ent->status;
                     $ent->save();
                 }

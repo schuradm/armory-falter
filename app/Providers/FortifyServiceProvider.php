@@ -6,6 +6,7 @@ use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
 use App\Actions\Fortify\UpdateUserPassword;
 use App\Actions\Fortify\UpdateUserProfileInformation;
+use App\Models\User;
 use App\Services\AuditLogger;
 use App\Services\Cart\CartService;
 use Illuminate\Auth\Events\Failed;
@@ -46,13 +47,16 @@ class FortifyServiceProvider extends ServiceProvider
         RateLimiter::for('two-factor', fn (Request $request) => Limit::perMinute(5)->by($request->session()->get('login.id')));
 
         Event::listen(Login::class, function (Login $event) {
+            if (! $event->user instanceof User) {
+                return;
+            }
             app(CartService::class)->mergeGuestCartInto($event->user, request()->cookie(CartService::COOKIE) ?? session(CartService::COOKIE));
             $event->user->forceFill(['last_login_at' => now()])->saveQuietly();
             app(AuditLogger::class)->log('auth.login', $event->user);
         });
 
         Event::listen(Failed::class, function (Failed $event) {
-            app(AuditLogger::class)->log('auth.failed', $event->user, new: ['email' => Str::mask((string) ($event->credentials['email'] ?? ''), '*', 3)], actorType: 'system');
+            app(AuditLogger::class)->log('auth.failed', $event->user instanceof User ? $event->user : null, new: ['email' => Str::mask((string) ($event->credentials['email'] ?? ''), '*', 3)], actorType: 'system');
         });
     }
 }

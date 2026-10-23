@@ -179,7 +179,7 @@ class CheckoutService
                 'product_id' => $p->id,
                 'product_variant_id' => $item->product_variant_id,
                 'item_type' => $voucher ? 'gift_voucher' : 'product',
-                'sku' => $item->variant?->sku ?? $p->sku,
+                'sku' => $item->variant->sku ?? $p->sku,
                 'name' => $voucher ? $item->displayName().' (Mehrzweck-Gutschein)' : $p->name.($item->variant ? ' ('.$item->variant->label().')' : ''),
                 'legal_class_code' => $item->product->legalClass->code,
                 'quantity' => $item->quantity,

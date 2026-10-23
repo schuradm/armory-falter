@@ -35,7 +35,7 @@ class LatestOrders extends TableWidget
                 Tables\Columns\TextColumn::make('order_number')->label('Nummer')->fontFamily('mono'),
                 Tables\Columns\TextColumn::make('placed_at')->label('Datum')->dateTime('d.m.Y H:i'),
                 Tables\Columns\TextColumn::make('customer')->label('Kunde')
-                    ->getStateUsing(fn (Order $r) => $r->user?->company_name ?: trim(($r->user?->first_name ?? '').' '.($r->user?->last_name ?? ''))),
+                    ->getStateUsing(fn (Order $r) => $r->user?->company_name ?: trim(($r->user->first_name ?? '').' '.($r->user->last_name ?? ''))),
                 Tables\Columns\TextColumn::make('total_gross')->label('Summe')->formatStateUsing(fn ($state) => Money::format((int) $state)),
                 Tables\Columns\TextColumn::make('payment_method_code')->label('Zahlart'),
                 Tables\Columns\TextColumn::make('status')->label('Status')->badge(),

@@ -13,6 +13,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
 /**
@@ -127,7 +128,7 @@ class ProductReviewResource extends Resource
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\BulkAction::make('approve')->label('Veröffentlichen')->icon('heroicon-o-check')
-                        ->action(fn (Collection $records) => $records->each(fn (ProductReview $r) => app(ReviewService::class)->approve($r, auth()->user())))
+                        ->action(fn (Collection $records) => $records->each(fn (Model $r) => $r instanceof ProductReview && app(ReviewService::class)->approve($r, auth()->user())))
                         ->deselectRecordsAfterCompletion(),
                 ]),
             ]);

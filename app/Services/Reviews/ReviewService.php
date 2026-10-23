@@ -64,7 +64,7 @@ class ReviewService
      */
     public function submit(User $user, Product $product, array $data): ProductReview
     {
-        $rating = (int) ($data['rating'] ?? 0);
+        $rating = (int) $data['rating'];
         if ($rating < 1 || $rating > 5) {
             throw new InvalidArgumentException('Bitte vergeben Sie 1 bis 5 Sterne.');
         }

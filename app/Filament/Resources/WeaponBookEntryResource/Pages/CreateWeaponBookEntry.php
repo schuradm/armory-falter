@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\WeaponBookEntryResource\Pages;
 
 use App\Filament\Resources\WeaponBookEntryResource;
+use App\Models\WeaponBookEntry;
 use App\Services\AuditLogger;
 use Filament\Resources\Pages\CreateRecord;
 
@@ -21,8 +22,10 @@ class CreateWeaponBookEntry extends CreateRecord
 
     protected function afterCreate(): void
     {
-        app(AuditLogger::class)->log('weapon_book.booked', $this->record->weaponItem, [], [
-            'entry_id' => $this->record->id, 'direction' => $this->record->direction,
+        /** @var WeaponBookEntry $entry */
+        $entry = $this->record;
+        app(AuditLogger::class)->log('weapon_book.booked', $entry->weaponItem, [], [
+            'entry_id' => $entry->id, 'direction' => $entry->direction,
         ]);
     }
 }

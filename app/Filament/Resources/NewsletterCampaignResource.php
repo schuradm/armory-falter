@@ -32,7 +32,7 @@ class NewsletterCampaignResource extends Resource
 
     public static function canEdit(Model $record): bool
     {
-        return in_array($record->status, ['draft', 'scheduled'], true);
+        return $record instanceof NewsletterCampaign && in_array($record->status, ['draft', 'scheduled'], true);
     }
 
     public static function form(Form $form): Form

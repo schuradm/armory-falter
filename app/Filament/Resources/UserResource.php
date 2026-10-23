@@ -46,7 +46,7 @@ class UserResource extends Resource
     public static function canEdit(Model $record): bool
     {
         // Nur Super-Admins dürfen andere Super-Admins bearbeiten (keine Rechteausweitung)
-        return self::isSuperAdmin() || ! $record->hasRole('super-admin');
+        return self::isSuperAdmin() || ($record instanceof User && ! $record->hasRole('super-admin'));
     }
 
     public static function canDelete(Model $record): bool
@@ -61,6 +61,7 @@ class UserResource extends Resource
 
     public static function getGlobalSearchResultTitle(Model $record): string
     {
+        /** @var User $record */
         return $record->name.' ('.$record->customer_number.')';
     }
 
@@ -101,7 +102,7 @@ class UserResource extends Resource
                 Forms\Components\Group::make()->schema([
                     Forms\Components\Section::make('Konto')->schema([
                         Forms\Components\Placeholder::make('customer_number')->label('Kundennummer')
-                            ->content(fn (?User $record) => $record?->customer_number ?? 'wird automatisch vergeben'),
+                            ->content(fn (?User $record) => $record->customer_number ?? 'wird automatisch vergeben'),
                         Forms\Components\Toggle::make('is_active')->label('Konto aktiv')->default(true),
                         Forms\Components\Toggle::make('email_verified')->label('E-Mail bestätigt')->default(true),
                         Forms\Components\Placeholder::make('age_verified_at')->label('Alter bestätigt')

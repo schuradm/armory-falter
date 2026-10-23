@@ -29,6 +29,7 @@ class ViewCustomerDocument extends ViewRecord
 
     public function getTitle(): string
     {
+        /** @var CustomerDocument $doc */
         $doc = $this->getRecord();
 
         return $doc->type->label().' – '.$doc->user?->name;

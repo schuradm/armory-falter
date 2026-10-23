@@ -17,7 +17,9 @@ class EditProduct extends EditRecord
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        $data['stock_reserved'] = $this->getRecord()->stock_reserved;
+        /** @var Product $product */
+        $product = $this->getRecord();
+        $data['stock_reserved'] = $product->stock_reserved;
 
         return $this->fillProductExtras($data);
     }

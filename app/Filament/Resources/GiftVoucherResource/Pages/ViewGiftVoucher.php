@@ -18,7 +18,10 @@ class ViewGiftVoucher extends ViewRecord
 
     public function getTitle(): string
     {
-        return 'Gutschein '.$this->getRecord()->formattedCode();
+        /** @var GiftVoucher $voucher */
+        $voucher = $this->getRecord();
+
+        return 'Gutschein '.$voucher->formattedCode();
     }
 
     protected function getHeaderActions(): array

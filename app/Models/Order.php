@@ -87,13 +87,21 @@ class Order extends Model
         return $this->hasOne(DiscountCodeRedemption::class)->latestOfMany();
     }
 
-    /** Buchungen auf Geschenkgutscheinen, mit denen diese Bestellung (teil-)bezahlt wurde. */
+    /**
+     * Buchungen auf Geschenkgutscheinen, mit denen diese Bestellung (teil-)bezahlt wurde.
+     *
+     * @return HasMany<GiftVoucherTransaction, $this>
+     */
     public function giftVoucherTransactions(): HasMany
     {
         return $this->hasMany(GiftVoucherTransaction::class);
     }
 
-    /** Mit dieser Bestellung gekaufte Geschenkgutscheine. */
+    /**
+     * Mit dieser Bestellung gekaufte Geschenkgutscheine.
+     *
+     * @return HasMany<GiftVoucher, $this>
+     */
     public function issuedGiftVouchers(): HasMany
     {
         return $this->hasMany(GiftVoucher::class);

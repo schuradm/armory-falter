@@ -134,7 +134,7 @@ class CustomerDocumentResource extends Resource
             ])
             ->filters([
                 Tables\Filters\Filter::make('awaiting')->label('Wartet auf Prüfung')->default()
-                    ->query(fn (Builder $query) => $query->awaitingReview()),
+                    ->query(fn (Builder $query) => $query->scopes('awaitingReview')),
                 Tables\Filters\SelectFilter::make('status')->label('Status')->options(DocumentStatus::class),
                 Tables\Filters\SelectFilter::make('type')->label('Dokumentart')->options(DocumentType::class),
             ])

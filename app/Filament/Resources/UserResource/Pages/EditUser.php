@@ -43,8 +43,10 @@ class EditUser extends EditRecord
     protected function afterSave(): void
     {
         // Rollen ohne Mitarbeiterstatus ergeben keinen Sinn
-        if (! $this->getRecord()->is_staff && UserResource::isSuperAdmin()) {
-            $this->getRecord()->syncRoles([]);
+        /** @var User $user */
+        $user = $this->getRecord();
+        if (! $user->is_staff && UserResource::isSuperAdmin()) {
+            $user->syncRoles([]);
         }
     }
 

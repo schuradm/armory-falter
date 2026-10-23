@@ -16,7 +16,10 @@ class EditProductReview extends EditRecord
 
     public function getTitle(): string
     {
-        return 'Bewertung: '.$this->getRecord()->product?->name;
+        /** @var ProductReview $review */
+        $review = $this->getRecord();
+
+        return 'Bewertung: '.$review->product?->name;
     }
 
     protected function resolveRecord(int|string $key): Model

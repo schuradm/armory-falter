@@ -12,11 +12,13 @@ class Withdrawal extends Model
 
     protected $casts = ['declared_at' => 'datetime', 'processed_at' => 'datetime'];
 
+    /** @return BelongsTo<Order, $this> */
     public function order(): BelongsTo
     {
         return $this->belongsTo(Order::class);
     }
 
+    /** @return BelongsTo<User, $this> */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

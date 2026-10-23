@@ -1,6 +1,5 @@
 includes:
     - vendor/larastan/larastan/extension.neon
-    - phpstan-baseline.neon
 
 parameters:
     level: 5
@@ -10,3 +9,12 @@ parameters:
         - database
         - routes
     tmpDir: storage/framework/cache/phpstan
+    ignoreErrors:
+        # Seeder laufen auch ohne Konsole (z. B. aus Migrationen), $this->command ist dann null
+        -
+            identifier: nullsafe.neverNull
+            path: database/seeders/*
+        # Die Demo-Daten sind fest, die Bedingungen gelten für künftige Einträge
+        -
+            identifier: greater.alwaysTrue
+            path: database/seeders/ProductSeeder.php

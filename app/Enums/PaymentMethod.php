@@ -27,7 +27,7 @@ enum PaymentMethod: string implements FilamentLabel
     /** Zahlarten, die Kunde und Backend wählen bzw. Rechtsklassen zuordnen können (ohne Gutschein). */
     public static function selectable(): array
     {
-        return array_values(array_filter(self::cases(), fn (self $m) => $m !== self::GiftVoucher));
+        return collect(self::cases())->reject(fn (self $m) => $m === self::GiftVoucher)->values()->all();
     }
 
     /** @return array<string,string> value => label, für Filament-Auswahlfelder */

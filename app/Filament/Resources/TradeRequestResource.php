@@ -84,7 +84,7 @@ class TradeRequestResource extends Resource
                 Forms\Components\Group::make()->schema([
                     Forms\Components\Section::make('Bearbeitung')->schema([
                         Forms\Components\Placeholder::make('reference_display')->label('Referenz')
-                            ->content(fn (?TradeRequest $record) => $record?->reference ?? 'wird beim Speichern vergeben'),
+                            ->content(fn (?TradeRequest $record) => $record->reference ?? 'wird beim Speichern vergeben'),
                         Forms\Components\Select::make('status')->label('Status')->options(TradeRequestStatus::class)
                             ->default(TradeRequestStatus::New->value)->required(),
                         Forms\Components\Select::make('assigned_to')->label('Zuständig')

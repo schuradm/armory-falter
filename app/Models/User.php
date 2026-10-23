@@ -12,10 +12,19 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Carbon;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
+/**
+ * @property Carbon|null $email_verified_at
+ * @property Carbon|null $birth_date
+ * @property Carbon|null $age_verified_at
+ * @property Carbon|null $last_login_at
+ * @property Carbon|null $two_factor_confirmed_at
+ * @property Carbon|null $review_requests_opted_out_at
+ */
 class User extends Authenticatable implements FilamentUser, HasName, MustVerifyEmail
 {
     use HasApiTokens, HasFactory, HasRoles, Notifiable, SoftDeletes, TwoFactorAuthenticatable;

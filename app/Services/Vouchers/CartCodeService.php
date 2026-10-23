@@ -34,7 +34,7 @@ class CartCodeService
      */
     public function apply(Cart $cart, string $input, ?User $user): string
     {
-        $key = 'voucher-code:'.($user?->id ?? request()->ip());
+        $key = 'voucher-code:'.($user->id ?? request()->ip());
         if (RateLimiter::tooManyAttempts($key, self::MAX_FAILED_ATTEMPTS)) {
             throw new VoucherException('Zu viele ungültige Versuche. Bitte warten Sie '.ceil(RateLimiter::availableIn($key) / 60).' Minuten.');
         }

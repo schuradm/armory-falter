@@ -36,7 +36,7 @@ class VerifyAuditLog extends Command
                     'old_values' => $log->old_values,
                     'new_values' => $log->new_values,
                     'prev_hash' => $log->prev_hash,
-                    'created_at' => $log->created_at?->format('Y-m-d H:i:s.v'),
+                    'created_at' => $log->created_at->format('Y-m-d H:i:s.v'),
                 ];
                 if ($log->prev_hash !== $prev) {
                     $errors[] = "#{$log->id}: Verkettung gebrochen (prev_hash passt nicht zum Vorgänger)";

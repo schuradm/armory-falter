@@ -159,7 +159,11 @@ class Product extends Model
         return $this->belongsToMany(Category::class)->withPivot('is_primary');
     }
 
-    /** „Passend dazu“: Zubehör-Empfehlungen (Upsell), im Backend je Produkt gepflegt. */
+    /**
+     * „Passend dazu“: Zubehör-Empfehlungen (Upsell), im Backend je Produkt gepflegt.
+     *
+     * @return BelongsToMany<Product, $this>
+     */
     public function accessories(): BelongsToMany
     {
         return $this->belongsToMany(Product::class, 'product_relations', 'product_id', 'related_product_id')

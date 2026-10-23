@@ -31,7 +31,7 @@ class CommentForm extends Component
     public function mount(BlogPost $post): void
     {
         $this->postId = $post->id;
-        $this->author = Auth::user()?->first_name ?? '';
+        $this->author = Auth::user()->first_name ?? '';
     }
 
     public function submit(): void

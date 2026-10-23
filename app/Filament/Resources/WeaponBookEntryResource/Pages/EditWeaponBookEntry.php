@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\WeaponBookEntryResource\Pages;
 
 use App\Filament\Resources\WeaponBookEntryResource;
+use App\Models\WeaponBookEntry;
 use App\Services\AuditLogger;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Arr;
@@ -19,8 +20,10 @@ class EditWeaponBookEntry extends EditRecord
 
     protected function afterSave(): void
     {
-        app(AuditLogger::class)->log('weapon_book.nwr_reported', $this->record->weaponItem, [], [
-            'entry_id' => $this->record->id, 'nwr_reference' => $this->record->nwr_reference,
+        /** @var WeaponBookEntry $entry */
+        $entry = $this->record;
+        app(AuditLogger::class)->log('weapon_book.nwr_reported', $entry->weaponItem, [], [
+            'entry_id' => $entry->id, 'nwr_reference' => $entry->nwr_reference,
         ]);
     }
 

@@ -48,7 +48,7 @@ class WeaponBookEntryResource extends Resource
 
     public static function weaponLabel(WeaponItem $item): string
     {
-        return ($item->product?->name ?? 'Waffe')." – SN {$item->serial_number}";
+        return ($item->product->name ?? 'Waffe')." – SN {$item->serial_number}";
     }
 
     public static function form(Form $form): Form

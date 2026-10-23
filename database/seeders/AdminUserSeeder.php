@@ -15,8 +15,8 @@ class AdminUserSeeder extends Seeder
 {
     public function run(): void
     {
-        $email = env('ADMIN_EMAIL', 'admin@armory-falter.de');
-        $envPassword = env('ADMIN_PASSWORD');
+        $email = config('shop.admin.email');
+        $envPassword = config('shop.admin.password');
 
         $user = User::withTrashed()->where('email', $email)->first() ?? new User(['email' => $email]);
         $generated = null;

@@ -13,7 +13,10 @@ class EditTradeRequest extends EditRecord
 
     public function getTitle(): string
     {
-        return 'Anfrage '.$this->getRecord()->reference;
+        /** @var TradeRequest $request */
+        $request = $this->getRecord();
+
+        return 'Anfrage '.$request->reference;
     }
 
     protected function getHeaderActions(): array

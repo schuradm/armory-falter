@@ -48,6 +48,6 @@ class TradeRequest extends Model
 
     public function manufacturerLabel(): string
     {
-        return $this->manufacturer?->name ?? (string) $this->manufacturer_name;
+        return $this->manufacturer->name ?? (string) $this->manufacturer_name;
     }
 }

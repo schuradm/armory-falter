@@ -43,7 +43,7 @@ class CartItem extends Model
             return (int) $this->options['amount'];
         }
 
-        return $this->variant?->price_gross ?? $this->product->currentPrice();
+        return $this->variant->price_gross ?? $this->product->currentPrice();
     }
 
     /** Anzeigename inkl. Gutscheinbetrag, z. B. „Geschenkgutschein 50,00 €“. */

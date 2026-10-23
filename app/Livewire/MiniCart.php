@@ -60,7 +60,7 @@ class MiniCart extends Component
         $inCart = $hasItems ? $current->items->pluck('product_id')->all() : [];
         $suggestions = $this->justAdded
             ? Product::find($this->justAdded)?->accessories()->with(['media', 'legalClass', 'taxRate', 'variants'])
-                ->whereNotIn('products.id', $inCart)->take(6)->get()->filter->isPurchasable()->take(3)
+                ->whereNotIn('products.id', $inCart)->take(6)->get()->filter(fn (Product $p) => $p->isPurchasable())->take(3)
             : collect();
 
         return view('livewire.mini-cart', [

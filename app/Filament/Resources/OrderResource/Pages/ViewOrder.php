@@ -23,7 +23,10 @@ class ViewOrder extends ViewRecord
 
     public function getTitle(): string
     {
-        return 'Bestellung '.$this->getRecord()->order_number;
+        /** @var Order $order */
+        $order = $this->getRecord();
+
+        return 'Bestellung '.$order->order_number;
     }
 
     private const RELATIONS = [

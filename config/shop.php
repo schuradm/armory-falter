@@ -1,6 +1,12 @@
 <?php
 
 return [
+    // Admin-Konto für /kms-login, angelegt durch AdminUserSeeder
+    'admin' => [
+        'email' => env('ADMIN_EMAIL', 'admin@armory-falter.de'),
+        'password' => env('ADMIN_PASSWORD'),
+    ],
+
     'company' => [
         'name' => env('SHOP_COMPANY_NAME', 'Armory Falter'),
         'owner' => env('SHOP_COMPANY_OWNER', 'Mark Falter'),

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\EventResource\RelationManagers;
 
+use App\Models\Event;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -25,6 +26,7 @@ class RegistrationsRelationManager extends RelationManager
 
     public static function getBadge(Model $ownerRecord, string $pageClass): ?string
     {
+        /** @var Event $ownerRecord */
         return (string) $ownerRecord->registrations()->where('status', 'registered')->sum('persons');
     }
 
@@ -78,6 +80,7 @@ class RegistrationsRelationManager extends RelationManager
 
     protected function exportCsv(): StreamedResponse
     {
+        /** @var Event $event */
         $event = $this->getOwnerRecord();
 
         return response()->streamDownload(function () use ($event) {
