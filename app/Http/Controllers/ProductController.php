@@ -6,11 +6,12 @@ use App\Models\Product;
 use App\Services\Compliance\ComplianceService;
 use App\Services\Reviews\ReviewService;
 use App\Support\Seo;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
-    public function show(Product $product, Seo $seo, ComplianceService $compliance, ReviewService $reviewService)
+    public function show(Product $product, Seo $seo, ComplianceService $compliance, ReviewService $reviewService): View
     {
         abort_unless($product->status === 'active' && (! $product->authority_only || auth()->user()?->isAuthorityOrDealer()), 404);
 

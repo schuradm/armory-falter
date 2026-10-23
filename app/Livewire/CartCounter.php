@@ -16,7 +16,7 @@ class CartCounter extends Component
         $this->count = $cart->count();
     }
 
-    public function render()
+    public function render(): string
     {
         return <<<'BLADE'
             <a href="{{ route('cart') }}" x-data="{ bump: false }" x-on:cart-updated.window="bump = true; setTimeout(() => bump = false, 500)"

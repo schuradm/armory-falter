@@ -10,7 +10,9 @@ use App\Services\Orders\InvoiceService;
 use App\Services\Orders\OrderService;
 use App\Services\Payment\KlarnaGateway;
 use App\Services\Payment\PayPalGateway;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Throwable;
@@ -18,7 +20,7 @@ use Throwable;
 class PaymentController extends Controller
 {
     /** Zahlung starten (nach Bestellung bzw. nach Compliance-Freigabe). */
-    public function start(Order $order, PayPalGateway $paypal, KlarnaGateway $klarna)
+    public function start(Order $order, PayPalGateway $paypal, KlarnaGateway $klarna): RedirectResponse
     {
         abort_unless($order->user_id === auth()->id(), 403);
         if ($order->status !== OrderStatus::PendingPayment) {
@@ -39,7 +41,7 @@ class PaymentController extends Controller
         }
     }
 
-    public function paypalReturn(Order $order, Request $request, PayPalGateway $paypal)
+    public function paypalReturn(Order $order, Request $request, PayPalGateway $paypal): RedirectResponse
     {
         abort_unless($order->user_id === auth()->id(), 403);
         $token = (string) $request->query('token');
@@ -53,7 +55,7 @@ class PaymentController extends Controller
         return $this->failed($order);
     }
 
-    public function klarnaReturn(Order $order, Request $request, KlarnaGateway $klarna)
+    public function klarnaReturn(Order $order, Request $request, KlarnaGateway $klarna): RedirectResponse
     {
         abort_unless($order->user_id === auth()->id(), 403);
         $sid = (string) $request->query('sid');
@@ -68,7 +70,7 @@ class PaymentController extends Controller
     }
 
     /** Klarna status_update: Absicherung, falls der Kunde den Browser vor der Rückleitung schließt. */
-    public function klarnaWebhook(Order $order, Request $request, KlarnaGateway $klarna)
+    public function klarnaWebhook(Order $order, Request $request, KlarnaGateway $klarna): Response
     {
         abort_unless(hash_equals($klarna->signature($order), (string) $request->query('sig')), 403);
         $payment = $order->payments()->where('provider', 'klarna')->latest('id')->first();
@@ -80,7 +82,7 @@ class PaymentController extends Controller
     }
 
     /** PayPal-Webhook PAYMENT.CAPTURE.COMPLETED, Signatur wird bei PayPal verifiziert. */
-    public function paypalWebhook(Request $request, PayPalGateway $paypal)
+    public function paypalWebhook(Request $request, PayPalGateway $paypal): Response
     {
         if (! $paypal->verifyWebhook($request)) {
             return response()->noContent(400);
@@ -111,7 +113,7 @@ class PaymentController extends Controller
         });
     }
 
-    private function failed(Order $order)
+    private function failed(Order $order): RedirectResponse
     {
         return redirect()->route('account.orders.show', $order)
             ->withErrors(['payment' => 'Die Zahlung wurde nicht abgeschlossen. Sie können es über „Jetzt bezahlen“ erneut versuchen.']);

@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Models\Product;
 use App\Services\Cart\CartService;
 use App\Services\Compliance\CartComplianceEvaluator;
+use Illuminate\Contracts\View\View;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
@@ -44,7 +45,7 @@ class MiniCart extends Component
         $this->dispatch('cart-updated');
     }
 
-    public function render(CartService $cart, CartComplianceEvaluator $evaluator)
+    public function render(CartService $cart, CartComplianceEvaluator $evaluator): View
     {
         if (! $this->loaded) {
             return view('livewire.mini-cart', ['suggestions' => collect(), 'cart' => null, 'evaluation' => null, 'subtotal' => 0, 'freeFrom' => 0, 'progress' => 0]);

@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Models\WorkshopService;
 use App\Rules\Honeypot;
 use App\Services\Booking\AppointmentService;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use InvalidArgumentException;
@@ -93,7 +94,7 @@ class AppointmentBooking extends Component
         $this->booked = true;
     }
 
-    public function render(AppointmentService $service)
+    public function render(AppointmentService $service): View
     {
         $slots = $service->availableSlots($this->resource());
 

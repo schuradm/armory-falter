@@ -6,11 +6,12 @@ use App\Models\Author;
 use App\Models\BlogCategory;
 use App\Models\BlogPost;
 use App\Support\Seo;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Str;
 
 class BlogController extends Controller
 {
-    public function index(Seo $seo, ?BlogCategory $category = null)
+    public function index(Seo $seo, ?BlogCategory $category = null): View
     {
         $seo->title($category ? "{$category->name} – Blog" : 'Blog: Jagd, Sportschießen, Waffenrecht & Optik')
             ->description($category?->description ?: 'Fachartikel von Armory Falter zu Jagd, Sportschießen, Waffenrecht, Optiken, Munition und Produktneuheiten.')
@@ -27,7 +28,7 @@ class BlogController extends Controller
         return view('blog.index', compact('posts', 'categories', 'category'));
     }
 
-    public function author(Author $author, Seo $seo)
+    public function author(Author $author, Seo $seo): View
     {
         $seo->title("{$author->name} – Autor")->description(Str::limit((string) $author->bio, 150))
             ->breadcrumb('Blog', route('blog.index'))->breadcrumb($author->name, route('blog.author', $author))
@@ -37,7 +38,7 @@ class BlogController extends Controller
         return view('blog.author', compact('author', 'posts'));
     }
 
-    public function show(BlogPost $post, Seo $seo)
+    public function show(BlogPost $post, Seo $seo): View
     {
         abort_unless($post->status === 'published' && $post->published_at?->isPast(), 404);
         $post->load('category', 'author', 'faqs', 'seo');

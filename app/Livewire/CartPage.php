@@ -7,6 +7,7 @@ use App\Services\Cart\CartService;
 use App\Services\Compliance\CartComplianceEvaluator;
 use App\Services\Vouchers\CartCodeService;
 use App\Support\Seo;
+use Illuminate\Contracts\View\View;
 use Livewire\Component;
 
 class CartPage extends Component
@@ -30,7 +31,7 @@ class CartPage extends Component
         $this->dispatch('cart-updated');
     }
 
-    public function render(CartService $cart, CartComplianceEvaluator $evaluator, CartCodeService $codes)
+    public function render(CartService $cart, CartComplianceEvaluator $evaluator, CartCodeService $codes): View
     {
         $current = $cart->current();
         $current?->load('items.product.media', 'items.product.manufacturer', 'items.product.legalClass', 'items.product.taxRate', 'items.product.categories', 'items.variant');

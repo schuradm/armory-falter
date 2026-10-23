@@ -5,12 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Faq;
 use App\Models\Page;
 use App\Support\Seo;
+use Illuminate\Contracts\View\View;
 
 class PageController extends Controller
 {
     public const SLUGS = ['impressum', 'datenschutz', 'agb', 'widerruf', 'versandinformationen', 'zahlungsarten', 'barrierefreiheit', 'ueber-uns', 'altersverifikation'];
 
-    public function show(string $slug, Seo $seo)
+    public function show(string $slug, Seo $seo): View
     {
         $page = Page::where('slug', $slug)->where('status', 'published')->with('seo')->firstOrFail();
         $seo->title($page->title)->description(strip_tags($page->body))->breadcrumb($page->title, route('page.show', $slug))
@@ -19,7 +20,7 @@ class PageController extends Controller
         return view('pages.show', compact('page'));
     }
 
-    public function faq(Seo $seo)
+    public function faq(Seo $seo): View
     {
         $seo->title('Häufige Fragen (FAQ)')->description('Antworten zu Bestellung, Waffenerwerb, WBK, Munition, Versand, Zahlung, Werkstatt und Ankauf bei Armory Falter.')
             ->breadcrumb('FAQ', route('faq'));
@@ -28,7 +29,7 @@ class PageController extends Controller
         return view('pages.faq', compact('groups'));
     }
 
-    public function contact(Seo $seo)
+    public function contact(Seo $seo): View
     {
         $seo->title('Kontakt & Anfahrt')->description('Kontakt zu Armory Falter in Wolfschlugen: Telefon, E-Mail, Öffnungszeiten und Anfahrt.')
             ->breadcrumb('Kontakt', route('contact'))->schema(Seo::organization());

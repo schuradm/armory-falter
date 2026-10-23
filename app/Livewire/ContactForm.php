@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\ContactMessage;
 use App\Rules\Honeypot;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
 use Livewire\Component;
@@ -57,7 +58,7 @@ class ContactForm extends Component
         $this->sent = true;
     }
 
-    public function render()
+    public function render(): View
     {
         return view('livewire.contact-form');
     }

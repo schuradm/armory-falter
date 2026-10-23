@@ -6,11 +6,12 @@ use App\Models\Event;
 use App\Models\LocalPage;
 use App\Models\Product;
 use App\Support\Seo;
+use Illuminate\Contracts\View\View;
 
 /** Events, Premium-Club „Elite“ und regionale Landingpages. */
 class MarketingController extends Controller
 {
-    public function events(Seo $seo)
+    public function events(Seo $seo): View
     {
         $seo->title('Events, Testtage & Workshops')
             ->description('Shooting Day, Testtage, Jagdabende, Optik-Workshops und Wiederlade-Seminare bei Armory Falter. Jetzt Platz sichern.')
@@ -19,7 +20,7 @@ class MarketingController extends Controller
         return view('marketing.events', ['events' => Event::upcoming()->get()]);
     }
 
-    public function event(Event $event, Seo $seo)
+    public function event(Event $event, Seo $seo): View
     {
         abort_unless($event->is_published, 404);
         $seo->title($event->title.' – '.$event->starts_at->format('d.m.Y'))->description($event->teaser)
@@ -37,7 +38,7 @@ class MarketingController extends Controller
         return view('marketing.event', compact('event'));
     }
 
-    public function elite(Seo $seo)
+    public function elite(Seo $seo): View
     {
         $seo->title('Armory Falter Elite – der Club für Jäger & Sportschützen')
             ->description('Frühzugriff auf Neuheiten, exklusive Waffen, VIP-Angebote, Eventeinladungen und Schießstandtage. Jetzt auf die Warteliste.')
@@ -46,7 +47,7 @@ class MarketingController extends Controller
         return view('marketing.elite');
     }
 
-    public function local(LocalPage $page, Seo $seo)
+    public function local(LocalPage $page, Seo $seo): View
     {
         abort_unless($page->is_published, 404);
         $seo->title($page->title)->description($page->meta_description)

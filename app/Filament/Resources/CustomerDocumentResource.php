@@ -223,7 +223,7 @@ class CustomerDocumentResource extends Resource
      *
      * @param  class-string<Action|Tables\Actions\Action>  $class
      */
-    public static function downloadAction(string $class)
+    public static function downloadAction(string $class): Action|Tables\Actions\Action
     {
         return $class::make('download')->label('Datei öffnen')->icon('heroicon-o-arrow-down-tray')->color('gray')
             ->visible(fn (CustomerDocument $record) => $record->storage_path !== 'deleted' && self::canReview())
@@ -253,7 +253,7 @@ class CustomerDocumentResource extends Resource
     }
 
     /** @param  class-string<Action|Tables\Actions\Action>  $class */
-    public static function approveAction(string $class)
+    public static function approveAction(string $class): Action|Tables\Actions\Action
     {
         return $class::make('approve')->label('Freigeben')->icon('heroicon-o-check-badge')->color('success')
             ->visible(fn (CustomerDocument $record) => $record->status->awaitingReview() && self::canReview())
@@ -310,7 +310,7 @@ class CustomerDocumentResource extends Resource
     }
 
     /** @param  class-string<Action|Tables\Actions\Action>  $class */
-    public static function rejectAction(string $class)
+    public static function rejectAction(string $class): Action|Tables\Actions\Action
     {
         return $class::make('reject')->label('Ablehnen')->icon('heroicon-o-x-circle')->color('danger')
             ->visible(fn (CustomerDocument $record) => $record->status->awaitingReview() && self::canReview())

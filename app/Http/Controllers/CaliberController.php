@@ -4,10 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Caliber;
 use App\Support\Seo;
+use Illuminate\Contracts\View\View;
 
 class CaliberController extends Controller
 {
-    public function show(Caliber $caliber, Seo $seo)
+    public function show(Caliber $caliber, Seo $seo): View
     {
         $seo->title("Kaliber {$caliber->name}: Waffen & Munition")
             ->description("Waffen und Munition im Kaliber {$caliber->name} bei Armory Falter. Abgabe erlaubnispflichtiger Artikel nur an Berechtigte.")

@@ -6,6 +6,7 @@ use App\Models\Caliber;
 use App\Models\Category;
 use App\Models\Manufacturer;
 use App\Models\Product;
+use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Url;
@@ -50,7 +51,7 @@ class ProductListing extends Component
     #[Url(as: 'sortierung', except: 'relevanz')]
     public string $sort = 'relevanz';
 
-    public function updated($property): void
+    public function updated(string $property): void
     {
         if ($property !== 'paginators') {
             $this->resetPage('seite');
@@ -144,7 +145,7 @@ class ProductListing extends Component
         ];
     }
 
-    public function render()
+    public function render(): View
     {
         $products = $this->filteredQuery()
             ->with(['manufacturer', 'caliber', 'legalClass', 'taxRate', 'media'])

@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\Order;
 use App\Support\Seo;
+use Illuminate\Contracts\View\View;
 use Livewire\Component;
 
 class CheckoutSuccess extends Component
@@ -17,7 +18,7 @@ class CheckoutSuccess extends Component
         $seo->title('Vielen Dank für Ihre Bestellung')->noindex();
     }
 
-    public function render()
+    public function render(): View
     {
         return view('livewire.checkout-success', ['bank' => config('shop.company.bank')]);
     }

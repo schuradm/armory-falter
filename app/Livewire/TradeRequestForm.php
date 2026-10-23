@@ -9,6 +9,7 @@ use App\Rules\Captcha;
 use App\Rules\Honeypot;
 use App\Services\Trade\TradeRequestService;
 use App\Support\Money;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\Rule;
@@ -126,7 +127,7 @@ class TradeRequestForm extends Component
         $this->reference = $request->reference;
     }
 
-    public function render()
+    public function render(): View
     {
         return view('livewire.trade-request-form', [
             'manufacturers' => Manufacturer::orderBy('name')->get(['id', 'name']),

@@ -4,11 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Support\Seo;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 
 class ShopController extends Controller
 {
-    public function index(Request $request, Seo $seo)
+    public function index(Request $request, Seo $seo): View
     {
         $seo->title('Shop – Waffen, Optik, Munition & Zubehör')
             ->description('Alle Produkte von Armory Falter: Kurzwaffen, Langwaffen, Jagd- und Sportwaffen, Optiken, Munition, Messer, Zubehör, Wiederladen und Bekleidung.')
@@ -20,7 +21,7 @@ class ShopController extends Controller
         return view('shop.listing', ['category' => null]);
     }
 
-    public function category(string $path, Request $request, Seo $seo)
+    public function category(string $path, Request $request, Seo $seo): View
     {
         $category = Category::where('path', $path)->where('is_active', true)->with('seo', 'children')->firstOrFail();
 

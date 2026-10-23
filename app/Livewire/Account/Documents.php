@@ -5,10 +5,12 @@ namespace App\Livewire\Account;
 use App\Enums\DocumentType;
 use App\Services\Documents\DocumentService;
 use App\Support\Seo;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\Rule;
 use Livewire\Component;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
 
 /** Upload von WBK, Jagdschein, Ausweis usw. mit Statusanzeige. */
@@ -18,6 +20,7 @@ class Documents extends Component
 
     public string $type = 'id_card';
 
+    /** @var TemporaryUploadedFile|null */
     public $file;
 
     public string $documentNumber = '';
@@ -65,7 +68,7 @@ class Documents extends Component
         $this->dispatch('toast', message: 'Dokument hochgeladen. Wir prüfen es zeitnah.');
     }
 
-    public function render()
+    public function render(): View
     {
         $user = Auth::user();
 

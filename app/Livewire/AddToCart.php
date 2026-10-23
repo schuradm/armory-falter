@@ -6,6 +6,7 @@ use App\Models\Product;
 use App\Services\Cart\CartService;
 use App\Services\Compliance\ComplianceResult;
 use App\Services\Compliance\ComplianceService;
+use Illuminate\Contracts\View\View;
 use InvalidArgumentException;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
@@ -74,7 +75,7 @@ class AddToCart extends Component
         $this->dispatch('toast', message: "„{$product->name}“ liegt im Warenkorb.");
     }
 
-    public function render(ComplianceService $compliance)
+    public function render(ComplianceService $compliance): View
     {
         $product = Product::with(['legalClass', 'variants', 'caliber'])->findOrFail($this->productId);
 

@@ -11,11 +11,12 @@ use App\Models\Manufacturer;
 use App\Models\Page;
 use App\Models\Product;
 use App\Models\WorkshopService;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
 
 class SitemapController extends Controller
 {
-    public function index()
+    public function index(): Response
     {
         $xml = Cache::remember('sitemap.xml', 3600, function () {
             $urls = collect([
@@ -41,7 +42,7 @@ class SitemapController extends Controller
         return response($xml, 200, ['Content-Type' => 'application/xml; charset=UTF-8']);
     }
 
-    public function robots()
+    public function robots(): Response
     {
         $lines = app()->isProduction() && ! config('app.noindex')
             ? ['User-agent: *', 'Disallow: /konto', 'Disallow: /kasse', 'Disallow: /warenkorb', 'Disallow: /suche', 'Disallow: /vergleich', 'Disallow: /*?*sortierung=', '', 'Sitemap: '.route('sitemap')]

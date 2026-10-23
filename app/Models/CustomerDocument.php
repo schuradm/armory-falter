@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\DocumentStatus;
 use App\Enums\DocumentType;
 use App\Support\BlindIndex;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -54,7 +55,11 @@ class CustomerDocument extends Model
         return $this->hasMany(CustomerEntitlement::class, 'document_id');
     }
 
-    public function scopeAwaitingReview($query)
+    /**
+     * @param  Builder<self>  $query
+     * @return Builder<self>
+     */
+    public function scopeAwaitingReview(Builder $query): Builder
     {
         return $query->whereIn('status', [DocumentStatus::Uploaded, DocumentStatus::PrecheckPassed, DocumentStatus::PrecheckFlagged]);
     }

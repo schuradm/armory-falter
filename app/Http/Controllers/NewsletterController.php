@@ -9,10 +9,15 @@ use App\Models\NewsletterSubscriber;
 use App\Rules\Honeypot;
 use App\Services\Newsletter\NewsletterService;
 use App\Support\Settings;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class NewsletterController extends Controller
 {
@@ -21,7 +26,7 @@ class NewsletterController extends Controller
      * erst nach dem Laden nachgeladen; ein Livewire-Formular ging verloren, wenn vorher abgeschickt wurde.
      * Ergebnis per Flash-Meldung, der Seiten-Cache wird dafür übergangen (CachePublicPages).
      */
-    public function subscribe(Request $request, NewsletterService $service)
+    public function subscribe(Request $request, NewsletterService $service): RedirectResponse
     {
         $variant = $request->input('variant') === 'lead' ? 'lead' : 'footer';
         $bag = 'newsletter_'.$variant;
@@ -50,7 +55,7 @@ class NewsletterController extends Controller
         return $back()->with('newsletter_done', $variant);
     }
 
-    public function confirm(string $token, NewsletterService $service)
+    public function confirm(string $token, NewsletterService $service): View
     {
         $sub = $service->confirm($token);
         $download = $sub && $sub->source === 'ratgeber' ? $sub->ratgeberUrl() : null;
@@ -63,7 +68,7 @@ class NewsletterController extends Controller
     }
 
     /** Leadmagnet-Download, nur über signierten Link nach Double-Opt-in. */
-    public function ratgeber(NewsletterSubscriber $subscriber)
+    public function ratgeber(NewsletterSubscriber $subscriber): StreamedResponse|BinaryFileResponse
     {
         abort_unless($subscriber->status === 'confirmed', 403);
         // Im Backend hochgeladenes PDF hat Vorrang, sonst der mitgelieferte Ratgeber (php artisan ratgeber:pdf)
@@ -76,7 +81,7 @@ class NewsletterController extends Controller
         return response()->download($bundled, 'Armory-Falter-Waffenratgeber.pdf');
     }
 
-    public function unsubscribe(NewsletterSubscriber $subscriber, NewsletterService $service)
+    public function unsubscribe(NewsletterSubscriber $subscriber, NewsletterService $service): View
     {
         $service->unsubscribe($subscriber);
 
@@ -84,7 +89,7 @@ class NewsletterController extends Controller
     }
 
     /** Öffnungs-Tracking (nur bei Anmeldung mit Hinweis auf Erfolgsmessung). */
-    public function open(NewsletterCampaign $campaign, NewsletterSubscriber $subscriber)
+    public function open(NewsletterCampaign $campaign, NewsletterSubscriber $subscriber): Response
     {
         NewsletterEvent::create(['newsletter_campaign_id' => $campaign->id, 'newsletter_subscriber_id' => $subscriber->id, 'event' => 'open', 'occurred_at' => now()]);
 

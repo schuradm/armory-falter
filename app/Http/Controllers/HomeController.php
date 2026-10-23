@@ -10,12 +10,13 @@ use App\Models\Product;
 use App\Models\Testimonial;
 use App\Support\Seo;
 use App\Support\Settings;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Cache;
 
 /** Startseite nach AIDA: Attention (Hero) → Interest (Kategorien, Versprechen) → Desire (Produkte, Stimmen) → Action (CTA). */
 class HomeController extends Controller
 {
-    public function __invoke(Seo $seo, Settings $settings)
+    public function __invoke(Seo $seo, Settings $settings): View
     {
         $seo->title($settings->get('seo.home_title', 'Armory Falter – Waffenhändler bei Stuttgart für Jagd, Sport & Präzision'), false)
             ->description($settings->get('seo.home_description', 'Die erste Adresse für Jäger, Sportschützen, Sammler und Behörden: Jagd- und Sportwaffen, Optik, Munition, Werkstatt, Ankauf und Verkaufsservice. Persönliche Beratung in Wolfschlugen bei Stuttgart.'))

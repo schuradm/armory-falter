@@ -4,11 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\ConsentRecord;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 /** Protokolliert Cookie-Einwilligungen (Nachweispflicht Art. 7 Abs. 1 DSGVO), pseudonym. */
 class ConsentController extends Controller
 {
-    public function store(Request $request)
+    public function store(Request $request): Response
     {
         $data = $request->validate([
             'id' => ['required', 'string', 'max:64'],

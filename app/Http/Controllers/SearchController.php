@@ -4,11 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Support\Seo;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 
 class SearchController extends Controller
 {
-    public function index(Request $request, Seo $seo)
+    public function index(Request $request, Seo $seo): View
     {
         $q = trim((string) $request->query('q'));
         $seo->title($q ? "Suche: {$q}" : 'Suche')->noindex();
@@ -16,7 +17,7 @@ class SearchController extends Controller
         return view('shop.search', ['q' => $q]);
     }
 
-    public function compare(Request $request, Seo $seo)
+    public function compare(Request $request, Seo $seo): View
     {
         $seo->title('Produktvergleich')->noindex();
         $ids = collect(explode(',', (string) $request->query('ids')))->map(fn ($v) => (int) $v)->filter()->take(4);

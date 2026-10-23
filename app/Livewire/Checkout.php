@@ -13,6 +13,7 @@ use App\Services\Checkout\CheckoutService;
 use App\Services\Compliance\CartComplianceEvaluator;
 use App\Services\Vouchers\CartCodeService;
 use App\Support\Seo;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Locked;
@@ -48,15 +49,19 @@ class Checkout extends Component
     #[Locked]
     public string $idempotencyKey = '';
 
-    public function mount(Seo $seo, CartService $cart, CartComplianceEvaluator $evaluator)
+    public function mount(Seo $seo, CartService $cart, CartComplianceEvaluator $evaluator): void
     {
         $seo->title('Kasse')->noindex();
         if (! $cart->current() || $cart->current()->items()->doesntExist()) {
-            return $this->redirectRoute('cart');
+            $this->redirectRoute('cart');
+
+            return;
         }
         // Fehlt ein Nachweis, zeigt der Warenkorb je Artikel den Grund – nicht erst nach vier Schritten beim Bestellen scheitern
         if (! $evaluator->evaluate($cart->current(), Auth::user())->allowed()) {
-            return $this->redirectRoute('cart');
+            $this->redirectRoute('cart');
+
+            return;
         }
         $this->idempotencyKey = (string) Str::uuid();
         $user = Auth::user();
@@ -127,7 +132,7 @@ class Checkout extends Component
         }
     }
 
-    public function placeOrder(CartService $carts, CheckoutService $checkout)
+    public function placeOrder(CartService $carts, CheckoutService $checkout): void
     {
         $this->validate(['terms' => ['accepted']], ['terms.accepted' => 'Bitte akzeptieren Sie AGB und Widerrufsbelehrung.']);
 
@@ -146,24 +151,26 @@ class Checkout extends Component
         } catch (CheckoutException $e) {
             $this->addError('order', $e->getMessage());
 
-            return null;
+            return;
         }
 
         $this->dispatch('cart-updated');
 
-        return $this->redirectAfterOrder($order);
+        $this->redirectAfterOrder($order);
     }
 
-    protected function redirectAfterOrder(Order $order)
+    protected function redirectAfterOrder(Order $order): void
     {
         if ($order->status->value === 'pending_payment' && $order->payment_method_code->requiresOnlineCapture()) {
-            return redirect()->route('payment.start', $order);
+            $this->redirectRoute('payment.start', ['order' => $order]);
+
+            return;
         }
 
-        return redirect()->route('checkout.success', $order);
+        $this->redirectRoute('checkout.success', ['order' => $order]);
     }
 
-    public function render(CartService $carts, CartComplianceEvaluator $evaluator, CheckoutService $checkout, CartCodeService $codes)
+    public function render(CartService $carts, CartComplianceEvaluator $evaluator, CheckoutService $checkout, CartCodeService $codes): View
     {
         $cart = $carts->current();
         $cart?->load('items.product.legalClass', 'items.product.taxRate', 'items.product.media', 'items.product.caliber', 'items.product.categories', 'items.variant');

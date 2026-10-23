@@ -7,6 +7,7 @@ use App\Enums\OrderStatus;
 use App\Models\Category;
 use App\Models\DiscountCode;
 use App\Models\Order;
+use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\ProductReview;
 use App\Models\User;
@@ -104,7 +105,7 @@ class ReviewVoucherDemoSeeder extends Seeder
     }
 
     /** Abgeschlossene Demo-Bestellung des Kunden mit dem Artikel (Kaufnachweis der Bewertung). */
-    private function deliveredOrderItem(User $user, Product $product, int $daysAgo)
+    private function deliveredOrderItem(User $user, Product $product, int $daysAgo): OrderItem
     {
         $number = 'DEMO-'.$user->id.'-'.$product->id;
         $placed = now()->subDays($daysAgo);

@@ -6,6 +6,7 @@ use App\Models\Product;
 use App\Models\Wishlist;
 use App\Services\Cart\CartService;
 use App\Support\Seo;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Livewire\Component;
@@ -67,7 +68,7 @@ class Wishlists extends Component
         }
     }
 
-    public function render()
+    public function render(): View
     {
         $lists = Auth::user()->wishlists()->withCount('products')->orderByDesc('is_default')->get();
         $active = $lists->firstWhere('id', $this->activeId) ?? $lists->first();

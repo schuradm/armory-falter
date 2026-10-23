@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Models\Category;
 use App\Models\Manufacturer;
 use App\Models\Product;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\RateLimiter;
 use Livewire\Component;
 
@@ -15,7 +16,7 @@ class SearchAutocomplete extends Component
 
     public string $q = '';
 
-    public function render()
+    public function render(): View
     {
         $results = ['products' => collect(), 'brands' => collect(), 'categories' => collect()];
         $term = trim($this->q);

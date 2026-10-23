@@ -19,12 +19,14 @@ class WishlistToggle extends Component
         $this->active = Auth::check() && Auth::user()->wishlists()->whereHas('products', fn ($q) => $q->whereKey($productId))->exists();
     }
 
-    public function toggle()
+    public function toggle(): void
     {
         if (! Auth::check()) {
             session()->put('url.intended', url()->previous());
 
-            return $this->redirectRoute('login');
+            $this->redirectRoute('login');
+
+            return;
         }
         $list = Auth::user()->defaultWishlist();
         $list->products()->toggle([$this->productId]);
@@ -32,7 +34,7 @@ class WishlistToggle extends Component
         $this->dispatch('toast', message: $this->active ? 'Zur Merkliste hinzugefügt.' : 'Von der Merkliste entfernt.');
     }
 
-    public function render()
+    public function render(): string
     {
         return <<<'BLADE'
             <button type="button" wire:click="toggle" class="grid size-9 place-items-center rounded-full border border-line bg-surface/90 backdrop-blur hover:text-accent {{ $active ? 'text-accent border-accent' : '' }}"

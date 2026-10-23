@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\User;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class ReviewController extends Controller
 {
@@ -12,7 +14,7 @@ class ReviewController extends Controller
      * Weitere Bewertungen als HTML-Fragment für „Mehr anzeigen“ auf der Produktseite (serverseitig gerendert,
      * per fetch angehängt). Gäste bekommen das Fragment aus dem Seiten-Cache.
      */
-    public function index(Product $product, Request $request)
+    public function index(Product $product, Request $request): Response
     {
         abort_unless($product->status === 'active' && ! $product->authority_only, 404);
         $page = max(2, (int) $request->query('seite', 2));
@@ -24,7 +26,7 @@ class ReviewController extends Controller
     }
 
     /** Widerspruch gegen Bewertungseinladungen per signiertem Link (GET aus der Mail, POST für One-Click). */
-    public function optOut(User $user)
+    public function optOut(User $user): Response|View
     {
         if (! $user->review_requests_opted_out_at) {
             $user->forceFill(['review_requests_opted_out_at' => now()])->save();

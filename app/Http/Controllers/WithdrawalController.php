@@ -9,6 +9,8 @@ use App\Rules\Honeypot;
 use App\Services\AuditLogger;
 use App\Services\NumberGenerator;
 use App\Support\Seo;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
@@ -22,7 +24,7 @@ class WithdrawalController extends Controller
 {
     private const DRAFT = 'withdrawal.draft';
 
-    public function create(Request $request, Seo $seo)
+    public function create(Request $request, Seo $seo): View
     {
         $seo->title('Vertrag widerrufen')->noindex()->breadcrumb('Vertrag widerrufen', route('withdrawal.create'));
         $user = $request->user();
@@ -41,7 +43,7 @@ class WithdrawalController extends Controller
     }
 
     /** Schritt 2: Angaben prüfen, Bestätigungsseite mit „Widerruf bestätigen“. */
-    public function review(Request $request, Seo $seo)
+    public function review(Request $request, Seo $seo): View
     {
         $data = $request->validate([
             'name' => ['required', 'string', 'max:200'],
@@ -63,7 +65,7 @@ class WithdrawalController extends Controller
     }
 
     /** Schritt 3: verbindlich absenden. */
-    public function store(Request $request, NumberGenerator $numbers, AuditLogger $audit)
+    public function store(Request $request, NumberGenerator $numbers, AuditLogger $audit): RedirectResponse
     {
         $data = $request->session()->pull(self::DRAFT);
         if (! $data) {
@@ -92,7 +94,7 @@ class WithdrawalController extends Controller
         return redirect()->route('withdrawal.done', ['ref' => $withdrawal->reference]);
     }
 
-    public function done(Request $request, Seo $seo)
+    public function done(Request $request, Seo $seo): View
     {
         $seo->title('Widerruf eingegangen')->noindex();
 

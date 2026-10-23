@@ -180,7 +180,7 @@ class TradeRequestResource extends Resource
     }
 
     /** @param  class-string<Action|Tables\Actions\Action>  $class */
-    public static function pdfAction(string $class)
+    public static function pdfAction(string $class): Action|Tables\Actions\Action
     {
         return $class::make('pdf')->label('PDF-Dossier')->icon('heroicon-o-document-text')->color('gray')
             ->action(function (TradeRequest $record) {

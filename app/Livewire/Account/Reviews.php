@@ -5,6 +5,7 @@ namespace App\Livewire\Account;
 use App\Models\Product;
 use App\Services\Reviews\ReviewService;
 use App\Support\Seo;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use InvalidArgumentException;
 use Livewire\Attributes\Url;
@@ -55,7 +56,7 @@ class Reviews extends Component
         $this->dispatch('toast', message: 'Vielen Dank! Ihre Bewertung wird geprüft und dann veröffentlicht.');
     }
 
-    public function render(ReviewService $reviews)
+    public function render(ReviewService $reviews): View
     {
         $user = Auth::user();
         $reviewable = $reviews->reviewableProducts($user);

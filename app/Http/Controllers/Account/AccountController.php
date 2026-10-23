@@ -9,10 +9,13 @@ use App\Models\ProductDocument;
 use App\Services\AuditLogger;
 use App\Services\Reviews\ReviewService;
 use App\Support\Seo;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AccountController extends Controller
 {
@@ -21,7 +24,7 @@ class AccountController extends Controller
         $seo->noindex();
     }
 
-    public function dashboard(Request $request, Seo $seo)
+    public function dashboard(Request $request, Seo $seo): View
     {
         $seo->title('Mein Konto');
         $user = $request->user()->load(['activeEntitlements.caliber']);
@@ -31,7 +34,7 @@ class AccountController extends Controller
         return view('account.dashboard', compact('user', 'orders', 'openDocs'));
     }
 
-    public function orders(Request $request, Seo $seo)
+    public function orders(Request $request, Seo $seo): View
     {
         $seo->title('Meine Bestellungen');
         $orders = $request->user()->orders()->withCount('items')->latest('placed_at')->paginate(10, pageName: 'seite');
@@ -39,7 +42,7 @@ class AccountController extends Controller
         return view('account.orders', compact('orders'));
     }
 
-    public function order(Order $order, Seo $seo)
+    public function order(Order $order, Seo $seo): View
     {
         abort_unless($order->user_id === Auth::id(), 404);
         $seo->title('Bestellung '.$order->order_number);
@@ -48,14 +51,14 @@ class AccountController extends Controller
         return view('account.order', compact('order'));
     }
 
-    public function invoice(Invoice $invoice)
+    public function invoice(Invoice $invoice): StreamedResponse
     {
         abort_unless($invoice->order->user_id === Auth::id(), 404);
 
         return Storage::disk('local')->download($invoice->pdf_path, $invoice->invoice_number.'.pdf');
     }
 
-    public function invoices(Request $request, Seo $seo)
+    public function invoices(Request $request, Seo $seo): View
     {
         $seo->title('Rechnungen');
         $invoices = Invoice::whereHas('order', fn ($q) => $q->where('user_id', $request->user()->id))->with('order')->latest('issued_at')->get();
@@ -64,7 +67,7 @@ class AccountController extends Controller
     }
 
     /** Anleitungen und Dokumente zu gekauften Produkten. */
-    public function downloads(Request $request, Seo $seo)
+    public function downloads(Request $request, Seo $seo): View
     {
         $seo->title('Downloads');
         $productIds = Order::where('user_id', $request->user()->id)->join('order_items', 'orders.id', '=', 'order_items.order_id')->pluck('order_items.product_id');
@@ -73,7 +76,7 @@ class AccountController extends Controller
         return view('account.downloads', compact('downloads'));
     }
 
-    public function productDocument(ProductDocument $document)
+    public function productDocument(ProductDocument $document): StreamedResponse
     {
         $allowed = $document->visibility === 'public'
             || ($document->visibility === 'customers' && Auth::check())
@@ -83,7 +86,7 @@ class AccountController extends Controller
         return Storage::disk('public')->download($document->path, \Str::slug($document->title).'.pdf');
     }
 
-    public function appointments(Request $request, Seo $seo)
+    public function appointments(Request $request, Seo $seo): View
     {
         $seo->title('Meine Termine');
         $appointments = $request->user()->appointments()->with('service')->latest('starts_at')->get();
@@ -91,7 +94,7 @@ class AccountController extends Controller
         return view('account.appointments', compact('appointments'));
     }
 
-    public function requests(Request $request, Seo $seo)
+    public function requests(Request $request, Seo $seo): View
     {
         $seo->title('Meine Anfragen');
         $requests = $request->user()->tradeRequests()->latest()->get();
@@ -99,21 +102,21 @@ class AccountController extends Controller
         return view('account.requests', compact('requests'));
     }
 
-    public function security(Seo $seo)
+    public function security(Seo $seo): View
     {
         $seo->title('Sicherheit & Zwei-Faktor-Anmeldung');
 
         return view('account.security');
     }
 
-    public function profile(Seo $seo)
+    public function profile(Seo $seo): View
     {
         $seo->title('Persönliche Daten');
 
         return view('account.profile', ['user' => Auth::user()->load('addresses')]);
     }
 
-    public function privacy(Seo $seo)
+    public function privacy(Seo $seo): View
     {
         $seo->title('Datenschutz & Konto');
 
@@ -121,7 +124,7 @@ class AccountController extends Controller
     }
 
     /** Bewertungseinladungen per E-Mail an/aus (Widerspruch nach § 7 Abs. 3 UWG). */
-    public function reviewInvites(Request $request)
+    public function reviewInvites(Request $request): RedirectResponse
     {
         $allow = $request->boolean('allow');
         $request->user()->forceFill(['review_requests_opted_out_at' => $allow ? null : now()])->save();
@@ -130,7 +133,7 @@ class AccountController extends Controller
     }
 
     /** Art. 15/20 DSGVO: Datenauskunft als JSON. */
-    public function export(Request $request, AuditLogger $audit)
+    public function export(Request $request, AuditLogger $audit): StreamedResponse
     {
         $u = $request->user()->load(['addresses', 'orders.items', 'documents', 'entitlements', 'wishlists.products:id,name', 'tradeRequests', 'appointments', 'reviews.product:id,name']);
         $audit->log('privacy.export', $u);
@@ -154,7 +157,7 @@ class AccountController extends Controller
      * Art. 17 DSGVO: Konto löschen. Daten mit gesetzlicher Aufbewahrungspflicht (Rechnungen, Waffenhandelsbuch)
      * bleiben gesperrt erhalten; personenbezogene Kontodaten werden anonymisiert.
      */
-    public function destroy(Request $request, AuditLogger $audit)
+    public function destroy(Request $request, AuditLogger $audit): RedirectResponse
     {
         $request->validate(['password' => ['required', 'current_password']]);
         $user = $request->user();

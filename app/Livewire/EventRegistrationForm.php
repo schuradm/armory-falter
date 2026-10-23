@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Models\Event;
 use App\Models\EventRegistration;
 use App\Rules\Honeypot;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -68,7 +69,7 @@ class EventRegistrationForm extends Component
         $this->result = $status;
     }
 
-    public function render()
+    public function render(): View
     {
         return view('livewire.event-registration-form', ['event' => Event::find($this->eventId)]);
     }

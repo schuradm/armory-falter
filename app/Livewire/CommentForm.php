@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Models\BlogPost;
 use App\Models\Comment;
 use App\Rules\Honeypot;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Livewire\Attributes\Locked;
@@ -61,7 +62,7 @@ class CommentForm extends Component
         $this->sent = true;
     }
 
-    public function render()
+    public function render(): View
     {
         return view('livewire.comment-form');
     }

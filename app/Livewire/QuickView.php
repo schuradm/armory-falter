@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Product;
+use Illuminate\Contracts\View\View;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
@@ -21,7 +22,7 @@ class QuickView extends Component
         $this->productId = null;
     }
 
-    public function render()
+    public function render(): View
     {
         $product = $this->productId
             ? Product::visible(auth()->user())->with(['manufacturer', 'caliber', 'legalClass', 'taxRate', 'media', 'attributes'])->find($this->productId)
